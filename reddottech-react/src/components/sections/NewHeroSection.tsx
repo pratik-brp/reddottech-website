@@ -109,6 +109,7 @@ export function NewHeroSection() {
 
   return (
     <section
+      id="hero"
       ref={container}
       className="relative flex min-h-screen flex-col justify-center overflow-hidden"
       style={{ background: "var(--gradient-hero)" }}

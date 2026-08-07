@@ -172,12 +172,24 @@ export function LearningMatrixSection() {
               <div
                 onMouseEnter={() => setHoveredId(featuredPillar.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className="group relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 p-8 sm:p-12 text-white shadow-2xl border border-white/10 transition-all duration-500 hover:shadow-brand-red/20"
+                className="group relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 text-white shadow-2xl border border-white/15 transition-all duration-500 hover:shadow-brand-red/25"
               >
+                {/* Background Image with Zoom & Dark Gradient Overlay */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <img
+                    src="/images/pecp-hero-card-bg.png"
+                    alt="PECP Executive Education"
+                    className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                  {/* Gradient overlay for optimal readability & executive ambiance */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-slate-900/80 backdrop-blur-[2px]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
+                </div>
+
                 {/* Background Pattern & Ambient Glow */}
-                <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-15" />
+                <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-20 z-0" />
                 <div
-                  className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full opacity-30 blur-[100px]"
+                  className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full opacity-35 blur-[100px] z-0"
                   style={{
                     background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)",
                   }}
@@ -190,7 +202,7 @@ export function LearningMatrixSection() {
                         <Award className="h-3.5 w-3.5" />
                         {featuredPillar.badge}
                       </span>
-                      <span className="text-xs font-bold text-slate-400">
+                      <span className="text-xs font-bold text-amber-300/90 bg-amber-500/10 border border-amber-400/20 px-3 py-1 rounded-full backdrop-blur-xs">
                         {featuredPillar.subtitle}
                       </span>
                     </div>

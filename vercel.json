@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rootDirectory": "reddottech-react",
+  "framework": "vite",
+  "installCommand": "bun install",
+  "buildCommand": "bun run build"
+}

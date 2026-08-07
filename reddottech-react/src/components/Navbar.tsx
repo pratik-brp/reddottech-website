@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRight,
   Menu,
@@ -17,6 +17,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const routerState = useRouterState();
+  const navigate = useNavigate();
   const currentPath = routerState.location.pathname;
 
   useEffect(() => {
@@ -79,6 +80,27 @@ export function Navbar() {
         {/* Left: Logo */}
         <Link
           to="/"
+          onClick={(e) => {
+            e.preventDefault();
+            const goToHero = () => {
+              const el = document.getElementById("hero");
+              if (el) {
+                const lenis = (window as any).__lenis;
+                if (lenis?.scrollTo) {
+                  lenis.scrollTo(el, { offset: 0, duration: 1.2 });
+                } else {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }
+            };
+            if (currentPath !== "/") {
+              navigate({ to: "/" }).then(() => {
+                requestAnimationFrame(goToHero);
+              });
+            } else {
+              goToHero();
+            }
+          }}
           className="shrink-0 flex items-center transition-all duration-300 hover:opacity-80 active:scale-95"
           aria-label="RedDot Technologies — Home"
         >
