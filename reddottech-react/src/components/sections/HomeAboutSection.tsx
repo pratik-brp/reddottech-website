@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -184,11 +184,10 @@ export function HomeAboutSection() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-colors duration-200 ${
-                      isActive
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-colors duration-200 ${isActive
                         ? "bg-white text-brand-ink shadow-md"
                         : "text-slate-600 hover:text-brand-ink hover:bg-white/50"
-                    }`}
+                      }`}
                   >
                     <Icon className={`h-4 w-4 ${isActive ? "text-brand-red" : "text-slate-400"}`} />
                     <span>{tab.label}</span>
@@ -226,7 +225,7 @@ export function HomeAboutSection() {
               {/* Actions Row */}
               <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-4 shrink-0">
                 <Magnetic>
-                  <Link to={"/aboutt" as any} className="btn-primary group text-xs sm:text-sm py-3 px-6">
+                  <Link to="/about" className="btn-primary group text-xs sm:text-sm py-3 px-6 justify-center w-full sm:w-auto">
                     <span>Learn More</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>

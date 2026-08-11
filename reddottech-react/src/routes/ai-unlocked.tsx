@@ -961,8 +961,8 @@ function AiUnlockedPage() {
                       isActive
                         ? "bg-brand-red text-white shadow-md"
                         : isDone
-                        ? "bg-emerald-50 text-emerald-800 border border-emerald-100 hover:border-emerald-200"
-                        : "text-slate-600 hover:bg-surface-elevated hover:text-brand-ink",
+                          ? "bg-emerald-50 text-emerald-800 border border-emerald-100 hover:border-emerald-200"
+                          : "text-slate-600 hover:bg-surface-elevated hover:text-brand-ink",
                     ].join(" ")}
                   >
                     <span
@@ -971,8 +971,8 @@ function AiUnlockedPage() {
                         isDone
                           ? "bg-emerald-500 text-white"
                           : isActive
-                          ? "bg-white text-brand-red"
-                          : "bg-slate-100 text-slate-500 group-hover:bg-slate-200",
+                            ? "bg-white text-brand-red"
+                            : "bg-slate-100 text-slate-500 group-hover:bg-slate-200",
                       ].join(" ")}
                     >
                       {isDone ? <CheckCircle className="h-3.5 w-3.5" /> : idx + 1}
@@ -994,14 +994,14 @@ function AiUnlockedPage() {
                   activeTab === "cert"
                     ? "bg-brand-ink text-white shadow-md"
                     : isCourseComplete
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "text-slate-400 hover:bg-surface-elevated cursor-default",
+                      ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                      : "text-slate-400 hover:bg-surface-elevated cursor-default",
                 ].join(" ")}
               >
                 <span className={[
                   "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px]",
                   activeTab === "cert" ? "bg-white/20" :
-                  isCourseComplete ? "bg-white/20" : "bg-slate-100",
+                    isCourseComplete ? "bg-white/20" : "bg-slate-100",
                 ].join(" ")}>
                   <Award className="h-3.5 w-3.5" />
                 </span>
@@ -1347,8 +1347,8 @@ function AiUnlockedPage() {
                                         <span className={[
                                           "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black transition-colors",
                                           isCorrect && isThisAnswerKey ? "bg-white text-emerald-600" :
-                                          isAnswered && isThisSelected && !isCorrect ? "bg-red-300 text-red-700" :
-                                          "bg-slate-100 text-slate-500",
+                                            isAnswered && isThisSelected && !isCorrect ? "bg-red-300 text-red-700" :
+                                              "bg-slate-100 text-slate-500",
                                         ].join(" ")}>
                                           {LETTERS[oIdx]}
                                         </span>

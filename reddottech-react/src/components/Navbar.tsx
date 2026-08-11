@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -53,11 +53,10 @@ export function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/", icon: Home },
-    { name: "About Us", href: "/aboutt", icon: Info },
-    { name: "PECP", href: "/pecpp", icon: GraduationCap },
-    { name: "Courses", href: "/coursess", icon: BookOpen },
-    { name: "AI Unlocked", href: "/ai-unlockedd", icon: Sparkles },
-    { name: "Contact Us", href: "/contactt", icon: PhoneCall },
+    { name: "About Us", href: "/about", icon: Info },
+    { name: "PECP", href: "/pecp", icon: GraduationCap },
+    { name: "Courses", href: "/courses", icon: BookOpen },
+    { name: "Contact Us", href: "/contact", icon: PhoneCall },
   ];
 
   const isActive = (path: string) => {
@@ -145,10 +144,20 @@ export function Navbar() {
         </nav>
 
         {/* Right: CTA & Mobile Toggle */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <Magnetic strength={0.3}>
             <Link
-              to={"/contactt" as any}
+              to="/ai-unlocked"
+              className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-white/90 border border-slate-200/90 px-3.5 sm:px-4 py-1.5 text-[0.8rem] font-bold text-brand-ink shadow-xs transition-all duration-300 hover:bg-brand-red hover:text-white hover:border-brand-red hover:shadow-lg hover:shadow-brand-red/20 hover:scale-105"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-brand-red transition-colors group-hover:text-amber-300 group-hover:animate-pulse" />
+              <span>AI Unlocked</span>
+            </Link>
+          </Magnetic>
+
+          <Magnetic strength={0.3}>
+            <Link
+              to="/contact"
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-ink pl-4 sm:pl-5 pr-1.5 py-1.5 text-[0.8rem] font-bold text-white shadow-md transition-all duration-300 hover:shadow-lg hover:shadow-slate-900/15"
             >
               <span className="relative z-10">Get in Touch</span>
@@ -233,10 +242,18 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="pt-3 mt-3 border-t border-slate-100">
+          <div className="pt-3 mt-3 border-t border-slate-100 space-y-2">
             <Link
-              to={"/contactt" as any}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-red py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-95"
+              to="/ai-unlocked"
+              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-white border border-slate-200 py-3 text-sm font-bold text-brand-ink shadow-xs transition-all hover:bg-brand-red hover:text-white hover:border-brand-red active:scale-95"
+            >
+              <Sparkles className="h-4 w-4 text-brand-red group-hover:text-amber-300 transition-colors" />
+              <span>AI Unlocked</span>
+            </Link>
+
+            <Link
+              to="/contact"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-ink py-3 text-sm font-bold text-white shadow-lg transition-all active:scale-95"
             >
               <span>Connect With Us</span>
               <ArrowRight className="h-4 w-4 stroke-[2.5]" />

@@ -54,11 +54,10 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-semibold transition-all ${
-                  active
+                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-xs font-semibold transition-all ${active
                     ? "bg-[var(--brand-red)] text-white shadow-md"
                     : "text-slate-400 hover:text-white hover:bg-slate-800"
-                }`}
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 <span>{item.name}</span>

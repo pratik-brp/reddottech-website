@@ -156,10 +156,10 @@ function ContactPage() {
                       const Wrapper = item.href ? "a" : "div";
                       const wrapperProps = item.href
                         ? {
-                            href: item.href,
-                            target: item.href.startsWith("http") ? "_blank" : undefined,
-                            rel: item.href.startsWith("http") ? "noreferrer" : undefined,
-                          }
+                          href: item.href,
+                          target: item.href.startsWith("http") ? "_blank" : undefined,
+                          rel: item.href.startsWith("http") ? "noreferrer" : undefined,
+                        }
                         : {};
 
                       return (
@@ -347,9 +347,8 @@ function ContactPage() {
                         {faq.q}
                       </span>
                       <ChevronDown
-                        className={`h-5 w-5 text-slate-400 shrink-0 transition-transform duration-300 ${
-                          isOpen ? "rotate-180 text-brand-red" : ""
-                        }`}
+                        className={`h-5 w-5 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-brand-red" : ""
+                          }`}
                       />
                     </button>
                     {isOpen && (

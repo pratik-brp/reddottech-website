@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { coursesData } from "@/data/courses";
 import {
   Clock,
@@ -138,11 +138,10 @@ function CourseDetailPage() {
                     <button
                       key={tab.key}
                       onClick={() => setActiveTab(tab.key)}
-                      className={`relative px-6 py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
-                        activeTab === tab.key
+                      className={`relative px-6 py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab.key
                           ? "text-brand-red"
                           : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-                      }`}
+                        }`}
                     >
                       {tab.label}
                       {activeTab === tab.key && (

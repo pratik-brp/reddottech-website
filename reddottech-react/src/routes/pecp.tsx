@@ -1,4 +1,4 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { PecpBatchSection } from "@/components/sections/PecpBatchSection";
 import { PageHero } from "@/components/PageHero";

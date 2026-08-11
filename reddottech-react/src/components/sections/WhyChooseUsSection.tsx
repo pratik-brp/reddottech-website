@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { GraduationCap, Users, Globe, Briefcase, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Link } from "@tanstack/react-router";
@@ -100,17 +100,15 @@ export function WhyChooseUsSection() {
                 <button
                   key={feature.title}
                   onClick={() => setActive(index)}
-                  className={`group relative flex items-center gap-4 rounded-2xl p-4 sm:p-5 text-left transition-all duration-400 border overflow-hidden ${
-                    isActive
+                  className={`group relative flex items-center gap-4 rounded-2xl p-4 sm:p-5 text-left transition-all duration-400 border overflow-hidden ${isActive
                       ? "bg-white border-brand-red/40 shadow-xl shadow-slate-200/60 scale-[1.02]"
                       : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 hover:shadow-md"
-                  }`}
+                    }`}
                 >
                   {/* Left Active Glow Indicator Bar */}
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 ${
-                      isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
-                    }`}
+                    className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 ${isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
+                      }`}
                   />
 
                   {/* Card Thumbnail Image */}
@@ -122,9 +120,8 @@ export function WhyChooseUsSection() {
                     />
                     <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors" />
                     <div
-                      className={`absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-lg ${
-                        isActive ? "bg-brand-red text-white" : "bg-slate-900/80 text-white"
-                      }`}
+                      className={`absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-lg ${isActive ? "bg-brand-red text-white" : "bg-slate-900/80 text-white"
+                        }`}
                     >
                       <FIcon className="h-3.5 w-3.5" />
                     </div>

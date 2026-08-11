@@ -3,5 +3,8 @@
   "rootDirectory": "reddottech-react",
   "framework": "vite",
   "installCommand": "bun install",
-  "buildCommand": "bun run build"
+  "buildCommand": "bun run build",
+  "redirects": [
+    { "source": "/aboutt", "destination": "/about", "permanent": true }
+  ]
 }

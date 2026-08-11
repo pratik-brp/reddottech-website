@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -18,11 +18,11 @@ export function Footer() {
   };
 
   const quickLinks = [
-    { name: "About Us", href: "/aboutt" },
-    { name: "All Courses", href: "/coursess" },
-    { name: "PECP Program", href: "/pecpp" },
-    { name: "AI Unlocked", href: "/ai-unlockedd" },
-    { name: "Contact Us", href: "/contactt" },
+    { name: "About Us", href: "/about" },
+    { name: "All Courses", href: "/courses" },
+    { name: "PECP Program", href: "/pecp" },
+    { name: "AI Unlocked", href: "/ai-unlocked" },
+    { name: "Contact Us", href: "/contact" },
   ];
 
   const programs = [

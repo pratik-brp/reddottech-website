@@ -1,10 +1,13 @@
-﻿import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CtaSection } from "@/components/sections/CtaSection";
+import { CoreValuesSection } from "@/components/sections/CoreValuesSection";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/SectionHeader";
 import { GradientBackground } from "@/components/GradientBackground";
+import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { Magnetic } from "@/components/motion/Magnetic";
 import {
   Award,
   ShieldCheck,
@@ -21,6 +24,9 @@ import {
   Briefcase,
   Clock,
   GraduationCap,
+  PhoneCall,
+  Star,
+  Building2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
@@ -191,14 +197,76 @@ function AboutPage() {
             Bridging Education &amp; <span className="gradient-text">Employability in Nepal</span>
           </>
         }
-        subtitle="Red Dot Technologies Pvt. Ltd. is a Kathmandu-based training and certification provider committed to bridging the gap between education and employability."
+        subtitle="RedDot Technologies Pvt. Ltd. is Kathmandu's premier professional certification hub—empowering engineers, executives, and organizations with globally recognized credentials and workforce-ready skills."
         actions={
-          <Link to={"/coursess" as any} className="btn-primary">
-            <span>Explore Our Programs</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <Magnetic>
+              <Link to="/courses" className="btn-primary group inline-flex items-center justify-center gap-2 py-3.5 px-7 text-xs sm:text-sm font-extrabold shadow-lg w-full sm:w-auto">
+                <span>Explore Our Programs</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link to="/contact" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-brand-ink font-bold text-xs sm:text-sm py-3.5 px-6 transition-all duration-300 shadow-sm w-full sm:w-auto">
+                <PhoneCall className="h-4 w-4 text-brand-red" />
+                <span>Speak to Academic Advisor</span>
+              </Link>
+            </Magnetic>
+          </div>
         }
-      />
+      >
+        {/* Feature Pills & Trust Stat Bar */}
+        <div className="max-w-4xl mx-auto space-y-8 pt-4">
+
+          {/* Feature Badges Strip */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs font-semibold text-slate-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-1.5 shadow-xs backdrop-blur-md">
+              <GraduationCap className="h-4 w-4 text-brand-red" />
+              <span>USC Upstate USA Academic Partner</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-1.5 shadow-xs backdrop-blur-md">
+              <ShieldCheck className="h-4 w-4 text-emerald-600" />
+              <span>Six Sigma &amp; PMI® Frameworks</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/80 px-3.5 py-1.5 shadow-xs backdrop-blur-md">
+              <Building2 className="h-4 w-4 text-blue-600" />
+              <span>Kathmandu HQ &amp; Nationwide Hubs</span>
+            </span>
+          </div>
+
+          {/* Stat Bar */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-xl p-4 sm:p-6 shadow-md grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60">
+            <div className="pt-2 sm:pt-0 sm:px-2 space-y-0.5 text-center">
+              <div className="display-font text-2xl sm:text-3xl font-extrabold text-brand-ink">
+                <AnimatedCounter value={12} suffix="k+" />
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">Alumni &amp; Professionals</p>
+            </div>
+
+            <div className="pt-2 sm:pt-0 sm:px-2 space-y-0.5 text-center">
+              <div className="display-font text-2xl sm:text-3xl font-extrabold text-brand-ink">
+                <AnimatedCounter value={40} suffix="+" />
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">Corporate Partners</p>
+            </div>
+
+            <div className="pt-2 sm:pt-0 sm:px-2 space-y-0.5 text-center">
+              <div className="display-font text-2xl sm:text-3xl font-extrabold text-emerald-600">
+                <AnimatedCounter value={98} suffix="%" />
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">Career Impact Rate</p>
+            </div>
+
+            <div className="pt-2 sm:pt-0 sm:px-2 space-y-0.5 text-center">
+              <div className="display-font text-2xl sm:text-3xl font-extrabold text-brand-red flex items-center justify-center gap-1">
+                <AnimatedCounter value={4.9} decimals={1} suffix="★" />
+              </div>
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium">Student Rating</p>
+            </div>
+          </div>
+
+        </div>
+      </PageHero>
 
       {/* Who We Are (About Intro) */}
       <section className="section-padding bg-white relative overflow-hidden">
@@ -377,66 +445,8 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* 1. OUR CORE VALUES: Crisp White 5-Pillar Connected Grid */}
-      <section className="relative py-20 lg:py-28 overflow-hidden bg-white">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-14 sm:mb-18 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-xs">
-              <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
-                Our Guiding Principles
-              </span>
-            </div>
-
-            <h2 className="display-font text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
-              Our Core <span className="gradient-text">Values</span>
-            </h2>
-
-            <p className="text-base sm:text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              The foundational beliefs shaping our training, certification, and learner community.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {values.map((v) => {
-              const IconComp = v.icon;
-              return (
-                <div
-                  key={v.number}
-                  className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-7 shadow-sm transition-all duration-400 hover:-translate-y-1 ${v.glow}`}
-                >
-                  <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${v.color}`} />
-
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${v.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-110`}>
-                        <IconComp className="h-6 w-6 stroke-[2.2]" />
-                      </div>
-
-                      <span className="rounded-full bg-slate-100 border border-slate-200/80 px-3 py-1 text-xs font-black text-slate-700 tracking-wider">
-                        {v.number}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1 mb-3">
-                      <span className={`text-[10px] font-extrabold uppercase tracking-wider ${v.badgeColor}`}>
-                        {v.badge}
-                      </span>
-                      <h3 className="text-xl font-extrabold text-brand-ink tracking-tight transition-colors group-hover:text-brand-red">
-                        {v.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
-                      {v.desc}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* 1. OUR CORE VALUES: Advanced Bento Grid Section */}
+      <CoreValuesSection />
 
       {/* 2. WHAT WE DO: Deep Tech Dark Showfloor Stage */}
       <section className="relative py-20 lg:py-28 overflow-hidden bg-slate-950 text-white border-y border-slate-800">
