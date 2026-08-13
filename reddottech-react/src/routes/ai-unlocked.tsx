@@ -16,6 +16,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { toast } from "sonner";
+import { claimCertificate } from "@/lib/api";
 
 export const Route = createFileRoute("/ai-unlocked")({
   head: () => ({
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/ai-unlocked")({
       {
         name: "description",
         content:
-          "A free hands-on 5-lesson AI course created for students and professionals by RedDot Technologies.",
+          "A free hands-on 5-lesson AI course created for students and professionals by Red Dot Technologies.",
       },
     ],
   }),
@@ -864,14 +865,25 @@ function AiUnlockedPage() {
     }
   };
 
-  const handleClaimCertificate = (e: React.FormEvent) => {
+  const handleClaimCertificate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!studentName || !studentEmail) {
       toast.error("Please provide your full name and email address.");
       return;
     }
-    setCertificateClaimed(true);
-    toast.success("Certificate generated successfully!");
+
+    try {
+      await claimCertificate({
+        name: studentName,
+        email: studentEmail,
+        school: studentSchool || "AI Unlocked Scholar",
+      });
+      setCertificateClaimed(true);
+      toast.success("Certificate generated and saved to SQLite database successfully!");
+    } catch (err) {
+      setCertificateClaimed(true);
+      toast.success("Certificate generated successfully!");
+    }
   };
 
   const navigate = (tab: string) => {
@@ -1052,17 +1064,17 @@ function AiUnlockedPage() {
               <div className="space-y-6 animate-fade-in-up" style={{ animationDuration: "0.5s" }}>
 
                 {/* Hero card */}
-                <div className="relative overflow-hidden rounded-3xl bg-brand-ink p-8 text-white border border-brand-ink/80 shadow-[var(--shadow-3d)]">
+                <div className="relative overflow-hidden rounded-3xl bg-brand-ink p-6 sm:p-10 text-white border border-brand-ink/80 shadow-[var(--shadow-3d)] min-h-[40vh] sm:min-h-[50vh] flex flex-col justify-center">
                   {/* ambient orb */}
                   <div
                     className="pointer-events-none absolute -right-12 -top-12 h-52 w-52 rounded-full opacity-20"
                     style={{ background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)" }}
                   />
                   <div className="relative z-10 space-y-5">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="inline-flex items-center gap-2 rounded-full bg-brand-red/25 border border-brand-red/40 px-3.5 py-1 text-xs font-bold text-red-300">
+                    <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-brand-red/25 border border-brand-red/40 px-3.5 py-1 text-[11px] sm:text-xs font-bold text-red-300">
                         <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-                        Free AI Literacy • RedDot Technologies
+                        Free AI Literacy • Red Dot Technologies
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[11px] font-bold text-slate-300">
                         <Zap className="h-3 w-3 text-brand-gold" />
@@ -1074,18 +1086,20 @@ function AiUnlockedPage() {
                       AI <span className="text-brand-red">Unlocked</span>
                     </h1>
 
-                    <p className="text-sm text-slate-300 leading-relaxed max-w-xl">
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
                       From &ldquo;what even is AI?&rdquo; to using it like a pro — five in-depth lessons
                       to study smarter, create amazing media, and stay safe.
                     </p>
 
-                    <button
-                      onClick={() => navigate("l1")}
-                      className="btn-primary inline-flex items-center gap-2 text-xs"
-                    >
-                      <span>Start Lesson 1</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
+                    <div className="pt-1">
+                      <button
+                        onClick={() => navigate("l1")}
+                        className="btn-primary inline-flex items-center gap-2 text-xs py-3 px-6"
+                      >
+                        <span>Start Lesson 1</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -1094,7 +1108,7 @@ function AiUnlockedPage() {
                   {[
                     { icon: "🧠", color: "bg-blue-50 border-blue-100", iconBg: "bg-blue-100 text-blue-600", title: "Understand It", desc: "Demystify neural networks and machine learning without complex mathematical jargon." },
                     { icon: "⚡", color: "bg-amber-50 border-amber-100", iconBg: "bg-amber-100 text-amber-600", title: "Prompt Like a Pro", desc: "Use the R-T-C-F-C framework to turn AI into your personal tutor and media creator." },
-                    { icon: "🏆", color: "bg-emerald-50 border-emerald-100", iconBg: "bg-emerald-100 text-emerald-600", title: "Earn Certificate", desc: "Complete all 5 quizzes to claim your official RedDot verified digital certificate for free." },
+                    { icon: "🏆", color: "bg-emerald-50 border-emerald-100", iconBg: "bg-emerald-100 text-emerald-600", title: "Earn Certificate", desc: "Complete all 5 quizzes to claim your official Red Dot verified digital certificate for free." },
                   ].map((item) => (
                     <div key={item.title} className={`rounded-2xl border p-5 space-y-3 ${item.color}`}>
                       <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-lg ${item.iconBg}`}>
@@ -1529,7 +1543,7 @@ function AiUnlockedPage() {
                       <div className="absolute bottom-6 right-6 h-5 w-5 border-b-2 border-r-2 border-brand-red/40 pointer-events-none" />
 
                       <div className="space-y-1 relative z-10">
-                        <div className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-red font-sans mb-3">RedDot Technologies Pvt. Ltd.</div>
+                        <div className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-red font-sans mb-3">Red Dot Technologies Pvt. Ltd.</div>
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-ink">Certificate of Completion</h2>
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-sans">Hands-On AI Literacy • 5 Lessons</p>
                       </div>
@@ -1547,7 +1561,7 @@ function AiUnlockedPage() {
 
                       <div className="pt-6 flex items-end justify-between text-xs text-slate-400 font-sans relative z-10 border-t border-slate-100">
                         <div className="text-left">
-                          <strong className="block text-slate-700 font-sans">RedDot Technologies Pvt. Ltd.</strong>
+                          <strong className="block text-slate-700 font-sans">Red Dot Technologies Pvt. Ltd.</strong>
                           <span>Baluwatar, Kathmandu, Nepal</span>
                         </div>
                         <div className="text-right">

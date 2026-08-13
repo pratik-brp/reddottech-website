@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useState } from "react";
 import { toast } from "sonner";
+import { createCourse } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/courses/create")({
   head: () => ({
-    meta: [{ title: "Create Course | RedDot Admin" }],
+    meta: [{ title: "Create Course | Red Dot Admin" }],
   }),
   component: AdminCreateCoursePage,
 });
@@ -24,15 +25,38 @@ function AdminCreateCoursePage() {
   const [description, setDescription] = useState("");
   const [curriculum, setCurriculum] = useState("");
   const [requirements, setRequirements] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name) {
       toast.error("Please enter a course title.");
       return;
     }
-    toast.success("Course created successfully!");
-    navigate({ to: "/admin/courses" });
+
+    setIsSubmitting(true);
+    try {
+      await createCourse({
+        name,
+        instructorName,
+        price: Number(price) || 0,
+        duration,
+        delivery,
+        mode,
+        language,
+        skillLevel,
+        description,
+        curriculum,
+        requirements,
+        status: "published",
+      });
+      toast.success("Course created and saved to SQLite database!");
+      navigate({ to: "/admin/courses" });
+    } catch (err) {
+      toast.error("Failed to save course to database.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

@@ -13,6 +13,7 @@ interface RevealProps {
   delay?: number;
   duration?: number;
   blur?: boolean;
+  direction?: "up" | "left" | "right" | "scale";
 }
 
 export function Reveal({

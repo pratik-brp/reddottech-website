@@ -16,15 +16,16 @@ import { toast } from "sonner";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/SectionHeader";
+import { submitContact } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us | RedDot Technologies — Enrollment & Support" },
+      { title: "Contact Us | Red Dot Technologies — Enrollment & Support" },
       {
         name: "description",
         content:
-          "Get in touch with RedDot Technologies in Kathmandu, Nepal for course enrollment, PECP program details, corporate workshops, and admissions.",
+          "Get in touch with Red Dot Technologies in Kathmandu, Nepal for course enrollment, PECP program details, corporate workshops, and admissions.",
       },
     ],
   }),
@@ -55,12 +56,29 @@ function ContactPage() {
       return;
     }
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    toast.success(
-      "Your message has been sent successfully! Our admissions team will contact you within 24 hours.",
-    );
-    setForm({ fullName: "", email: "", phone: "", subject: "", message: "" });
-    setIsSubmitting(false);
+    try {
+      const names = form.fullName.trim().split(" ");
+      const firstName = names[0] || form.fullName;
+      const lastName = names.slice(1).join(" ") || "";
+
+      await submitContact({
+        first_name: firstName,
+        last_name: lastName,
+        email: form.email,
+        phone: form.phone,
+        subject: form.subject || "General Inquiry",
+        message: form.message,
+      });
+
+      toast.success(
+        "Your message has been sent and saved to our database! Our admissions team will contact you within 24 hours.",
+      );
+      setForm({ fullName: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err) {
+      toast.error("Failed to submit inquiry.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -103,7 +121,7 @@ function ContactPage() {
       a: "We offer flexible blended learning formats including live interactive online sessions, weekend workshops, and hands-on lab projects suited for working professionals.",
     },
     {
-      q: "Does RedDot Technologies provide career placement support?",
+      q: "Does Red Dot Technologies provide career placement support?",
       a: "Yes! All full certification programs include resume optimization, technical interview preparation, and placement recommendations through our corporate hiring partner network.",
     },
   ];
@@ -153,7 +171,7 @@ function ContactPage() {
                   <div className="space-y-6 pt-2">
                     {contactInfo.map((item, idx) => {
                       const Icon = item.icon;
-                      const Wrapper = item.href ? "a" : "div";
+                      const Wrapper: any = item.href ? "a" : "div";
                       const wrapperProps = item.href
                         ? {
                           href: item.href,
@@ -370,7 +388,7 @@ function ContactPage() {
           <ScrollReveal direction="scale">
             <div className="relative rounded-[2rem] overflow-hidden shadow-[var(--shadow-card-premium)] border border-slate-100">
               <iframe
-                title="RedDot Technologies Location Map"
+                title="Red Dot Technologies Location Map"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3531.7543562899787!2d85.32590537634262!3d27.72509612511485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb192c41c4a53b%3A0x3e001ff7e56bb038!2sRedDot%20Technologies!5e0!3m2!1sen!2snp!4v1747760762966!5m2!1sen!2snp"
                 width="100%"
                 height="420"

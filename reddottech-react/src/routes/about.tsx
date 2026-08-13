@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { CoreValuesSection } from "@/components/sections/CoreValuesSection";
+import { WhatWeDoSection } from "@/components/sections/WhatWeDoSection";
+import { WhyChooseUsSection } from "@/components/sections/WhyChooseUsSection";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -32,11 +34,11 @@ import {
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Us | RedDot Technologies — Empowering Professionals in Nepal" },
+      { title: "About Us | Red Dot Technologies — Empowering Professionals in Nepal" },
       {
         name: "description",
         content:
-          "Learn about RedDot Technologies Pvt. Ltd., our mission, vision, core values, services, and why learners in Nepal choose our globally recognized certification programs.",
+          "Learn about Red Dot Technologies Pvt. Ltd., our mission, vision, core values, services, and why learners in Nepal choose our globally recognized certification programs.",
       },
     ],
   }),
@@ -191,13 +193,9 @@ function AboutPage() {
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Page Hero */}
       <PageHero
-        badge="About RedDot Technologies"
-        title={
-          <>
-            Bridging Education &amp; <span className="gradient-text">Employability in Nepal</span>
-          </>
-        }
-        subtitle="RedDot Technologies Pvt. Ltd. is Kathmandu's premier professional certification hub—empowering engineers, executives, and organizations with globally recognized credentials and workforce-ready skills."
+        badge="About Red Dot Technologies"
+        title="Building Nepal's Premier Talent & Executive Workforce"
+        subtitle="Red Dot Technologies Pvt. Ltd. is Kathmandu's premier professional certification hub—empowering engineers, executives, and organizations with globally recognized credentials and workforce-ready skills."
         actions={
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Magnetic>
@@ -278,7 +276,7 @@ function AboutPage() {
                 <div className="absolute -inset-4 rounded-full bg-gradient-to-tr from-brand-red/10 via-amber-500/10 to-brand-red/5 blur-3xl pointer-events-none" />
                 <img
                   src="/images/about/about.png"
-                  alt="Who We Are - RedDot Technologies"
+                  alt="Who We Are - Red Dot Technologies"
                   className="relative z-10 w-full max-w-lg h-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-[1.02]"
                 />
               </div>
@@ -307,25 +305,30 @@ function AboutPage() {
                 Our focus is on creating opportunities for students, early-career professionals, and working employees to grow, upskill, and succeed in Nepal and beyond.
               </p>
 
-              {/* Key Stats Bar */}
-              <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-100">
-                <div>
-                  <span className="block text-2xl sm:text-4xl font-black text-brand-ink tracking-tight">
-                    12k+
-                  </span>
-                  <span className="text-xs font-semibold text-slate-400">Learners Trained</span>
+              {/* Core Pillars Feature Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-slate-200/80">
+                <div className="group rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 transition-all duration-300 hover:bg-white hover:border-brand-red/30 hover:shadow-md">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red mb-3 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                    <Award className="h-4.5 w-4.5 stroke-[2.2]" />
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">Global Standard</h4>
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">US institutional tie-ups &amp; verifiable digital badges.</p>
                 </div>
-                <div>
-                  <span className="block text-2xl sm:text-4xl font-black text-brand-red tracking-tight">
-                    40+
-                  </span>
-                  <span className="text-xs font-semibold text-slate-400">Certifications</span>
+
+                <div className="group rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 transition-all duration-300 hover:bg-white hover:border-amber-400/40 hover:shadow-md">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 mb-3 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <Zap className="h-4.5 w-4.5 stroke-[2.2]" />
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">Practical Mastery</h4>
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">Live laboratory capstones &amp; corporate case audits.</p>
                 </div>
-                <div>
-                  <span className="block text-2xl sm:text-4xl font-black text-brand-ink tracking-tight">
-                    96%
-                  </span>
-                  <span className="text-xs font-semibold text-slate-400">Completion Rate</span>
+
+                <div className="group rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 transition-all duration-300 hover:bg-white hover:border-emerald-400/40 hover:shadow-md">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 mb-3 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                    <TrendingUp className="h-4.5 w-4.5 stroke-[2.2]" />
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">Career Outcomes</h4>
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">Workforce mentorship &amp; direct industry guidance.</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -448,177 +451,11 @@ function AboutPage() {
       {/* 1. OUR CORE VALUES: Advanced Bento Grid Section */}
       <CoreValuesSection />
 
-      {/* 2. WHAT WE DO: Deep Tech Dark Showfloor Stage */}
-      <section className="relative py-20 lg:py-28 overflow-hidden bg-slate-950 text-white border-y border-slate-800">
-        {/* Background ambient radial glow */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-25 blur-3xl"
-            style={{
-              background: "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 35%, transparent), transparent 70%)",
-            }}
-          />
-          <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-        </div>
+      {/* 2. WHAT WE DO: Advanced 2x2 Bento Stage */}
+      <WhatWeDoSection />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6">
-          <div className="mb-14 sm:mb-18 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/30 bg-brand-red/10 px-4 py-1.5 backdrop-blur-md shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-red">
-                Services &amp; Offerings
-              </span>
-            </div>
-
-            <h2 className="display-font text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-              What <span className="gradient-text">We Do</span>
-            </h2>
-
-            <p className="text-base sm:text-lg text-slate-400 font-medium max-w-2xl mx-auto">
-              Bridging higher education and workforce employability with high-impact programs.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {whatWeDo.map((w) => {
-              const IconComp = w.icon;
-              return (
-                <div
-                  key={w.number}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-7 shadow-2xl transition-all duration-500 hover:border-brand-red/60 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(200,16,46,0.25)] hover:-translate-y-1"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-brand-red/20 text-brand-red border border-brand-red/30 shadow-md transition-transform duration-300 group-hover:scale-110">
-                        <IconComp className="h-6 w-6 stroke-[2]" />
-                      </div>
-
-                      <span className="rounded-full bg-brand-red/20 border border-brand-red/40 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-brand-red">
-                        {w.badge}
-                      </span>
-                    </div>
-
-                    <h3 className="text-lg font-extrabold text-white tracking-tight transition-colors group-hover:text-brand-red">
-                      {w.title}
-                    </h3>
-
-                    <p className="mt-2.5 text-xs text-slate-300 leading-relaxed font-medium">
-                      {w.desc}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-bold text-slate-400">
-                    <span className="text-slate-300">{w.tag}</span>
-                    <ArrowRight className="h-3.5 w-3.5 text-brand-red transition-transform duration-300 group-hover:translate-x-1" />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. WHY CHOOSE US: Asymmetric 2-Column Split Showcase */}
-      <section className="relative py-20 lg:py-28 overflow-hidden bg-slate-50/80">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            {/* Left Column: Sticky Spotlight Card */}
-            <div className="lg:col-span-5">
-              <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 p-8 sm:p-10 text-white shadow-2xl border border-slate-800 space-y-6">
-                <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-15" />
-                <div
-                  className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full opacity-30 blur-3xl"
-                  style={{
-                    background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)",
-                  }}
-                />
-
-                <div className="relative z-10 space-y-4">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/40 bg-brand-red/20 px-3.5 py-1 backdrop-blur-md">
-                    <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-red">
-                      Key Advantages
-                    </span>
-                  </div>
-
-                  <h2 className="display-font text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-                    Why <span className="gradient-text">Choose Us?</span>
-                  </h2>
-
-                  <p className="text-sm text-slate-300 font-medium leading-relaxed">
-                    Designed to prepare you for real-world career success in competitive global markets.
-                  </p>
-                </div>
-
-                <div className="relative z-10 space-y-3 pt-4 border-t border-slate-800">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-red/20 text-brand-red font-black text-sm">
-                      ✓
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-extrabold text-white">100% Live Mentorship</h4>
-                      <p className="text-[10px] text-slate-400">Interactive weekend &amp; online cohorts</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-red/20 text-brand-red font-black text-sm">
-                      ✓
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-extrabold text-white">Dual US Credentials</h4>
-                      <p className="text-[10px] text-slate-400">Co-developed with USC Upstate</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative z-10 pt-2">
-                  <Link to={"/contactt" as any} className="btn-primary w-full text-center py-3.5 text-xs">
-                    <span>Schedule Free Advice</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: 4 Stacked Floating Advantage Cards */}
-            <div className="lg:col-span-7 space-y-4">
-              {whyChooseUs.map((c) => {
-                const IconComp = c.icon;
-                return (
-                  <div
-                    key={c.number}
-                    className="group relative flex items-start gap-5 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs transition-all duration-300 hover:shadow-xl hover:border-brand-red/40 hover:translate-x-1"
-                  >
-                    <div className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl border ${c.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-110`}>
-                      <IconComp className="h-6 w-6 stroke-[2]" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-brand-red">
-                          ADVANTAGE {c.number}
-                        </span>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500">
-                          {c.badge}
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-extrabold text-brand-ink tracking-tight transition-colors group-hover:text-brand-red">
-                        {c.title}
-                      </h3>
-
-                      <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                        {c.desc}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 3. WHY CHOOSE US: Interactive Showcase Section (Same as Homepage) */}
+      <WhyChooseUsSection />
 
       <CtaSection />
     </div>

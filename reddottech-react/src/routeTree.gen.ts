@@ -16,9 +16,11 @@ import { Route as AiUnlockedRouteImport } from './routes/ai-unlocked'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FreeRouteImport } from './routes/free'
 import { Route as PecpRouteImport } from './routes/pecp'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminCertificatesRouteImport } from './routes/admin/certificates'
 import { Route as AdminContactsRouteImport } from './routes/admin/contacts'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSubscriptionsRouteImport } from './routes/admin/subscriptions'
 import { Route as CoursesIndexRouteImport } from './routes/courses/index'
@@ -61,6 +63,11 @@ const PecpRoute = PecpRouteImport.update({
   path: '/pecp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCertificatesRoute = AdminCertificatesRouteImport.update({
   id: '/admin/certificates',
   path: '/admin/certificates',
@@ -74,6 +81,11 @@ const AdminContactsRoute = AdminContactsRouteImport.update({
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/admin/dashboard',
   path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -118,9 +130,11 @@ export interface FileRoutesByFullPath {
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/courses/$id': typeof CoursesIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses/': typeof AdminCoursesIndexRoute
@@ -136,9 +150,11 @@ export interface FileRoutesByTo {
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/courses/$id': typeof CoursesIdRoute
+  '/admin': typeof AdminIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses': typeof AdminCoursesIndexRoute
@@ -155,9 +171,11 @@ export interface FileRoutesById {
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/courses/$id': typeof CoursesIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses/': typeof AdminCoursesIndexRoute
@@ -175,9 +193,11 @@ export interface FileRouteTypes {
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/courses/$id'
+    | '/admin/'
     | '/courses/'
     | '/admin/courses/create'
     | '/admin/courses/'
@@ -193,9 +213,11 @@ export interface FileRouteTypes {
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/courses/$id'
+    | '/admin'
     | '/courses'
     | '/admin/courses/create'
     | '/admin/courses'
@@ -211,9 +233,11 @@ export interface FileRouteTypes {
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
+    | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/courses/$id'
+    | '/admin/'
     | '/courses/'
     | '/admin/courses/create'
     | '/admin/courses/'
@@ -230,9 +254,11 @@ export interface RootRouteChildren {
   AdminCertificatesRoute: typeof AdminCertificatesRoute
   AdminContactsRoute: typeof AdminContactsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSubscriptionsRoute: typeof AdminSubscriptionsRoute
   CoursesIdRoute: typeof CoursesIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
   AdminCoursesCreateRoute: typeof AdminCoursesCreateRoute
   AdminCoursesIndexRoute: typeof AdminCoursesIndexRoute
@@ -289,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PecpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/certificates': {
       id: '/admin/certificates'
       path: '/admin/certificates'
@@ -308,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/dashboard'
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/settings': {
@@ -366,9 +406,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCertificatesRoute: AdminCertificatesRoute,
   AdminContactsRoute: AdminContactsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSubscriptionsRoute: AdminSubscriptionsRoute,
   CoursesIdRoute: CoursesIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
   CoursesIndexRoute: CoursesIndexRoute,
   AdminCoursesCreateRoute: AdminCoursesCreateRoute,
   AdminCoursesIndexRoute: AdminCoursesIndexRoute,

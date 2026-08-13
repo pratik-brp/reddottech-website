@@ -208,7 +208,7 @@ export function TestimonialsSection() {
               Join Nepal&apos;s fastest growing community of certified corporate leaders &amp; engineers.
             </p>
             <Magnetic>
-              <Link to={"/coursess" as any} className="btn-primary text-xs py-3 px-6">
+              <Link to="/courses" className="btn-primary text-xs py-3 px-6">
                 <span>View All Certified Programs</span>
               </Link>
             </Magnetic>

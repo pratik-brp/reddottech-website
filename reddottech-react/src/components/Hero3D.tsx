@@ -91,10 +91,10 @@ export function Hero3D() {
           </p>
 
           <div className="animate-rise mt-9 flex flex-wrap gap-4 [animation-delay:240ms]">
-            <Link to={"/coursess" as any} className="btn-primary" style={{ boxShadow: "var(--shadow-3d)" }}>
+            <Link to="/courses" className="btn-primary" style={{ boxShadow: "var(--shadow-3d)" }}>
               Get Started
             </Link>
-            <Link to={"/coursess" as any} className="btn-secondary">
+            <Link to="/courses" className="btn-secondary">
               Explore Courses
             </Link>
           </div>

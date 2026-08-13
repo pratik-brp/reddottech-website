@@ -1,76 +1,144 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { coursesData } from "@/data/courses";
-import { BookOpen, Mail, Bell, Award, Plus, ArrowUpRight } from "lucide-react";
+import { BookOpen, Mail, Bell, Award, Plus, ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getDashboardStats } from "@/lib/api";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
-    meta: [{ title: "Admin Dashboard | RedDot Technologies" }],
+    meta: [{ title: "Admin Dashboard | Red Dot Technologies" }],
   }),
   component: AdminDashboardPage,
 });
 
 function AdminDashboardPage() {
-  const coursesCount = coursesData.length;
-  const contactsCount = 14;
-  const subscriptionsCount = 42;
-  const certificatesCount = 9;
+  const [stats, setStats] = useState({
+    coursesCount: coursesData.length,
+    contactsCount: 14,
+    subscriptionsCount: 42,
+    certificatesCount: 9,
+  });
+
+  useEffect(() => {
+    getDashboardStats().then((data) => {
+      if (data) {
+        setStats(data);
+      }
+    });
+  }, []);
 
   return (
     <AdminLayout title="Dashboard Overview">
       <div className="space-y-8">
-        {/* Metric Cards */}
+        {/* Metric Cards Grid matching old PHP dashboard.blade.php */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-2">
+          {/* Contacts Card */}
+          <div className="bg-blue-600 rounded-2xl p-6 text-white shadow-xl transform hover:scale-[1.02] transition duration-300 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Total Courses
-              </span>
-              <div className="h-10 w-10 rounded-xl bg-red-50 text-[var(--brand-red)] flex items-center justify-center">
-                <BookOpen className="h-5 w-5" />
+              <div>
+                <p className="text-blue-100 text-xs font-bold uppercase tracking-wider mb-1">
+                  Total Contacts
+                </p>
+                <h3 className="text-4xl font-extrabold">{stats.contactsCount}</h3>
+              </div>
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-3 text-white">
+                <Mail className="h-8 w-8" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#0F172A]">{coursesCount}</p>
-            <p className="text-xs text-emerald-600 font-medium">Active & Published</p>
+            <div className="mt-6 pt-4 border-t border-blue-400/40 flex items-center justify-between">
+              <Link
+                to="/admin/contacts"
+                className="text-xs font-bold text-white hover:underline inline-flex items-center gap-1"
+              >
+                <span>View all contacts</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span className="text-[10px] bg-blue-700/60 px-2 py-0.5 rounded-full font-semibold text-blue-100">
+                Live SQLite
+              </span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-2">
+          {/* Subscriptions Card */}
+          <div className="bg-purple-600 rounded-2xl p-6 text-white shadow-xl transform hover:scale-[1.02] transition duration-300 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Contact Inquiries
-              </span>
-              <div className="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-                <Mail className="h-5 w-5" />
+              <div>
+                <p className="text-purple-100 text-xs font-bold uppercase tracking-wider mb-1">
+                  Active Subscriptions
+                </p>
+                <h3 className="text-4xl font-extrabold">{stats.subscriptionsCount}</h3>
+              </div>
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-3 text-white">
+                <Bell className="h-8 w-8" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#0F172A]">{contactsCount}</p>
-            <p className="text-xs text-slate-500 font-medium">Submitted Form Leads</p>
+            <div className="mt-6 pt-4 border-t border-purple-400/40 flex items-center justify-between">
+              <Link
+                to="/admin/subscriptions"
+                className="text-xs font-bold text-white hover:underline inline-flex items-center gap-1"
+              >
+                <span>Manage subscriptions</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span className="text-[10px] bg-purple-700/60 px-2 py-0.5 rounded-full font-semibold text-purple-100">
+                Live SQLite
+              </span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-2">
+          {/* Certificates Card */}
+          <div className="bg-amber-500 rounded-2xl p-6 text-white shadow-xl transform hover:scale-[1.02] transition duration-300 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Subscribers
-              </span>
-              <div className="h-10 w-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-                <Bell className="h-5 w-5" />
+              <div>
+                <p className="text-amber-100 text-xs font-bold uppercase tracking-wider mb-1">
+                  Certificates Issued
+                </p>
+                <h3 className="text-4xl font-extrabold">{stats.certificatesCount}</h3>
+              </div>
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-3 text-white">
+                <Award className="h-8 w-8" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#0F172A]">{subscriptionsCount}</p>
-            <p className="text-xs text-slate-500 font-medium">Newsletter Audience</p>
+            <div className="mt-6 pt-4 border-t border-amber-300/40 flex items-center justify-between">
+              <Link
+                to="/admin/certificates"
+                className="text-xs font-bold text-white hover:underline inline-flex items-center gap-1"
+              >
+                <span>View certificates</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span className="text-[10px] bg-amber-600/60 px-2 py-0.5 rounded-full font-semibold text-amber-100">
+                AI Unlocked
+              </span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-2">
+          {/* Courses Card */}
+          <div className="bg-emerald-600 rounded-2xl p-6 text-white shadow-xl transform hover:scale-[1.02] transition duration-300 flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                Certificates
-              </span>
-              <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-                <Award className="h-5 w-5" />
+              <div>
+                <p className="text-emerald-100 text-xs font-bold uppercase tracking-wider mb-1">
+                  Total Courses
+                </p>
+                <h3 className="text-4xl font-extrabold">{stats.coursesCount}</h3>
+              </div>
+              <div className="bg-white/20 backdrop-blur-md rounded-2xl p-3 text-white">
+                <BookOpen className="h-8 w-8" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-[#0F172A]">{certificatesCount}</p>
-            <p className="text-xs text-emerald-600 font-medium">Issued Digital Badges</p>
+            <div className="mt-6 pt-4 border-t border-emerald-400/40 flex items-center justify-between">
+              <Link
+                to="/admin/courses"
+                className="text-xs font-bold text-white hover:underline inline-flex items-center gap-1"
+              >
+                <span>Browse courses</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <span className="text-[10px] bg-emerald-700/60 px-2 py-0.5 rounded-full font-semibold text-emerald-100">
+                Published
+              </span>
+            </div>
           </div>
         </div>
 
@@ -84,7 +152,7 @@ function AdminDashboardPage() {
                 className="text-xs font-semibold text-[var(--brand-red)] hover:underline flex items-center gap-1"
               >
                 View All Courses
-                <ArrowUpRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
@@ -99,48 +167,59 @@ function AdminDashboardPage() {
                     />
                     <div className="min-w-0">
                       <h4 className="text-xs font-bold text-slate-800 truncate">{course.name}</h4>
-                      <p className="text-[11px] text-slate-500">
-                        {course.instructorName} • {course.duration}
-                      </p>
+                      <p className="text-[11px] text-slate-500 truncate">{course.instructorName}</p>
                     </div>
                   </div>
-
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 shrink-0">
-                    Published
-                  </span>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="text-xs font-extrabold text-[var(--brand-red)]">
+                      ${course.price}
+                    </span>
+                    <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                      {course.certification}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
-            <h3 className="font-bold text-[#0F172A] pb-4 border-b border-slate-100">
-              Quick Administrative Actions
-            </h3>
-            <div className="space-y-3">
-              <Link
-                to="/admin/courses/create"
-                className="flex items-center gap-3 w-full rounded-xl bg-[var(--brand-red)] px-4 py-3 text-xs font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
-              >
-                <Plus className="h-4 w-4" />
-                Add New Course
-              </Link>
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+              <h3 className="font-bold text-[#0F172A]">Quick Admin Shortcuts</h3>
+              <div className="space-y-2">
+                <Link
+                  to="/admin/courses/create"
+                  className="flex items-center justify-between rounded-xl bg-red-50 p-3 text-xs font-bold text-[var(--brand-red)] hover:bg-red-100 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add New Course
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
 
-              <Link
-                to="/admin/contacts"
-                className="flex items-center justify-between w-full rounded-xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
-              >
-                <span>View Contact Messages</span>
-                <Mail className="h-4 w-4 text-slate-400" />
-              </Link>
+                <Link
+                  to="/admin/certificates"
+                  className="flex items-center justify-between rounded-xl bg-amber-50 p-3 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Award className="h-4 w-4" />
+                    Issue &amp; Verify Certificates
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
 
-              <Link
-                to="/admin/certificates"
-                className="flex items-center justify-between w-full rounded-xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors"
-              >
-                <span>Student Certificate Requests</span>
-                <Award className="h-4 w-4 text-slate-400" />
-              </Link>
+                <Link
+                  to="/admin/settings"
+                  className="flex items-center justify-between rounded-xl bg-slate-100 p-3 text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" />
+                    Batch Banner Controls
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ const pillars = [
     gradient: "from-slate-900 via-brand-ink to-slate-950",
     accentColor: "text-brand-red",
     borderGlow: "border-brand-red/30 hover:border-brand-red/60",
-    link: "/pecpp",
+    link: "/pecp",
     description:
       "Designed for senior managers, quality engineers, and project leaders seeking international recognition. 6-week structured modules with live masterclasses and university credentials.",
     stats: [
@@ -53,7 +53,7 @@ const pillars = [
     gradient: "from-amber-950/20 via-white to-white",
     accentColor: "text-amber-500",
     borderGlow: "border-amber-400/40 hover:border-amber-500",
-    link: "/coursess",
+    link: "/courses",
     description:
       "Fast-track your career with live weekend sessions, hands-on lab environments, and 1-on-1 mentorship. Build portfolio-ready capstones guided by industry leaders.",
     stats: [
@@ -78,7 +78,7 @@ const pillars = [
     gradient: "from-indigo-950/20 via-white to-white",
     accentColor: "text-indigo-600",
     borderGlow: "border-indigo-400/40 hover:border-indigo-600",
-    link: "/coursess",
+    link: "/courses",
     description:
       "Master machine learning, supervisor management, and financial forecasting with modular video lessons, downloadable guides, and syllabus checklists.",
     stats: [
@@ -103,7 +103,7 @@ const pillars = [
     gradient: "from-emerald-950/20 via-white to-white",
     accentColor: "text-emerald-600",
     borderGlow: "border-emerald-400/40 hover:border-emerald-600",
-    link: "/ai-unlockedd",
+    link: "/ai-unlocked",
     description:
       "Access 0-cost video masterclasses, interactive prompt builders, AI knowledge assessment quizzes, and instant verifiable certificates of completion.",
     stats: [
@@ -146,7 +146,7 @@ export function LearningMatrixSection() {
         <div className="absolute inset-0 bg-grid-pattern opacity-20" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-14 text-center mx-auto max-w-3xl space-y-4">
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-mist px-4 py-1.5 shadow-sm">

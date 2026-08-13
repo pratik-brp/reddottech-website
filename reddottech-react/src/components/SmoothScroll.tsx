@@ -1,14 +1,18 @@
-import { ReactLenis } from "lenis/react";
-import { type ReactNode } from "react";
+import { ReactLenis, useLenis } from "lenis/react";
+import { useEffect, type ReactNode } from "react";
+
+function LenisBridge() {
+  const lenis = useLenis();
+  useEffect(() => {
+    (window as any).__lenis = lenis;
+  }, [lenis]);
+  return null;
+}
 
 function SmoothScroll({ children }: { children: ReactNode }) {
   return (
-    <ReactLenis
-      root
-      onInit={(lenis) => {
-        (window as any).__lenis = lenis;
-      }}
-    >
+    <ReactLenis root autoRaf>
+      <LenisBridge />
       {children}
     </ReactLenis>
   );

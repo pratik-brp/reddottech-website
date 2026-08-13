@@ -1,20 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { coursesData } from "@/data/courses";
+import { coursesData as staticCourses } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { Search, SlidersHorizontal, X, LayoutGrid, Sparkles } from "lucide-react";
+import { getCourses } from "@/lib/api";
 
 export const Route = createFileRoute("/courses/")({
   head: () => ({
     meta: [
-      { title: "Course Catalog | RedDot Technologies — Professional IT & Business Credentials" },
+      { title: "Course Catalog | Red Dot Technologies — Professional IT & Business Credentials" },
       {
         name: "description",
         content:
-          "Explore globally recognized IT, AI, Analytics, and Management certification cohorts designed by RedDot Technologies and international partners.",
+          "Explore globally recognized IT, AI, Analytics, and Management certification cohorts designed by Red Dot Technologies and international partners.",
       },
     ],
   }),
@@ -35,28 +36,37 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 function CoursesPage() {
+  const [coursesList, setCoursesList] = useState<any[]>(staticCourses);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
   const prevFilterRef = useRef({ cat: "All", q: "" });
 
-  // Dynamically extract unique categories
-  const allCategories = useMemo(() => {
-    const cats = Array.from(new Set(coursesData.map((c) => c.category).filter(Boolean)));
-    return ["All", ...cats];
+  useEffect(() => {
+    getCourses().then((data) => {
+      if (data && data.length > 0) {
+        setCoursesList(data);
+      }
+    });
   }, []);
 
+  // Dynamically extract unique categories
+  const allCategories = useMemo(() => {
+    const cats = Array.from(new Set(coursesList.map((c) => c.category).filter(Boolean)));
+    return ["All", ...cats];
+  }, [coursesList]);
+
   const filteredCourses = useMemo(() => {
-    return coursesData.filter((c) => {
+    return coursesList.filter((c) => {
       const matchesCat = selectedCategory === "All" || c.category === selectedCategory;
       const matchesSearch =
         !searchQuery ||
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.name && c.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (c.category && c.category.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesCat && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [coursesList, selectedCategory, searchQuery]);
 
   // Trigger flash animation when filter changes
   useEffect(() => {
@@ -142,8 +152,8 @@ function CoursesPage() {
               {allCategories.map((cat) => {
                 const count =
                   cat === "All"
-                    ? coursesData.length
-                    : coursesData.filter((c) => c.category === cat).length;
+                    ? staticCourses.length
+                    : staticCourses.filter((c) => c.category === cat).length;
                 const isActive = selectedCategory === cat;
                 const icon = CATEGORY_ICONS[cat as string] || "◆";
 

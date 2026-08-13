@@ -225,7 +225,7 @@ export function FeaturesSection() {
                   First batch begins August 15, 2026. Limited executive seats.
                 </p>
                 <Magnetic>
-                  <Link to={"/pecpp" as any} className="btn-primary group text-xs py-3 px-6 w-full justify-center">
+                  <Link to="/pecp" className="btn-primary group text-xs py-3 px-6 w-full justify-center">
                     <span>Enroll In PECP Batch</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>

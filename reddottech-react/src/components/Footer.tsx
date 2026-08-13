@@ -2,15 +2,26 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail, ArrowUp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { subscribeNewsletter } from "@/lib/api";
 
 export function Footer() {
   const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    toast.success("Thank you for subscribing to our newsletter!");
-    setEmail("");
+
+    setIsSubmitting(true);
+    try {
+      await subscribeNewsletter(email);
+      toast.success("Thank you for subscribing to our newsletter! (Saved to DB)");
+      setEmail("");
+    } catch (err) {
+      toast.error("Failed to subscribe.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const scrollToTop = () => {
@@ -83,7 +94,7 @@ export function Footer() {
               <Link to="/" className="inline-block">
                 <img
                   src="/logo.png"
-                  alt="RedDot Technologies"
+                  alt="Red Dot Technologies"
                   className="h-9 md:h-10 w-auto object-contain"
                 />
               </Link>
@@ -202,7 +213,7 @@ export function Footer() {
         <div className="border-t border-slate-200/80 bg-white/60">
           <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-slate-500">
-              © {new Date().getFullYear()} RedDot Technologies Pvt. Ltd. All rights reserved.
+              © {new Date().getFullYear()} Red Dot Technologies Pvt. Ltd. All rights reserved.
             </p>
 
             <button

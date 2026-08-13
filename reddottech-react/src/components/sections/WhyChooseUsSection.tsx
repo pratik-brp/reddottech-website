@@ -72,13 +72,13 @@ export function WhyChooseUsSection() {
         style={{ background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)" }}
       />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="mb-14 text-center mx-auto max-w-3xl space-y-4">
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
             <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
-              Why RedDot
+              Why Red Dot
             </span>
           </span>
           <h2 className="display-font text-3xl sm:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
@@ -240,7 +240,7 @@ export function WhyChooseUsSection() {
                   </div>
 
                   <Magnetic>
-                    <Link to={"/coursess" as any} className="btn-primary text-xs py-3.5 px-6 shrink-0 w-full sm:w-auto text-center">
+                    <Link to="/courses" className="btn-primary text-xs py-3.5 px-6 shrink-0 w-full sm:w-auto text-center">
                       <span>Explore Programs</span>
                       <ArrowRight className="h-4 w-4" />
                     </Link>

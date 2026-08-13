@@ -1,4 +1,4 @@
-﻿import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   CheckCircle2,
@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { useState, useEffect } from "react";
+import { getSettings } from "@/lib/api";
 
 const benefits = [
   "U.S. Certified Credentials (USC Upstate)",
@@ -27,10 +29,24 @@ const cohortDetails = [
 ];
 
 export function PecpBatchSection() {
+  const [subtitle, setSubtitle] = useState("Take the next step toward a globally recognized career.");
+  const [title, setTitle] = useState("First batch begins November 15, 2025.\nLimited seats available.");
+  const [buttonText, setButtonText] = useState("Enroll Now");
+
+  useEffect(() => {
+    getSettings().then((data) => {
+      if (data) {
+        if (data.batch_banner_subtitle) setSubtitle(data.batch_banner_subtitle);
+        if (data.batch_banner_title) setTitle(data.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
+        if (data.batch_banner_button_text) setButtonText(data.batch_banner_button_text);
+      }
+    });
+  }, []);
+
   return (
     <section className="relative overflow-hidden py-16 lg:py-24 px-4 sm:px-6">
       <div className="mx-auto max-w-7xl">
-        <Reveal direction="scale">
+        <Reveal y={30}>
           <div className="relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-16 text-white shadow-2xl border border-white/15">
             {/* Background image: batch.png from old PHP project */}
             <img
@@ -75,14 +91,12 @@ export function PecpBatchSection() {
 
                 {/* Subtitle */}
                 <p className="text-base sm:text-2xl font-semibold text-white/90 tracking-wide">
-                  Take the next step toward a globally recognized career.
+                  {subtitle}
                 </p>
 
                 {/* Title & Batch Dates */}
-                <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-white">
-                  First batch begins <span className="gradient-text">August 15, 2026.</span>
-                  <br />
-                  <span className="text-white">Limited seats available.</span>
+                <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-line">
+                  {title}
                 </h2>
 
                 <p className="text-slate-200 text-sm sm:text-base font-medium max-w-2xl leading-relaxed">
@@ -105,40 +119,33 @@ export function PecpBatchSection() {
                 <div className="pt-4 flex flex-wrap items-center gap-4">
                   <Magnetic>
                     <Link
-                      to={"/contactt" as any}
+                      to="/contact"
                       className="group inline-flex items-center gap-3 rounded-full bg-brand-red px-8 py-4 text-sm sm:text-base font-extrabold text-white shadow-2xl hover:bg-brand-red-deep transition-all"
                     >
-                      <span>Enroll Now</span>
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
-                        <ArrowRight className="h-4 w-4 text-white" />
-                      </span>
-                    </Link>
-                  </Magnetic>
-
-                  <Magnetic>
-                    <Link
-                      to={"/contactt" as any}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/50"
-                    >
-                      <span>Schedule a Consultation</span>
+                      <span>{buttonText}</span>
+                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </Magnetic>
                 </div>
               </div>
 
-              {/* Right Column Floating Play / Consultation Spotlight Trigger */}
-              <div className="lg:col-span-4 flex items-center justify-center relative">
-                <Magnetic>
-                  <Link
-                    to={"/pecpp" as any}
-                    className="group relative flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-white/95 text-brand-red shadow-2xl backdrop-blur-md transition-transform duration-500 hover:scale-110"
-                  >
-                    <div className="absolute inset-0 rounded-full border border-white/60 animate-ping opacity-25" />
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-red text-white shadow-md transition-transform duration-300 group-hover:scale-110">
-                      <ArrowRight className="h-6 w-6 stroke-[2.5]" />
+              {/* Right Column Specs Grid */}
+              <div className="lg:col-span-4 grid grid-cols-2 gap-4">
+                {cohortDetails.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={item.label}
+                      className="rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-md transition-all hover:bg-white/15"
+                    >
+                      <Icon className="h-6 w-6 text-brand-red mb-3" />
+                      <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-300">
+                        {item.label}
+                      </div>
+                      <div className="mt-1 text-sm font-bold text-white">{item.value}</div>
                     </div>
-                  </Link>
-                </Magnetic>
+                  );
+                })}
               </div>
             </div>
           </div>

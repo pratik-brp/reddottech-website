@@ -82,7 +82,7 @@ export function StatsSection() {
               Empowering Professionals with <span className="gradient-text">Proven Results</span>
             </h2>
             <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-              In collaboration with the University of South Carolina Upstate (USA), RedDot
+              In collaboration with the University of South Carolina Upstate (USA), Red Dot
               Technologies delivers world-class learning with measurable career outcomes.
             </p>
           </div>

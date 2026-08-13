@@ -174,7 +174,7 @@ export function CareerRoadmapSection() {
           </div>
 
           <Magnetic>
-            <Link to={"/contactt" as any} className="btn-primary shrink-0 px-6 py-3.5 text-xs">
+            <Link to="/contact" className="btn-primary shrink-0 px-6 py-3.5 text-xs">
               <span>Schedule Free Advice</span>
               <ArrowRight className="h-4 w-4" />
             </Link>

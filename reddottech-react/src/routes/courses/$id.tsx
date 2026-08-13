@@ -10,16 +10,17 @@ import {
   Layers,
   Signal,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { fetchApi } from "@/lib/api";
 
 export const Route = createFileRoute("/courses/$id")({
   head: ({ params }) => {
-    const course = coursesData.find((c) => String(c.id) === params.id);
+    const course = coursesData.find((c) => String(c.id) === params.id || c.slug === params.id);
     return {
       meta: [
-        { title: `${course ? course.name : "Course Detail"} | RedDot Technologies` },
+        { title: `${course ? course.name : "Course Detail"} | Red Dot Technologies` },
         { name: "description", content: course?.description || "Course details" },
       ],
     };
@@ -29,10 +30,19 @@ export const Route = createFileRoute("/courses/$id")({
 
 function CourseDetailPage() {
   const { id } = Route.useParams();
-  const course = coursesData.find((c) => String(c.id) === id) || coursesData[0];
+  const fallback = coursesData.find((c) => String(c.id) === id || c.slug === id) || coursesData[0];
+  const [course, setCourse] = useState<any>(fallback);
   const [activeTab, setActiveTab] = useState<
     "overview" | "curriculum" | "instructor" | "requirements"
   >("overview");
+
+  useEffect(() => {
+    fetchApi<any>(`/courses/${id}`).then((data) => {
+      if (data) {
+        setCourse(data);
+      }
+    });
+  }, [id]);
 
   const [claimName, setClaimName] = useState("");
   const [claimEmail, setClaimEmail] = useState("");
@@ -64,7 +74,7 @@ function CourseDetailPage() {
       {/* Back button */}
       <div className="mx-auto max-w-7xl px-6 pt-4 pb-2">
         <Link
-          to={"/coursess" as any}
+          to="/courses"
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-brand-red transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -170,7 +180,7 @@ function CourseDetailPage() {
                       </h3>
                       {course.modules ? (
                         <div className="space-y-4">
-                          {course.modules.map((mod, idx) => (
+                          {course.modules.map((mod: any, idx: number) => (
                             <div
                               key={idx}
                               className="rounded-xl bg-surface-elevated p-5 border border-slate-100 space-y-3"
@@ -182,7 +192,7 @@ function CourseDetailPage() {
                                 {mod.title}
                               </h4>
                               <ul className="space-y-2 text-xs sm:text-sm text-slate-600 pl-8">
-                                {mod.lessons.map((lesson, lIdx) => (
+                                {mod.lessons.map((lesson: string, lIdx: number) => (
                                   <li key={lIdx} className="flex items-center gap-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
                                     <span>{lesson}</span>
@@ -269,7 +279,7 @@ function CourseDetailPage() {
                   <p className="text-[11px] text-slate-400 mt-1">Additional 13% VAT applicable</p>
                 </div>
 
-                <Link to={"/contactt" as any} className="btn-primary w-full text-center justify-center">
+                <Link to="/contact" className="btn-primary w-full text-center justify-center">
                   Enroll Now
                 </Link>
 

@@ -20,9 +20,10 @@ export function ScrollReveal({
   direction = "up",
   delay = 0,
   threshold = 0.15,
-  as: Tag = "div",
+  as = "div",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLElement>(null);
+  const Tag = as as any;
 
   useEffect(() => {
     const el = ref.current;
@@ -52,7 +53,6 @@ export function ScrollReveal({
           : "";
 
   return (
-    // @ts-expect-error — dynamic tag element
     <Tag
       ref={ref}
       className={`reveal ${directionClass} ${className}`}

@@ -15,13 +15,13 @@ import { ScrollAnimate } from "@/components/ScrollAnimate";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "RedDot Technologies — Grow. Upskill. Succeed." },
+      { title: "Red Dot Technologies — Grow. Upskill. Succeed." },
       {
         name: "description",
         content:
-          "RedDot Technologies empowers Nepalese professionals with globally recognized IT certifications, live bootcamps, and executive management programs.",
+          "Red Dot Technologies empowers Nepalese professionals with globally recognized IT certifications, live bootcamps, and executive management programs.",
       },
-      { property: "og:title", content: "RedDot Technologies — Grow. Upskill. Succeed." },
+      { property: "og:title", content: "Red Dot Technologies — Grow. Upskill. Succeed." },
       {
         property: "og:description",
         content:

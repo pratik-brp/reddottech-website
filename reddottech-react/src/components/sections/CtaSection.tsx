@@ -46,12 +46,12 @@ export function CtaSection() {
 
               <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
                 <Users className="h-4 w-4 text-brand-red" />
-                <span>Join 12,000+ learners who chose RedDot</span>
+                <span>Join 12,000+ learners who chose Red Dot</span>
               </div>
 
               <div className="pt-2">
                 <Magnetic>
-                  <Link to={"/contactt" as any} className="btn-primary text-base px-10 py-4">
+                  <Link to="/contact" className="btn-primary text-base px-10 py-4">
                     <span>Schedule a Consultation</span>
                     <ArrowRight className="h-5 w-5" />
                   </Link>

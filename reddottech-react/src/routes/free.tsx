@@ -22,11 +22,11 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/free")({
   head: () => ({
     meta: [
-      { title: "FREE Learning Hub | Cheat Sheets, Masterclasses & Webinars — RedDot" },
+      { title: "FREE Learning Hub | Cheat Sheets, Masterclasses & Webinars — Red Dot" },
       {
         name: "description",
         content:
-          "Access 100% free IT & management masterclasses, downloadable Six Sigma & PMP cheat sheets, and live community webinars by RedDot Technologies.",
+          "Access 100% free IT & management masterclasses, downloadable Six Sigma & PMP cheat sheets, and live community webinars by Red Dot Technologies.",
       },
     ],
   }),

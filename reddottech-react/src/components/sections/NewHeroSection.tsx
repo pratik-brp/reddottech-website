@@ -1,4 +1,4 @@
-﻿import { useRef } from "react";
+import { useRef } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, PlayCircle, ChevronDown } from "lucide-react";
 import { useGSAP } from "@gsap/react";
@@ -111,10 +111,9 @@ export function NewHeroSection() {
     <section
       id="hero"
       ref={container}
-      className="relative flex min-h-screen flex-col justify-center overflow-hidden"
+      className="relative flex min-h-[100dvh] min-h-screen flex-col justify-center overflow-hidden"
       style={{ background: "var(--gradient-hero)" }}
     >
-
 
       {/* Animated gradient orbs */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -140,17 +139,17 @@ export function NewHeroSection() {
         />
       </div>
 
-      <div className="relative z-10 my-auto mx-auto grid w-full max-w-7xl items-center gap-10 px-6 pt-24 pb-16 sm:pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pt-28 lg:pb-16">
+      <div className="relative z-10 my-auto mx-auto grid w-full max-w-7xl items-center gap-8 sm:gap-10 px-4 sm:px-6 pt-20 pb-12 sm:pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pt-28 lg:pb-16">
         {/* Left content */}
         <div>
-          <span className="hero-reveal-item inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/70 backdrop-blur-md px-4 py-1.5 shadow-sm">
+          <span className="hero-reveal-item inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/70 backdrop-blur-md px-3.5 sm:px-4 py-1.5 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
-            <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
+            <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
               Nepal&apos;s Certification Hub
             </span>
           </span>
 
-          <h1 className="display-font mt-6 text-[clamp(2.6rem,6.5vw,5.2rem)] font-bold leading-[1.02] tracking-[-0.03em] text-brand-ink">
+          <h1 className="display-font mt-4 sm:mt-6 text-[clamp(2.2rem,6.5vw,5.2rem)] font-bold leading-[1.04] tracking-[-0.03em] text-brand-ink">
             <span className="hero-reveal-item block overflow-hidden">
               <span className="block">Grow. Upskill.</span>
             </span>
@@ -159,20 +158,20 @@ export function NewHeroSection() {
             </span>
           </h1>
 
-          <p className="hero-reveal-item mt-5 max-w-xl text-base sm:text-lg leading-relaxed text-slate-500 font-medium">
+          <p className="hero-reveal-item mt-4 sm:mt-5 max-w-xl text-sm sm:text-lg leading-relaxed text-slate-500 font-medium">
             Empowering Nepalese professionals with globally recognized certifications, immersive
             labs and career-ready skills — built in partnership with leading US institutions.
           </p>
 
-          <div className="hero-reveal-item mt-7 sm:mt-8 flex flex-wrap items-center gap-4">
+          <div className="hero-reveal-item mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
             <Magnetic>
-              <Link to={"/coursess" as any} className="btn-primary group">
+              <Link to="/courses" className="btn-primary group py-3 sm:py-3.5 px-6 sm:px-7 text-xs sm:text-sm">
                 <span>Get Started</span>
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
-              <Link to={"/pecpp" as any} className="btn-secondary group inline-flex items-center gap-2">
+              <Link to="/pecp" className="btn-secondary group inline-flex items-center gap-2 py-3 sm:py-3.5 px-5 sm:px-6 text-xs sm:text-sm">
                 <PlayCircle className="h-4 w-4 text-brand-red" />
                 <span>Explore PECP</span>
               </Link>
@@ -180,29 +179,27 @@ export function NewHeroSection() {
           </div>
 
           {/* Stats */}
-          <dl className="hero-reveal-item mt-9 sm:mt-10 lg:mt-12 flex flex-wrap gap-10 sm:gap-12">
+          <dl className="hero-reveal-item mt-8 sm:mt-10 lg:mt-12 flex flex-wrap items-center gap-6 sm:gap-12">
             {[
               { value: 12, suffix: "k+", label: "Learners trained", decimals: 0 },
               { value: 40, suffix: "+", label: "Global certifications", decimals: 0 },
               { value: 96, suffix: "%", label: "Completion rate", decimals: 0 },
             ].map((s) => (
               <div key={s.label}>
-                <dt className="display-font text-3xl sm:text-4xl font-bold text-brand-ink tracking-tight">
+                <dt className="display-font text-2xl sm:text-4xl font-bold text-brand-ink tracking-tight">
                   <AnimatedCounter value={s.value} suffix={s.suffix} decimals={s.decimals} />
                 </dt>
-                <dd className="mt-1 text-sm text-slate-500 font-semibold">{s.label}</dd>
+                <dd className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-slate-500 font-semibold">{s.label}</dd>
               </div>
             ))}
           </dl>
-
-
         </div>
 
         {/* Right visual — 3D tilt illustration */}
-        <div className="hero-parallax-layer scene-3d relative hidden lg:block" aria-hidden="true">
+        <div className="hero-parallax-layer scene-3d relative w-full mt-6 sm:mt-8 lg:mt-0 flex justify-center" aria-hidden="true">
           <div
             ref={sceneRef}
-            className="layer-3d relative mx-auto aspect-square w-full max-w-[620px]"
+            className="layer-3d relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[440px] lg:max-w-[620px]"
             style={{ transformStyle: "preserve-3d" }}
           >
             {/* Back layers */}
@@ -215,7 +212,7 @@ export function NewHeroSection() {
               style={{
                 transform: "translateZ(-140px)",
                 background:
-                  "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 30%, transparent), transparent 70%)",
+                  "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 30%, transparent) 0%, transparent 70%)",
                 filter: "blur(40px)",
               }}
             />
@@ -234,21 +231,21 @@ export function NewHeroSection() {
 
             {/* Floating glass cards */}
             <div
-              className="hero-float-card glass-card animate-float absolute bottom-[12%] right-0 rounded-2xl px-5 py-4 shadow-[var(--shadow-card-premium)] [animation-delay:2.4s]"
+              className="hero-float-card glass-card animate-float absolute bottom-[6%] right-0 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-4 shadow-[var(--shadow-card-premium)] [animation-delay:2.4s]"
               style={{ transform: "translateZ(170px)" }}
             >
-              <p className="display-font text-3xl font-bold text-brand-red">4.9★</p>
-              <p className="mt-0.5 text-xs font-semibold text-slate-500">Learner rating</p>
+              <p className="display-font text-xl sm:text-3xl font-bold text-brand-red">4.9★</p>
+              <p className="mt-0.5 text-[9px] sm:text-xs font-semibold text-slate-500">Learner rating</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className="hero-reveal-item absolute bottom-6 left-1/2 z-10 -translate-x-1/2 animate-bounce-gentle">
-        <div className="flex flex-col items-center gap-1.5 text-slate-400">
-          <span className="text-[10px] font-bold uppercase tracking-widest">Scroll</span>
-          <ChevronDown className="h-4 w-4" />
+      <div className="hero-reveal-item absolute bottom-4 sm:bottom-6 left-1/2 z-10 -translate-x-1/2 animate-bounce-gentle">
+        <div className="flex flex-col items-center gap-1 text-slate-400">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Scroll</span>
+          <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </div>
       </div>
     </section>

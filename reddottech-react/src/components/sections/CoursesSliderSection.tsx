@@ -1,4 +1,4 @@
-﻿import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { coursesData } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { Link } from "@tanstack/react-router";
@@ -57,7 +57,7 @@ export function CoursesSliderSection() {
         <div className="absolute inset-0 bg-grid-pattern opacity-20" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Row */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
           <div className="space-y-4 max-w-2xl">
@@ -100,7 +100,7 @@ export function CoursesSliderSection() {
             </Magnetic>
 
             <Magnetic>
-              <Link to={"/coursess" as any} className="btn-primary text-xs py-3.5 px-6 ml-2">
+              <Link to="/courses" className="btn-primary text-xs py-3.5 px-6 ml-2">
                 <span>View All Courses</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>

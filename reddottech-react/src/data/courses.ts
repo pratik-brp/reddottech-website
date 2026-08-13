@@ -24,7 +24,7 @@ export const coursesData: Course[] = [
     language: "English",
     skillLevel: "beginner",
     category: "Quality & Management",
-    certification: "USC Upstate & RedDot Certified Six Sigma Professional",
+    certification: "USC Upstate & Red Dot Certified Six Sigma Professional",
     requirements:
       "Completion of Tony Swaim's Total Quality Fundamentals or basic algebra background.",
     curriculum:
@@ -133,7 +133,7 @@ export const coursesData: Course[] = [
     language: "English",
     skillLevel: "beginner",
     category: "Project Management",
-    certification: "RedDot & USC Upstate Project Management Practitioner",
+    certification: "Red Dot & USC Upstate Project Management Practitioner",
     requirements: "No prerequisites required.",
     curriculum:
       "Lesson 1 – Project Management Overview\nLesson 2 – The Power of Planning\nLesson 3 – The Power of Control\nLesson 4 – The Project Manager and Team\nLesson 5 – Stakeholder Interactions\nLesson 6 – Soft Skills & Root Cause Analysis\nLesson 7 – Project Cost Management & EVPM\nLesson 8 – The Project Plan (Part 1: WBS & Scope)\nLesson 9 – Supporting Plans (Quality & Risk)\nLesson 10 – Project Implementation\nLesson 11 – Project Monitoring & Auditing\nLesson 12 – Project Closure",
@@ -183,7 +183,7 @@ export const coursesData: Course[] = [
     language: "English",
     skillLevel: "intermediate",
     category: "Artificial Intelligence",
-    certification: "USC Upstate & RedDot AI Specialist",
+    certification: "USC Upstate & Red Dot AI Specialist",
     requirements: "Basic computer skills and high school level algebra.",
     curriculum:
       "Lesson 1 – Introduction to Artificial Intelligence\nLesson 2 – AI in Business & Consumer Applications\nLesson 3 – Machine Learning (Supervised/Unsupervised)\nLesson 4 – Neural Networks and Deep Learning\nLesson 5 – Computer Vision & Object Recognition\nLesson 6 – Natural Language Processing (NLP)\nLesson 7 – Time Series Forecasting\nLesson 8 – Robotics in Logistics & Agriculture\nLesson 9 – Implementing AI & Developer Tools\nLesson 10 – AI and Workforce Transformation\nLesson 11 – AI Ethics, Bias & Explainability\nLesson 12 – The Future of Neuromorphic AI",

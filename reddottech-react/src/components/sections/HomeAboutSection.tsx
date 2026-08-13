@@ -115,7 +115,7 @@ export function HomeAboutSection() {
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-mist px-4 py-1.5 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
             <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
-              About RedDot Technologies
+              About Red Dot Technologies
             </span>
           </span>
           <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
@@ -143,7 +143,7 @@ export function HomeAboutSection() {
                   <div className="relative w-full aspect-square sm:aspect-[4/3] overflow-hidden rounded-[2rem] bg-slate-950">
                     <img
                       src="/images/about/about-hero.png"
-                      alt="RedDot Technologies — Global Masterclass & Certification"
+                      alt="Red Dot Technologies — Global Masterclass & Certification"
                       className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none" />
@@ -232,7 +232,7 @@ export function HomeAboutSection() {
                 </Magnetic>
                 <Magnetic>
                   <Link
-                    to={"/contactt" as any}
+                    to="/contact"
                     className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-brand-ink hover:text-brand-red transition-colors py-2 px-3"
                   >
                     <span>Speak to Academic Advisor</span>

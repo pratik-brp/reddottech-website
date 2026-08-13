@@ -31,7 +31,7 @@ export function PageHero({ badge, title, subtitle, className = "", actions, chil
   return (
     <section
       ref={ref}
-      className={`relative overflow-hidden pt-32 sm:pt-40 pb-16 sm:pb-20 ${className}`}
+      className={`relative overflow-hidden min-h-[75dvh] sm:min-h-[80vh] flex flex-col justify-center items-center pt-24 sm:pt-36 pb-14 sm:pb-20 ${className}`}
       style={{ background: "var(--gradient-hero)" }}
     >
       {/* Grid texture */}
@@ -57,32 +57,32 @@ export function PageHero({ badge, title, subtitle, className = "", actions, chil
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-        <span className="pagehero-reveal inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/70 px-4 py-1.5 backdrop-blur-md shadow-sm">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center my-auto flex flex-col items-center justify-center">
+        <span className="pagehero-reveal inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/70 px-3.5 sm:px-4 py-1.5 backdrop-blur-md shadow-sm">
           <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
-          <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
+          <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
             {badge}
           </span>
         </span>
 
-        <h1 className="pagehero-reveal display-font mt-6 text-4xl sm:text-5xl lg:text-[3.75rem] font-bold text-brand-ink leading-[1.05] tracking-tight max-w-4xl mx-auto">
+        <h1 className="pagehero-reveal display-font mt-5 sm:mt-6 text-3xl sm:text-5xl lg:text-[3.75rem] font-bold text-brand-ink leading-[1.08] tracking-tight max-w-4xl mx-auto">
           {title}
         </h1>
 
         {subtitle && (
-          <p className="pagehero-reveal mt-5 text-base sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
+          <p className="pagehero-reveal mt-4 sm:mt-5 text-xs sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
             {subtitle}
           </p>
         )}
 
         {actions && (
-          <div className="pagehero-reveal mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="pagehero-reveal mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             {actions}
           </div>
         )}
 
         {children && (
-          <div className="pagehero-reveal mt-10">
+          <div className="pagehero-reveal mt-8 sm:mt-10 w-full">
             {children}
           </div>
         )}

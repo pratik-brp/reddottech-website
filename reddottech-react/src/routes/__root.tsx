@@ -77,13 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "RedDot Technologies | Nepal's Certification Hub" },
+      { title: "Red Dot Technologies | Nepal's Certification Hub" },
       {
         name: "description",
         content:
           "Empowering Nepalese professionals with globally recognized certifications, immersive labs, and workforce-ready skills.",
       },
-      { property: "og:title", content: "RedDot Technologies | Professional Certification Hub" },
+      { property: "og:title", content: "Red Dot Technologies | Professional Certification Hub" },
       {
         property: "og:description",
         content: "Global certifications and IT training delivered in partnership with USC Upstate.",
