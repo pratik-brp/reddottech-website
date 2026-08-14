@@ -881,8 +881,10 @@ function AiUnlockedPage() {
       setCertificateClaimed(true);
       toast.success("Certificate generated and saved to SQLite database successfully!");
     } catch (err) {
-      setCertificateClaimed(true);
-      toast.success("Certificate generated successfully!");
+      setCertificateClaimed(false);
+      const message =
+        err instanceof Error ? err.message : "Certificate request failed. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -893,11 +895,9 @@ function AiUnlockedPage() {
 
   return (
     <div className="min-h-screen bg-surface-elevated font-sans pt-24">
-
       {/* ── Main Layout: Sidebar + Content ── */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-6 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-
           {/* ── Left Sidebar ── */}
           <aside
             className={[
@@ -950,10 +950,12 @@ function AiUnlockedPage() {
                     : "text-slate-600 hover:bg-surface-elevated hover:text-brand-ink",
                 ].join(" ")}
               >
-                <span className={[
-                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-black",
-                  activeTab === "home" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
-                ].join(" ")}>
+                <span
+                  className={[
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-black",
+                    activeTab === "home" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
+                  ].join(" ")}
+                >
                   <BookOpen className="h-3.5 w-3.5" />
                 </span>
                 <span className="truncate">Overview</span>
@@ -1010,16 +1012,23 @@ function AiUnlockedPage() {
                       : "text-slate-400 hover:bg-surface-elevated cursor-default",
                 ].join(" ")}
               >
-                <span className={[
-                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px]",
-                  activeTab === "cert" ? "bg-white/20" :
-                    isCourseComplete ? "bg-white/20" : "bg-slate-100",
-                ].join(" ")}>
+                <span
+                  className={[
+                    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px]",
+                    activeTab === "cert"
+                      ? "bg-white/20"
+                      : isCourseComplete
+                        ? "bg-white/20"
+                        : "bg-slate-100",
+                  ].join(" ")}
+                >
                   <Award className="h-3.5 w-3.5" />
                 </span>
                 <span className="truncate">Certificate</span>
                 {isCourseComplete ? (
-                  <span className="ml-auto text-[9px] bg-white text-emerald-700 px-1.5 py-0.5 rounded-full font-black">FREE</span>
+                  <span className="ml-auto text-[9px] bg-white text-emerald-700 px-1.5 py-0.5 rounded-full font-black">
+                    FREE
+                  </span>
                 ) : (
                   <Lock className="h-3 w-3 ml-auto opacity-40" />
                 )}
@@ -1062,13 +1071,14 @@ function AiUnlockedPage() {
             {/* ── WELCOME / HOME VIEW ── */}
             {activeTab === "home" && (
               <div className="space-y-6 animate-fade-in-up" style={{ animationDuration: "0.5s" }}>
-
                 {/* Hero card */}
                 <div className="relative overflow-hidden rounded-3xl bg-brand-ink p-6 sm:p-10 text-white border border-brand-ink/80 shadow-[var(--shadow-3d)] min-h-[40vh] sm:min-h-[50vh] flex flex-col justify-center">
                   {/* ambient orb */}
                   <div
                     className="pointer-events-none absolute -right-12 -top-12 h-52 w-52 rounded-full opacity-20"
-                    style={{ background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)" }}
+                    style={{
+                      background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)",
+                    }}
                   />
                   <div className="relative z-10 space-y-5">
                     <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
@@ -1077,8 +1087,7 @@ function AiUnlockedPage() {
                         Free AI Literacy • Red Dot Technologies
                       </span>
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[11px] font-bold text-slate-300">
-                        <Zap className="h-3 w-3 text-brand-gold" />
-                        5 Lessons + Certificate
+                        <Zap className="h-3 w-3 text-brand-gold" />5 Lessons + Certificate
                       </span>
                     </div>
 
@@ -1087,8 +1096,8 @@ function AiUnlockedPage() {
                     </h1>
 
                     <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
-                      From &ldquo;what even is AI?&rdquo; to using it like a pro — five in-depth lessons
-                      to study smarter, create amazing media, and stay safe.
+                      From &ldquo;what even is AI?&rdquo; to using it like a pro — five in-depth
+                      lessons to study smarter, create amazing media, and stay safe.
                     </p>
 
                     <div className="pt-1">
@@ -1106,12 +1115,35 @@ function AiUnlockedPage() {
                 {/* 3-stat cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
-                    { icon: "🧠", color: "bg-blue-50 border-blue-100", iconBg: "bg-blue-100 text-blue-600", title: "Understand It", desc: "Demystify neural networks and machine learning without complex mathematical jargon." },
-                    { icon: "⚡", color: "bg-amber-50 border-amber-100", iconBg: "bg-amber-100 text-amber-600", title: "Prompt Like a Pro", desc: "Use the R-T-C-F-C framework to turn AI into your personal tutor and media creator." },
-                    { icon: "🏆", color: "bg-emerald-50 border-emerald-100", iconBg: "bg-emerald-100 text-emerald-600", title: "Earn Certificate", desc: "Complete all 5 quizzes to claim your official Red Dot verified digital certificate for free." },
+                    {
+                      icon: "🧠",
+                      color: "bg-blue-50 border-blue-100",
+                      iconBg: "bg-blue-100 text-blue-600",
+                      title: "Understand It",
+                      desc: "Demystify neural networks and machine learning without complex mathematical jargon.",
+                    },
+                    {
+                      icon: "⚡",
+                      color: "bg-amber-50 border-amber-100",
+                      iconBg: "bg-amber-100 text-amber-600",
+                      title: "Prompt Like a Pro",
+                      desc: "Use the R-T-C-F-C framework to turn AI into your personal tutor and media creator.",
+                    },
+                    {
+                      icon: "🏆",
+                      color: "bg-emerald-50 border-emerald-100",
+                      iconBg: "bg-emerald-100 text-emerald-600",
+                      title: "Earn Certificate",
+                      desc: "Complete all 5 quizzes to claim your official Red Dot verified digital certificate for free.",
+                    },
                   ].map((item) => (
-                    <div key={item.title} className={`rounded-2xl border p-5 space-y-3 ${item.color}`}>
-                      <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-lg ${item.iconBg}`}>
+                    <div
+                      key={item.title}
+                      className={`rounded-2xl border p-5 space-y-3 ${item.color}`}
+                    >
+                      <div
+                        className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-lg ${item.iconBg}`}
+                      >
                         {item.icon}
                       </div>
                       <h3 className="font-extrabold text-sm text-brand-ink">{item.title}</h3>
@@ -1136,17 +1168,23 @@ function AiUnlockedPage() {
                           className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-surface-elevated transition-colors group"
                         >
                           <div className="flex items-center gap-4">
-                            <span className={[
-                              "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-black transition-colors",
-                              isDone
-                                ? "bg-emerald-100 text-emerald-700"
-                                : "bg-slate-100 text-slate-600 group-hover:bg-brand-red group-hover:text-white",
-                            ].join(" ")}>
+                            <span
+                              className={[
+                                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-black transition-colors",
+                                isDone
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-slate-100 text-slate-600 group-hover:bg-brand-red group-hover:text-white",
+                              ].join(" ")}
+                            >
                               {isDone ? "✓" : idx + 1}
                             </span>
                             <div>
-                              <p className="text-sm font-bold text-brand-ink group-hover:text-brand-red transition-colors leading-tight">{lesson.title}</p>
-                              <p className="text-[11px] text-slate-400 mt-0.5">{lesson.summary} • {lesson.time}</p>
+                              <p className="text-sm font-bold text-brand-ink group-hover:text-brand-red transition-colors leading-tight">
+                                {lesson.title}
+                              </p>
+                              <p className="text-[11px] text-slate-400 mt-0.5">
+                                {lesson.summary} • {lesson.time}
+                              </p>
                             </div>
                           </div>
                           <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-brand-red group-hover:translate-x-0.5 transition-all shrink-0" />
@@ -1172,7 +1210,6 @@ function AiUnlockedPage() {
                 >
                   {/* Lesson card */}
                   <div className="bg-white rounded-3xl border border-slate-200/80 shadow-[var(--shadow-card)] overflow-hidden">
-
                     {/* Lesson header */}
                     <div className="px-8 py-6 border-b border-slate-100 bg-surface-elevated">
                       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1180,7 +1217,9 @@ function AiUnlockedPage() {
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-3 py-1 text-xs font-bold text-brand-red">
                             {lesson.tag}
                           </span>
-                          <span className="text-xs text-slate-400 font-semibold">{lesson.time}</span>
+                          <span className="text-xs text-slate-400 font-semibold">
+                            {lesson.time}
+                          </span>
                         </div>
                         <button
                           onClick={() => setActiveTab(isQuizMode ? lesson.id : `q_${lesson.id}`)}
@@ -1192,9 +1231,13 @@ function AiUnlockedPage() {
                           ].join(" ")}
                         >
                           {isQuizMode ? (
-                            <><ChevronLeft className="h-3.5 w-3.5" /> Read Lesson</>
+                            <>
+                              <ChevronLeft className="h-3.5 w-3.5" /> Read Lesson
+                            </>
                           ) : (
-                            <>Take Quiz <ArrowRight className="h-3.5 w-3.5" /></>
+                            <>
+                              Take Quiz <ArrowRight className="h-3.5 w-3.5" />
+                            </>
                           )}
                         </button>
                       </div>
@@ -1209,7 +1252,6 @@ function AiUnlockedPage() {
                     <div className="px-8 py-8">
                       {!isQuizMode ? (
                         <div className="space-y-8">
-
                           {/* Learning objectives */}
                           <div className="rounded-2xl bg-surface-elevated border border-slate-200/80 p-6 space-y-3">
                             <h4 className="text-[11px] font-black uppercase tracking-[0.12em] text-brand-red flex items-center gap-2">
@@ -1218,7 +1260,10 @@ function AiUnlockedPage() {
                             </h4>
                             <ul className="space-y-2.5">
                               {lesson.objectives.map((obj, oIdx) => (
-                                <li key={oIdx} className="flex items-start gap-2.5 text-sm text-slate-700">
+                                <li
+                                  key={oIdx}
+                                  className="flex items-start gap-2.5 text-sm text-slate-700"
+                                >
                                   <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-[10px] font-black mt-0.5">
                                     {oIdx + 1}
                                   </span>
@@ -1230,7 +1275,9 @@ function AiUnlockedPage() {
 
                           {/* Animated SVG diagram */}
                           <div className="rounded-2xl bg-gradient-to-br from-brand-ink to-brand-navy p-6 border border-brand-ink/60 shadow-[var(--shadow-3d)] space-y-3">
-                            <div dangerouslySetInnerHTML={{ __html: renderDiagramSvg(lesson.id) }} />
+                            <div
+                              dangerouslySetInnerHTML={{ __html: renderDiagramSvg(lesson.id) }}
+                            />
                             <p className="text-center text-xs italic text-slate-400">
                               {DIAGRAM_CAPTIONS[lesson.id]}
                             </p>
@@ -1244,7 +1291,9 @@ function AiUnlockedPage() {
                                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-brand-ink text-white text-xs font-black mt-0.5">
                                     {sIdx + 1}
                                   </span>
-                                  <h3 className="text-base font-bold text-brand-ink leading-snug pt-0.5">{sec.h}</h3>
+                                  <h3 className="text-base font-bold text-brand-ink leading-snug pt-0.5">
+                                    {sec.h}
+                                  </h3>
                                 </div>
                                 <div
                                   className="text-sm text-slate-600 leading-relaxed pl-10 space-y-3"
@@ -1259,7 +1308,9 @@ function AiUnlockedPage() {
                             <h4 className="text-xs font-black uppercase tracking-[0.1em] text-emerald-800 flex items-center gap-2">
                               ✏️ {lesson.activity.title}
                             </h4>
-                            <p className="text-sm text-emerald-900 leading-relaxed">{lesson.activity.text}</p>
+                            <p className="text-sm text-emerald-900 leading-relaxed">
+                              {lesson.activity.text}
+                            </p>
                           </div>
 
                           {/* Key takeaways */}
@@ -1270,7 +1321,10 @@ function AiUnlockedPage() {
                             </h4>
                             <ul className="space-y-2.5">
                               {lesson.takeaways.map((take, tIdx) => (
-                                <li key={tIdx} className="flex items-start gap-3 text-sm text-slate-200">
+                                <li
+                                  key={tIdx}
+                                  className="flex items-start gap-3 text-sm text-slate-200"
+                                >
                                   <span className="text-brand-red font-black mt-0.5">→</span>
                                   <span className="leading-relaxed">{take}</span>
                                 </li>
@@ -1288,7 +1342,9 @@ function AiUnlockedPage() {
                                 <ChevronLeft className="h-3.5 w-3.5" />
                                 Previous
                               </button>
-                            ) : <span />}
+                            ) : (
+                              <span />
+                            )}
 
                             <button
                               onClick={() => setActiveTab(`q_${lesson.id}`)}
@@ -1304,7 +1360,8 @@ function AiUnlockedPage() {
                         <div className="space-y-6">
                           <div className="rounded-2xl bg-amber-50 border border-amber-200 px-5 py-3.5 text-amber-900 text-xs font-semibold flex items-center gap-2">
                             <span className="text-base">📝</span>
-                            Answer all questions correctly to complete this lesson and progress toward your certificate!
+                            Answer all questions correctly to complete this lesson and progress
+                            toward your certificate!
                           </div>
 
                           {lesson.quiz.map((qItem, qIdx) => {
@@ -1334,7 +1391,8 @@ function AiUnlockedPage() {
                                     // Only lock buttons once the correct answer is chosen
                                     const isLocked = isCorrect;
 
-                                    let style = "bg-white border-slate-200 text-slate-700 hover:border-brand-red/40 hover:bg-brand-red/5";
+                                    let style =
+                                      "bg-white border-slate-200 text-slate-700 hover:border-brand-red/40 hover:bg-brand-red/5";
                                     if (isAnswered) {
                                       if (isThisAnswerKey && isCorrect)
                                         // Correct answer — green locked state
@@ -1344,7 +1402,8 @@ function AiUnlockedPage() {
                                         style = "bg-red-100 border-red-300 text-red-800";
                                       else if (!isLocked)
                                         // Other options when answer is still wrong — stay normal & hoverable
-                                        style = "bg-white border-slate-200 text-slate-700 hover:border-brand-red/40 hover:bg-brand-red/5";
+                                        style =
+                                          "bg-white border-slate-200 text-slate-700 hover:border-brand-red/40 hover:bg-brand-red/5";
                                     }
 
                                     return (
@@ -1358,12 +1417,16 @@ function AiUnlockedPage() {
                                           isLocked ? "cursor-default" : "cursor-pointer",
                                         ].join(" ")}
                                       >
-                                        <span className={[
-                                          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black transition-colors",
-                                          isCorrect && isThisAnswerKey ? "bg-white text-emerald-600" :
-                                            isAnswered && isThisSelected && !isCorrect ? "bg-red-300 text-red-700" :
-                                              "bg-slate-100 text-slate-500",
-                                        ].join(" ")}>
+                                        <span
+                                          className={[
+                                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-black transition-colors",
+                                            isCorrect && isThisAnswerKey
+                                              ? "bg-white text-emerald-600"
+                                              : isAnswered && isThisSelected && !isCorrect
+                                                ? "bg-red-300 text-red-700"
+                                                : "bg-slate-100 text-slate-500",
+                                          ].join(" ")}
+                                        >
                                           {LETTERS[oIdx]}
                                         </span>
                                         <span className="flex-1">{optText}</span>
@@ -1387,12 +1450,13 @@ function AiUnlockedPage() {
                                   >
                                     <span className="text-base">{isCorrect ? "✓" : "✗"}</span>
                                     <span>
-                                      <strong>{isCorrect ? "Correct!" : "Not quite — try again!"}</strong>
-                                      {" "}{isCorrect ? qItem.fb : "Select another option above."}
+                                      <strong>
+                                        {isCorrect ? "Correct!" : "Not quite — try again!"}
+                                      </strong>{" "}
+                                      {isCorrect ? qItem.fb : "Select another option above."}
                                     </span>
                                   </div>
                                 )}
-
                               </div>
                             );
                           })}
@@ -1439,14 +1503,19 @@ function AiUnlockedPage() {
                     <div className="mx-auto h-20 w-20 rounded-full bg-surface-elevated border border-slate-200 flex items-center justify-center text-3xl">
                       🔒
                     </div>
-                    <h3 className="display-font text-2xl font-bold text-brand-ink">Certificate Almost Ready</h3>
+                    <h3 className="display-font text-2xl font-bold text-brand-ink">
+                      Certificate Almost Ready
+                    </h3>
                     <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
                       Complete all 5 quizzes to unlock your free certificate. You've finished{" "}
-                      <span className="font-bold text-brand-ink">{completedCount} of {LESSONS.length}</span> lessons.
+                      <span className="font-bold text-brand-ink">
+                        {completedCount} of {LESSONS.length}
+                      </span>{" "}
+                      lessons.
                     </p>
                     {/* Progress dots */}
                     <div className="flex items-center justify-center gap-2">
-                      {LESSONS.map(l => (
+                      {LESSONS.map((l) => (
                         <div
                           key={l.id}
                           className={[
@@ -1458,7 +1527,7 @@ function AiUnlockedPage() {
                     </div>
                     <button
                       onClick={() => {
-                        const next = LESSONS.find(l => !completedLessons[l.id]) || LESSONS[0];
+                        const next = LESSONS.find((l) => !completedLessons[l.id]) || LESSONS[0];
                         navigate(next.id);
                       }}
                       className="btn-primary inline-flex items-center gap-2 text-xs"
@@ -1474,20 +1543,46 @@ function AiUnlockedPage() {
                         <Award className="h-6 w-6 text-emerald-600" />
                       </div>
                       <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-600">Course Complete 🎉</p>
-                        <h2 className="text-xl font-extrabold text-brand-ink leading-tight">Claim Your Free AI Certificate</h2>
+                        <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-600">
+                          Course Complete 🎉
+                        </p>
+                        <h2 className="text-xl font-extrabold text-brand-ink leading-tight">
+                          Claim Your Free AI Certificate
+                        </h2>
                       </div>
                     </div>
 
                     <div className="p-8">
                       <p className="text-sm text-slate-500 mb-6">
-                        Enter your full name as you'd like it to appear on your official digital credential.
+                        Enter your full name as you'd like it to appear on your official digital
+                        credential.
                       </p>
                       <form onSubmit={handleClaimCertificate} className="space-y-5 max-w-md">
                         {[
-                          { label: "Full Name", value: studentName, onChange: (v: string) => setStudentName(v), placeholder: "e.g. Aaditya Sharma", type: "text", required: true },
-                          { label: "Email Address", value: studentEmail, onChange: (v: string) => setStudentEmail(v), placeholder: "you@example.com", type: "email", required: true },
-                          { label: "School / Organization", value: studentSchool, onChange: (v: string) => setStudentSchool(v), placeholder: "e.g. Grade 11, Kathmandu", type: "text", required: false },
+                          {
+                            label: "Full Name",
+                            value: studentName,
+                            onChange: (v: string) => setStudentName(v),
+                            placeholder: "e.g. Aaditya Sharma",
+                            type: "text",
+                            required: true,
+                          },
+                          {
+                            label: "Email Address",
+                            value: studentEmail,
+                            onChange: (v: string) => setStudentEmail(v),
+                            placeholder: "you@example.com",
+                            type: "email",
+                            required: true,
+                          },
+                          {
+                            label: "School / Organization",
+                            value: studentSchool,
+                            onChange: (v: string) => setStudentSchool(v),
+                            placeholder: "e.g. Grade 11, Kathmandu",
+                            type: "text",
+                            required: false,
+                          },
                         ].map(({ label, value, onChange, placeholder, type, required }) => (
                           <div key={label}>
                             <label className="block text-xs font-bold text-slate-700 mb-1.5">
@@ -1506,7 +1601,9 @@ function AiUnlockedPage() {
                         <button type="submit" className="btn-primary w-full text-xs py-3">
                           Generate Official Certificate →
                         </button>
-                        <p className="text-center text-[11px] text-slate-400">🔒 100% Free. No credit card required.</p>
+                        <p className="text-center text-[11px] text-slate-400">
+                          🔒 100% Free. No credit card required.
+                        </p>
                       </form>
                     </div>
                   </div>
@@ -1515,7 +1612,9 @@ function AiUnlockedPage() {
                     {/* Actions */}
                     <div className="bg-white rounded-3xl border border-slate-200/80 shadow-[var(--shadow-card)] px-6 py-4 flex flex-wrap items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">🏆 Course Completed</span>
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                          🏆 Course Completed
+                        </span>
                         <h2 className="text-lg font-extrabold text-brand-ink">Your Certificate</h2>
                       </div>
                       <button
@@ -1543,30 +1642,46 @@ function AiUnlockedPage() {
                       <div className="absolute bottom-6 right-6 h-5 w-5 border-b-2 border-r-2 border-brand-red/40 pointer-events-none" />
 
                       <div className="space-y-1 relative z-10">
-                        <div className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-red font-sans mb-3">Red Dot Technologies Pvt. Ltd.</div>
-                        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-ink">Certificate of Completion</h2>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-sans">Hands-On AI Literacy • 5 Lessons</p>
+                        <div className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-red font-sans mb-3">
+                          Red Dot Technologies Pvt. Ltd.
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-ink">
+                          Certificate of Completion
+                        </h2>
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest font-sans">
+                          Hands-On AI Literacy • 5 Lessons
+                        </p>
                       </div>
 
                       <div className="space-y-3 relative z-10 py-4">
-                        <p className="text-xs text-slate-400 italic font-sans">This certifies that</p>
+                        <p className="text-xs text-slate-400 italic font-sans">
+                          This certifies that
+                        </p>
                         <div className="text-2xl sm:text-3xl font-bold text-brand-ink border-b-2 border-slate-200 pb-3 inline-block px-8">
                           {studentName || "Student Name"}
                         </div>
                         <p className="text-sm text-slate-600 max-w-md mx-auto leading-relaxed font-sans">
-                          has successfully completed all five lessons of <strong>AI Unlocked</strong>, demonstrating
-                          practical skills in understanding, using, creating with, and responsibly navigating artificial intelligence.
+                          has successfully completed all five lessons of{" "}
+                          <strong>AI Unlocked</strong>, demonstrating practical skills in
+                          understanding, using, creating with, and responsibly navigating artificial
+                          intelligence.
                         </p>
                       </div>
 
                       <div className="pt-6 flex items-end justify-between text-xs text-slate-400 font-sans relative z-10 border-t border-slate-100">
                         <div className="text-left">
-                          <strong className="block text-slate-700 font-sans">Red Dot Technologies Pvt. Ltd.</strong>
+                          <strong className="block text-slate-700 font-sans">
+                            Red Dot Technologies Pvt. Ltd.
+                          </strong>
                           <span>Baluwatar, Kathmandu, Nepal</span>
                         </div>
                         <div className="text-right">
                           <strong className="block text-slate-700 font-sans">
-                            {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                            {new Date().toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
                           </strong>
                           <span>Date of completion</span>
                         </div>

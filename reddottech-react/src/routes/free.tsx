@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { submitContact } from "@/lib/api";
 
 export const Route = createFileRoute("/free")({
   head: () => ({
@@ -37,6 +38,7 @@ function FreePage() {
   const [showRsvpModal, setShowRsvpModal] = useState(false);
   const [rsvpName, setRsvpName] = useState("");
   const [rsvpEmail, setRsvpEmail] = useState("");
+  const [isRsvping, setIsRsvping] = useState(false);
 
   const cheatSheets = [
     {
@@ -45,6 +47,34 @@ function FreePage() {
       format: "PDF (4 Pages)",
       downloads: "4.2k+",
       desc: "Complete reference for DPU, DPMO, Process Yield formulas, FMEA risk tables, and control chart rules.",
+      content: `# Six Sigma DMAIC & Quality Formula Sheet
+
+## DMAIC Methodology
+1. **Define** - identify the problem and customer requirements (VOC, CTQ)
+2. **Measure** - baseline current performance and collect data
+3. **Analyze** - find root causes (FMEA, regression, hypothesis tests)
+4. **Improve** - design and run experiments (DOE)
+5. **Control** - hold the gains (control charts, process capability)
+
+## Core Formulas
+- **DPU** = Defects / Units
+- **DPMO** = (Defects × 1,000,000) / (Units × Opportunities per Unit)
+- **Process Yield** = e^(-DPU)
+- **Rolled Throughput Yield (RTY)** = Product of yields at each step
+- **Sigma Level** ≈ NormSInv(1 - DPMO/1,000,000) + 1.5
+
+## FMEA Risk Priority Number
+**RPN = Severity (1-10) × Occurrence (1-10) × Detection (1-10)**
+Prioritize actions on items with the highest RPN.
+
+## Control Chart Rules
+- A point falls beyond the upper or lower control limit
+- A run of 7+ consecutive points on one side of the center line
+- 2 of 3 points in the outer third of the control band
+
+## Lean Waste Types (DOWNTIME)
+Defects, Overproduction, Waiting, Non-utilized talent, Transportation, Inventory, Motion, Extra-processing
+`,
     },
     {
       title: "Generative AI Prompting Master Guide",
@@ -52,6 +82,33 @@ function FreePage() {
       format: "PDF (6 Pages)",
       downloads: "8.9k+",
       desc: "The 5-layer RTCFC prompt framework, role personas, few-shot examples, and hallucination reduction checklist.",
+      content: `# Generative AI Prompting Master Guide
+
+## RTCFC Prompt Framework
+1. **Role** - "You are a senior data analyst..."
+2. **Task** - "Explain the DMAIC methodology"
+3. **Context** - "For a manufacturing audience, non-technical"
+4. **Format** - "Return a 5-bullet summary with headings"
+5. **Constraint** - "Maximum 150 words, no jargon"
+
+## Effective Personas
+- Expert practitioner ("You are a PMP-certified project manager")
+- Teacher ("Explain it to a curious 14-year-old")
+- Devil's advocate ("Challenge my assumptions about...")
+
+## Few-Shot Prompting
+Provide 2-3 example inputs AND ideal outputs before your real request.
+
+## Hallucination Reduction Checklist
+- Ask for sources/evidence or "state if you are unsure"
+- Request the model to work step-by-step (chain of thought)
+- Cross-check numbers with primary references
+- Constrain scope explicitly ("Only answer from the attached document")
+- Use temperature lower for factual tasks
+
+## Refinement Loop
+Iterate: Clarify → Refine → Validate → Regenerate. Never accept the first draft blindly.
+`,
     },
     {
       title: "PMP® Exam 49 Processes & Formula Matrix",
@@ -59,6 +116,37 @@ function FreePage() {
       format: "PDF (5 Pages)",
       downloads: "6.1k+",
       desc: "Earned Value Management (EVPM) formulas, triple constraints, EV, PV, AC, CPI, SPI variance cheat sheet.",
+      content: `# PMP Exam 49 Processes & Formula Matrix
+
+## Triple Constraint
+Scope + Schedule + Cost (quality is the center of the triangle).
+
+## Earned Value Management (EVM)
+- **PV** = Planned Value (budgeted cost of work scheduled)
+- **EV** = Earned Value (budgeted cost of work performed)
+- **AC** = Actual Cost (actual cost of work performed)
+
+## EVM Indicators
+- **CV** = EV - AC (positive = under budget)
+- **SV** = EV - PV (positive = ahead of schedule)
+- **CPI** = EV / AC (greater than 1 = efficient)
+- **SPI** = EV / PV (greater than 1 = ahead of schedule)
+- **EAC** = BAC / CPI (estimate at completion)
+- **ETC** = EAC - AC (estimate to complete)
+- **TCPI** = (BAC - EV) / (BAC - AC)
+
+## Variances
+- Cost Variance % = CV / EV
+- Schedule Variance % = SV / PV
+
+## Key Formulas
+- **Communication Channels** = n(n - 1) / 2
+- **Expected Value (PERT)** = (Optimistic + 4×Most Likely + Pessimistic) / 6
+
+## Exam Tips
+- If CPI/SPI > 1 or CV/SV > 0 → favorable
+- If CPI/SPI < 1 or CV/SV < 0 → unfavorable
+`,
     },
   ];
 
@@ -102,15 +190,47 @@ function FreePage() {
   ];
 
   const handleDownload = (title: string) => {
+    const sheet = cheatSheets.find((s) => s.title === title);
+    if (!sheet) return;
+
+    const blob = new Blob([sheet.content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${sheet.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     toast.success(`Downloading ${title}...`);
   };
 
-  const handleRsvpSubmit = (e: React.FormEvent) => {
+  const handleRsvpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(`RSVP confirmed for ${rsvpName}! Webinar access link sent to ${rsvpEmail}.`);
-    setShowRsvpModal(false);
-    setRsvpName("");
-    setRsvpEmail("");
+    setIsRsvping(true);
+    try {
+      await submitContact({
+        first_name: rsvpName,
+        last_name: "",
+        email: rsvpEmail,
+        subject: "Webinar RSVP",
+        message: "Reserved a free community webinar RSVP pass.",
+      });
+      toast.success(
+        `RSVP confirmed for ${rsvpName}! Webinar access link will be sent to ${rsvpEmail}.`,
+      );
+      setShowRsvpModal(false);
+      setRsvpName("");
+      setRsvpEmail("");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "RSVP failed. Please try again.";
+      toast.error(message);
+    } finally {
+      setIsRsvping(false);
+    }
   };
 
   return (
@@ -314,8 +434,8 @@ function FreePage() {
                 />
               </div>
 
-              <button type="submit" className="btn-primary w-full mt-2">
-                <span>Confirm Free RSVP</span>
+              <button type="submit" disabled={isRsvping} className="btn-primary w-full mt-2">
+                <span>{isRsvping ? "Confirming RSVP..." : "Confirm Free RSVP"}</span>
                 <ArrowRight className="h-4 w-4" />
               </button>
             </form>

@@ -8,11 +8,27 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       server: { entry: "server" },
+      router: {
+        // Supported at runtime (router-composed-plugin reads it); the installed
+        // start-plugin-core types lag the router-plugin API.
+        // @ts-expect-error - verified to emit per-route chunks in production build.
+        autoCodeSplitting: true,
+      },
     }),
     react(),
   ],
   resolve: {
     tsconfigPaths: true,
+  },
+  server: {
+    proxy: {
+      // Forward API calls to the Express + SQLite backend during development so
+      // the frontend can use same-origin "/api/..." URLs everywhere.
+      "/api": {
+        target: process.env.VITE_DEV_PROXY_TARGET || "http://localhost:5000",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     target: "esnext",

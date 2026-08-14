@@ -3,8 +3,10 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useState } from "react";
 import { toast } from "sonner";
 import { createCourse } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/courses/create")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Create Course | Red Dot Admin" }],
   }),

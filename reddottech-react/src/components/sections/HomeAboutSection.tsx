@@ -144,6 +144,8 @@ export function HomeAboutSection() {
                     <img
                       src="/images/about/about-hero.png"
                       alt="Red Dot Technologies — Global Masterclass & Certification"
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none" />

@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "server": "node server/server.js",
+    "dev:all": "node scripts/dev-all.js",
+    "server": "node --env-file-if-exists=.env server/server.js",
+    "start": "node --env-file-if-exists=.env server/prod-entry.js",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",

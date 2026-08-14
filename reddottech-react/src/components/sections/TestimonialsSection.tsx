@@ -183,6 +183,8 @@ export function TestimonialsSection() {
                     <img
                       src={review.avatar}
                       alt={review.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-9 w-9 rounded-full object-cover border-2 border-white/20 shrink-0"
                     />
                     <div className="min-w-0">

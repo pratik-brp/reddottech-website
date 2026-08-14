@@ -90,9 +90,9 @@ export function WhyChooseUsSection() {
         </div>
 
         {/* 2-Column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left Column: Interactive Feature Cards List (5 Cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-3.5 h-full">
+          <div className="lg:col-span-5 flex flex-col gap-3.5">
             {features.map((feature, index) => {
               const FIcon = feature.icon;
               const isActive = active === index;
@@ -100,28 +100,33 @@ export function WhyChooseUsSection() {
                 <button
                   key={feature.title}
                   onClick={() => setActive(index)}
-                  className={`group relative flex items-center gap-4 rounded-2xl p-4 sm:p-5 text-left transition-all duration-400 border overflow-hidden ${isActive
-                      ? "bg-white border-brand-red/40 shadow-xl shadow-slate-200/60 scale-[1.02]"
+                  className={`group relative flex items-center gap-4 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 border overflow-hidden cursor-pointer ${
+                    isActive
+                      ? "bg-white border-brand-red/40 shadow-xl shadow-slate-200/70 ring-1 ring-brand-red/30"
                       : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 hover:shadow-md"
-                    }`}
+                  }`}
                 >
                   {/* Left Active Glow Indicator Bar */}
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-1.5 transition-all duration-300 ${isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
-                      }`}
+                    className={`absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-200 ${
+                      isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
+                    }`}
                   />
 
                   {/* Card Thumbnail Image */}
-                  <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+                  <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 shadow-xs">
                     <img
                       src={feature.image}
                       alt={feature.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-transparent transition-colors" />
                     <div
-                      className={`absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-lg ${isActive ? "bg-brand-red text-white" : "bg-slate-900/80 text-white"
-                        }`}
+                      className={`absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-lg transition-colors ${
+                        isActive ? "bg-brand-red text-white shadow-xs" : "bg-slate-900/80 text-white"
+                      }`}
                     >
                       <FIcon className="h-3.5 w-3.5" />
                     </div>
@@ -130,10 +135,18 @@ export function WhyChooseUsSection() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h3 className={`display-font text-base font-extrabold tracking-tight transition-colors duration-300 ${isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"}`}>
+                      <h3
+                        className={`display-font text-base font-extrabold tracking-tight transition-colors duration-200 ${
+                          isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
+                        }`}
+                      >
                         {feature.title}
                       </h3>
-                      <span className="text-[10px] font-black text-slate-400 group-hover:text-brand-red">
+                      <span
+                        className={`text-[10px] font-black transition-colors ${
+                          isActive ? "text-brand-red" : "text-slate-400 group-hover:text-brand-red"
+                        }`}
+                      >
                         {feature.id}
                       </span>
                     </div>
@@ -146,18 +159,19 @@ export function WhyChooseUsSection() {
             })}
           </div>
 
-          {/* Right Column: Dynamic Feature Spotlight Box (7 Cols) */}
-          <div className="lg:col-span-7">
-            <div
-              key={active}
-              className="relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 text-white shadow-2xl border border-slate-800 flex flex-col justify-between h-full"
-            >
-              {/* Feature Hero Showcase Image Header */}
-              <div className="relative h-56 sm:h-64 w-full overflow-hidden">
+          {/* Right Column: Dynamic Feature Spotlight Box (7 Cols) - Fixed in Place */}
+          <div className="lg:col-span-7 flex flex-col">
+            <div className="relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 text-white shadow-2xl border border-slate-800 flex flex-col justify-between">
+              {/* Feature Hero Showcase Image Header (Fixed Height) */}
+              <div className="relative h-56 sm:h-64 w-full overflow-hidden shrink-0 bg-slate-950">
                 <img
+                  key={activeFeature.image}
                   src={activeFeature.image}
                   alt={activeFeature.title}
-                  className="h-full w-full object-cover animate-scale-in"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover animate-fade-in"
+                  style={{ animationDuration: "250ms" }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
 
@@ -176,48 +190,50 @@ export function WhyChooseUsSection() {
                 </div>
               </div>
 
-              {/* Body Content */}
-              <div className="relative z-10 p-6 sm:p-8 space-y-5 -mt-8">
-                {/* Feature Title */}
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-red text-white shadow-lg shadow-red-900/40">
-                    <Icon className="h-6 w-6 stroke-[2]" />
+              {/* Body Content - Stable Heights */}
+              <div className="relative z-10 p-6 sm:p-8 space-y-5 -mt-8 flex-1 flex flex-col justify-between">
+                <div className="space-y-4">
+                  {/* Feature Title */}
+                  <div className="flex items-center gap-3 min-h-[56px]">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-red text-white shadow-lg shadow-red-900/40">
+                      <Icon className="h-6 w-6 stroke-[2]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="display-font text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                        {activeFeature.title}
+                      </h3>
+                      <p className="text-xs text-brand-red font-semibold mt-0.5 truncate">
+                        {activeFeature.tagline}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="display-font text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                      {activeFeature.title}
-                    </h3>
-                    <p className="text-xs text-brand-red font-semibold mt-0.5">
-                      {activeFeature.tagline}
-                    </p>
-                  </div>
-                </div>
 
-                {/* Description */}
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-                  {activeFeature.description}
-                </p>
-
-                {/* Bullet Highlights Grid */}
-                <div className="space-y-2.5 pt-1">
-                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
-                    Key Deliverables &amp; Highlights:
+                  {/* Description */}
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal min-h-[40px]">
+                    {activeFeature.description}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {activeFeature.highlights.map((h) => (
-                      <div
-                        key={h}
-                        className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 p-2.5 text-xs font-bold text-slate-200 backdrop-blur-md hover:bg-white/10 transition-colors"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5 text-brand-red shrink-0" />
-                        <span className="leading-tight">{h}</span>
-                      </div>
-                    ))}
+
+                  {/* Bullet Highlights Grid */}
+                  <div className="space-y-2.5 pt-1">
+                    <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+                      Key Deliverables &amp; Highlights:
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      {activeFeature.highlights.map((h) => (
+                        <div
+                          key={h}
+                          className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 p-2.5 text-xs font-bold text-slate-200 backdrop-blur-md hover:bg-white/10 transition-colors"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5 text-brand-red shrink-0" />
+                          <span className="leading-tight">{h}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 {/* Bottom Footer: Metrics & CTA */}
-                <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-5">
+                <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-5 mt-4">
                   <div className="grid grid-cols-3 gap-6 text-center sm:text-left">
                     <div>
                       <p className="display-font text-xl sm:text-2xl font-extrabold text-brand-red">

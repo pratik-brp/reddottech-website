@@ -2,10 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { coursesData as staticCourses } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { CtaSection } from "@/components/sections/CtaSection";
-import { PageHero } from "@/components/PageHero";
 import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Search, SlidersHorizontal, X, LayoutGrid, Sparkles } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  X,
+  LayoutGrid,
+  Sparkles,
+  ShieldCheck,
+  Users,
+  Briefcase,
+  Bot,
+  TrendingUp,
+  BookOpen,
+  Filter,
+} from "lucide-react";
 import { getCourses } from "@/lib/api";
 
 export const Route = createFileRoute("/courses/")({
@@ -22,17 +34,13 @@ export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
 });
 
-const CATEGORY_ICONS: Record<string, string> = {
-  All: "✦",
-  Technology: "💻",
-  Business: "📊",
-  AI: "🤖",
-  Analytics: "📈",
-  Management: "🎯",
-  Design: "🎨",
-  Cybersecurity: "🔐",
-  "Data Science": "🧪",
-  Cloud: "☁️",
+const CATEGORY_CONFIG: Record<string, { icon: any; label?: string }> = {
+  All: { icon: Sparkles, label: "All Programs" },
+  "Quality & Management": { icon: ShieldCheck, label: "Quality & Six Sigma" },
+  "Leadership & Management": { icon: Users, label: "Leadership & Mgmt" },
+  "Project Management": { icon: Briefcase, label: "Project Management" },
+  "Artificial Intelligence": { icon: Bot, label: "Artificial Intelligence" },
+  "Analytics & Data": { icon: TrendingUp, label: "Analytics & Data" },
 };
 
 function CoursesPage() {
@@ -41,6 +49,7 @@ function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
   const prevFilterRef = useRef({ cat: "All", q: "" });
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getCourses().then((data) => {
@@ -48,6 +57,18 @@ function CoursesPage() {
         setCoursesList(data);
       }
     });
+  }, []);
+
+  // Keyboard shortcut (Cmd/Ctrl + K) to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Dynamically extract unique categories
@@ -87,111 +108,160 @@ function CoursesPage() {
   const isActiveFilter = selectedCategory !== "All" || searchQuery;
 
   return (
-    <div className="flex flex-col min-h-screen overflow-x-hidden">
-      <PageHero
-        badge="World-Class Course Catalog"
-        title={
-          <>
+    <div className="flex flex-col min-h-screen overflow-x-hidden bg-slate-50 text-brand-ink selection:bg-brand-red selection:text-white">
+      {/* ── Clean Centered Courses Hero Section ── */}
+      <section className="relative overflow-hidden pt-28 sm:pt-36 pb-14 sm:pb-18 border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-slate-50/70">
+        {/* Soft Ambient Background Lighting & Grid */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div
+            className="absolute -top-32 left-1/2 -translate-x-1/2 h-[450px] w-[750px] rounded-full opacity-[0.14] blur-[150px]"
+            style={{
+              background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute top-1/2 right-[10%] h-[350px] w-[350px] rounded-full opacity-[0.10] blur-[130px]"
+            style={{
+              background: "radial-gradient(circle, #f59e0b 0%, transparent 70%)",
+            }}
+          />
+          <div className="absolute inset-0 bg-grid-pattern opacity-40" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/80 px-4 py-1.5 backdrop-blur-md shadow-xs">
+            <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
+            <span className="text-xs font-black uppercase tracking-[0.14em] text-brand-red">
+              World-Class Course Catalog
+            </span>
+          </div>
+
+          {/* Heading */}
+          <h1 className="display-font mt-6 text-3xl sm:text-5xl lg:text-6xl font-black text-brand-ink leading-[1.1] tracking-tight max-w-4xl mx-auto">
             Master In-Demand Skills with{" "}
             <span className="gradient-text">Global Certifications</span>
-          </>
-        }
-        subtitle="Choose from our industry-led certification cohorts co-developed with university professors and senior tech leaders."
-      />
+          </h1>
 
-      {/* ── Sticky Filter Bar ── */}
-      <section className="sticky top-[4.25rem] z-30 bg-white/95 backdrop-blur-xl border-b border-slate-100/80 shadow-[0_2px_20px_oklch(0.15_0.015_255/0.06)]">
-        <div className="mx-auto max-w-7xl px-6 py-4">
-          <div className="flex flex-col gap-4">
+          {/* Subtitle */}
+          <p className="mt-4 text-base sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+            Choose from our industry-led certification cohorts co-developed with university
+            professors and senior tech leaders.
+          </p>
+        </div>
+      </section>
 
-            {/* Top row: search + result count */}
-            <div className="flex items-center gap-4">
-              {/* Search */}
-              <div className="relative flex-1 max-w-sm">
-                <Search className="h-4 w-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  id="course-search"
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search courses, skills, topics…"
-                  className="w-full rounded-full border border-slate-200 bg-surface-elevated pl-10 pr-10 py-2.5 text-xs font-semibold text-brand-ink placeholder:text-slate-400 focus:outline-none focus:border-brand-red focus:bg-white focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-red)_12%,transparent)] transition-all duration-200"
-                />
-                {searchQuery && (
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── REDESIGNED PREMIUM STICKY FILTER & COMMAND TOOLBAR ──       */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <section className="sticky top-[4.25rem] z-30 bg-white/85 backdrop-blur-2xl border-b border-slate-200/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5">
+            {/* Search Bar Input */}
+            <div className="relative flex-1 max-w-md">
+              <Search className="h-4 w-4 text-brand-red absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                ref={searchInputRef}
+                id="course-search"
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search courses, topics, skills..."
+                className="w-full rounded-full border border-slate-200/90 bg-slate-100/80 pl-10 pr-20 py-2.5 text-xs sm:text-sm font-semibold text-brand-ink placeholder:text-slate-400 focus:outline-none focus:border-brand-red focus:bg-white focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-red)_12%,transparent)] transition-all duration-200"
+              />
+
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                {searchQuery ? (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors"
+                    className="h-5 w-5 flex items-center justify-center rounded-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-colors"
                     aria-label="Clear search"
                   >
                     <X className="h-3 w-3" />
                   </button>
+                ) : (
+                  <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-black uppercase text-slate-400 bg-white/90 border border-slate-200/90 rounded shadow-2xs select-none">
+                    ⌘K
+                  </kbd>
                 )}
               </div>
+            </div>
 
-              {/* Results count */}
-              <div className="hidden sm:flex items-center gap-2 ml-auto">
+            {/* Results Count & Clear Button */}
+            <div className="hidden lg:flex items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-100/90 border border-slate-200/80 px-3 py-1.5 text-xs font-bold text-slate-700">
                 <LayoutGrid className="h-3.5 w-3.5 text-slate-400" />
-                <span className="text-xs font-bold text-slate-500">
-                  <span className="text-brand-ink tabular-nums">{filteredCourses.length}</span>{" "}
-                  {filteredCourses.length === 1 ? "program" : "programs"}
+                <span>
+                  <strong className="text-brand-ink">{filteredCourses.length}</strong>{" "}
+                  {filteredCourses.length === 1 ? "Program" : "Programs"}
                 </span>
-                {isActiveFilter && (
-                  <button
-                    onClick={clearFilters}
-                    className="ml-2 flex items-center gap-1 rounded-full bg-brand-red/8 border border-brand-red/20 px-3 py-1 text-[11px] font-bold text-brand-red hover:bg-brand-red/15 transition-colors"
-                  >
-                    <X className="h-3 w-3" />
-                    Clear
-                  </button>
-                )}
               </div>
+
+              {isActiveFilter && (
+                <button
+                  onClick={clearFilters}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 border border-rose-200 px-3.5 py-1.5 text-xs font-black text-brand-red hover:bg-rose-100 transition-colors cursor-pointer"
+                >
+                  <X className="h-3 w-3" />
+                  <span>Reset</span>
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Category pills */}
-            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filter by category">
-              {allCategories.map((cat) => {
-                const count =
-                  cat === "All"
-                    ? staticCourses.length
-                    : staticCourses.filter((c) => c.category === cat).length;
-                const isActive = selectedCategory === cat;
-                const icon = CATEGORY_ICONS[cat as string] || "◆";
+          {/* Category Filter Pills (Scrollable & Responsive) */}
+          <div className="mt-3 pt-3 border-t border-slate-100/80 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {allCategories.map((cat) => {
+              const count =
+                cat === "All"
+                  ? coursesList.length
+                  : coursesList.filter((c) => c.category === cat).length;
+              const isActive = selectedCategory === cat;
+              const config = CATEGORY_CONFIG[cat as string] || { icon: BookOpen, label: cat };
+              const IconComponent = config.icon;
 
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat as string)}
-                    aria-pressed={isActive}
-                    className={[
-                      "group relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all duration-250 select-none",
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat as string)}
+                  aria-pressed={isActive}
+                  className={`group relative shrink-0 flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 select-none cursor-pointer ${
+                    isActive
+                      ? "bg-slate-950 text-white shadow-md shadow-slate-950/20 scale-[1.02] border border-slate-800"
+                      : "bg-white text-slate-600 border border-slate-200/90 hover:border-slate-300 hover:text-brand-ink hover:bg-slate-50"
+                  }`}
+                >
+                  <IconComponent
+                    className={`h-3.5 w-3.5 transition-transform duration-300 ${
                       isActive
-                        ? "bg-brand-ink text-white shadow-[0_4px_14px_oklch(0.15_0.015_255/0.25)] scale-[1.04]"
-                        : "bg-surface-elevated text-slate-600 border border-slate-200/80 hover:border-slate-300 hover:bg-white hover:shadow-sm",
-                    ].join(" ")}
+                        ? "text-brand-red scale-110"
+                        : "text-slate-400 group-hover:text-brand-ink group-hover:scale-110"
+                    }`}
+                  />
+                  <span>{cat}</span>
+                  <span
+                    className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-black transition-colors ${
+                      isActive
+                        ? "bg-brand-red text-white"
+                        : "bg-slate-100 border border-slate-200/80 text-slate-600 group-hover:bg-slate-200"
+                    }`}
                   >
-                    <span className={`transition-transform duration-200 ${isActive ? "" : "group-hover:scale-110"}`}>
-                      {icon}
-                    </span>
-                    <span>{cat}</span>
-                    <span
-                      className={[
-                        "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-black transition-colors",
-                        isActive
-                          ? "bg-brand-red text-white"
-                          : "bg-slate-200/80 text-slate-500 group-hover:bg-slate-200",
-                      ].join(" ")}
-                    >
-                      {count}
-                    </span>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
 
-                    {/* Active underline glow */}
-                    {isActive && (
-                      <span className="absolute inset-x-3 -bottom-[1px] h-[2px] rounded-full bg-brand-red opacity-70" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Mobile Clear Action */}
+            {isActiveFilter && (
+              <button
+                onClick={clearFilters}
+                className="lg:hidden shrink-0 inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-bold text-brand-red hover:bg-rose-100 transition-colors"
+              >
+                <X className="h-3 w-3" />
+                <span>Reset</span>
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -199,15 +269,19 @@ function CoursesPage() {
       {/* ── Courses Grid ── */}
       <section className="section-padding bg-surface-elevated flex-1">
         <div className="mx-auto max-w-7xl px-6">
-
           {/* Mobile results count */}
           <div className="sm:hidden mb-6 flex items-center justify-between">
             <p className="text-xs font-bold text-slate-500">
-              <span className="text-brand-ink tabular-nums">{filteredCourses.length}</span>{" "}
-              {filteredCourses.length === 1 ? "program" : "programs"} found
+              <span className="text-brand-ink tabular-nums font-black">
+                {filteredCourses.length}
+              </span>{" "}
+              {filteredCourses.length === 1 ? "program" : "programs"} available
             </p>
             {isActiveFilter && (
-              <button onClick={clearFilters} className="text-xs font-bold text-brand-red hover:underline flex items-center gap-1">
+              <button
+                onClick={clearFilters}
+                className="text-xs font-bold text-brand-red hover:underline flex items-center gap-1"
+              >
                 <X className="h-3 w-3" /> Clear filters
               </button>
             )}

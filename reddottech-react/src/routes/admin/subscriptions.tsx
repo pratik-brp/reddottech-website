@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { Trash2, Download, Bell, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { getSubscriptions, subscribeNewsletter, deleteSubscription } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/subscriptions")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Newsletter Subscriptions | Red Dot Admin" }],
   }),
@@ -77,7 +79,8 @@ function AdminSubscriptionsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <p className="text-xs text-slate-500">
-            Subscribers who opted in for tech course announcements and workshops (Stored in SQLite DB).
+            Subscribers who opted in for tech course announcements and workshops (Stored in SQLite
+            DB).
           </p>
           <div className="flex items-center gap-3">
             <button
@@ -122,7 +125,7 @@ function AdminSubscriptionsPage() {
                     </td>
 
                     <td className="py-4 px-4 text-slate-600 font-medium">
-                      {sub.created_at || sub.date || "2026-07-29"}
+                      {sub.created_at || sub.date || "—"}
                     </td>
 
                     <td className="py-4 px-6 text-right">
@@ -159,7 +162,10 @@ function AdminSubscriptionsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleAddSubscriber} className="space-y-4 text-xs font-semibold text-slate-700">
+            <form
+              onSubmit={handleAddSubscriber}
+              className="space-y-4 text-xs font-semibold text-slate-700"
+            >
               <div>
                 <label className="block mb-1 font-bold">Subscriber Email *</label>
                 <input

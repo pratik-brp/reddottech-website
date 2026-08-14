@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { ReactNode } from "react";
 import { toast } from "sonner";
+import { logoutAdmin } from "@/lib/api";
+import { clearAuth, getAdminEmail, isAdminAuthed } from "@/lib/auth";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -23,6 +25,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
   const routerState = useRouterState();
   const navigate = useNavigate();
   const currentPath = routerState.location.pathname;
+  const adminEmail = getAdminEmail();
 
   const adminNav = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
@@ -33,11 +36,18 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_auth");
-    localStorage.removeItem("admin_email");
-    toast.info("Logged out of Admin Control Panel.");
-    navigate({ to: "/admin/login" });
+  const handleLogout = async () => {
+    try {
+      if (isAdminAuthed()) {
+        await logoutAdmin();
+      }
+    } catch {
+      // The session token is cleared locally regardless of network state.
+    } finally {
+      clearAuth();
+      toast.info("Logged out of Admin Control Panel.");
+      navigate({ to: "/admin/login" });
+    }
   };
 
   return (
@@ -115,8 +125,12 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 A
               </div>
               <div className="text-left leading-tight pr-1">
-                <span className="block text-xs font-black text-slate-800">Administrator</span>
-                <span className="block text-[10px] font-semibold text-slate-500">Super User</span>
+                <span className="block text-xs font-black text-slate-800">
+                  {adminEmail || "Administrator"}
+                </span>
+                <span className="block text-[10px] font-semibold text-slate-500">
+                  {isAdminAuthed() ? "Active Session" : "Signed Out"}
+                </span>
               </div>
             </div>
 

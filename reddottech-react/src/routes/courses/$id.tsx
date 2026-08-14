@@ -11,7 +11,6 @@ import {
   Signal,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { fetchApi } from "@/lib/api";
 
@@ -44,24 +43,6 @@ function CourseDetailPage() {
     });
   }, [id]);
 
-  const [claimName, setClaimName] = useState("");
-  const [claimEmail, setClaimEmail] = useState("");
-  const [claimCertId, setClaimCertId] = useState("");
-
-  const handleClaimCertificate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!claimName || !claimEmail || !claimCertId) {
-      toast.error("Please fill in all certificate claim fields.");
-      return;
-    }
-    toast.success(
-      "Certificate claim request submitted! We will verify and email your certificate within 24 hours.",
-    );
-    setClaimName("");
-    setClaimEmail("");
-    setClaimCertId("");
-  };
-
   const tabs = [
     { key: "overview" as const, label: "Overview" },
     { key: "curriculum" as const, label: "Curriculum" },
@@ -86,33 +67,45 @@ function CourseDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Hero image with overlay */}
+            {/* Course Title and Category Badges Header */}
             <ScrollReveal>
-              <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-card-premium)] border border-slate-100 aspect-video">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  {course.category && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-3.5 py-1 text-xs font-black text-brand-red">
+                      <Award className="h-3.5 w-3.5" />
+                      {course.category}
+                    </span>
+                  )}
+                  {course.skillLevel && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700 capitalize">
+                      <Signal className="h-3.5 w-3.5 text-emerald-600" />
+                      {course.skillLevel}
+                    </span>
+                  )}
+                  {course.certification && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
+                      USC Upstate Certified
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="display-font text-2xl sm:text-4xl lg:text-[2.6rem] font-black text-brand-ink leading-[1.15] tracking-tight">
+                  {course.name}
+                </h1>
+              </div>
+            </ScrollReveal>
+
+            {/* Course Banner Showcase */}
+            <ScrollReveal delay={40}>
+              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200/90 aspect-video bg-slate-900">
                 <img
                   src={course.bannerImage || course.thumbnail}
                   alt={course.name}
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/60 via-transparent to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    {course.category && (
-                      <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20">
-                        {course.category}
-                      </span>
-                    )}
-                    {course.skillLevel && (
-                      <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[11px] font-bold text-white border border-white/20 capitalize flex items-center gap-1.5">
-                        <Signal className="h-3 w-3" />
-                        {course.skillLevel}
-                      </span>
-                    )}
-                  </div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
-                    {course.name}
-                  </h1>
-                </div>
               </div>
             </ScrollReveal>
 
@@ -148,10 +141,11 @@ function CourseDetailPage() {
                     <button
                       key={tab.key}
                       onClick={() => setActiveTab(tab.key)}
-                      className={`relative px-6 py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab.key
+                      className={`relative px-6 py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                        activeTab === tab.key
                           ? "text-brand-red"
                           : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-                        }`}
+                      }`}
                     >
                       {tab.label}
                       {activeTab === tab.key && (
@@ -167,16 +161,31 @@ function CourseDetailPage() {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-brand-red">
                         Course Description
                       </h3>
-                      <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                        {course.longDescription || course.description}
-                      </p>
+                      {(() => {
+                        const content = course.longDescription || course.description;
+                        if (!content) return null;
+                        const isHtml = /<[a-z][\s\S]*>/i.test(content);
+                        if (isHtml) {
+                          return (
+                            <div
+                              className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1"
+                              dangerouslySetInnerHTML={{ __html: content }}
+                            />
+                          );
+                        }
+                        return (
+                          <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+                            {content}
+                          </p>
+                        );
+                      })()}
                     </div>
                   )}
 
                   {activeTab === "curriculum" && (
                     <div className="space-y-6">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-brand-red">
-                        Curriculum & Syllabus
+                        Curriculum &amp; Syllabus
                       </h3>
                       {course.modules ? (
                         <div className="space-y-4">
@@ -203,9 +212,29 @@ function CourseDetailPage() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-slate-600 text-sm whitespace-pre-line">
-                          {course.curriculum}
-                        </p>
+                        (() => {
+                          const curriculum = course.curriculum;
+                          if (!curriculum)
+                            return (
+                              <p className="text-slate-500 text-sm">
+                                Curriculum details available upon enrollment.
+                              </p>
+                            );
+                          const isHtml = /<[a-z][\s\S]*>/i.test(curriculum);
+                          if (isHtml) {
+                            return (
+                              <div
+                                className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_strong]:block [&_strong]:text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1"
+                                dangerouslySetInnerHTML={{ __html: curriculum }}
+                              />
+                            );
+                          }
+                          return (
+                            <p className="text-slate-600 text-sm whitespace-pre-line leading-relaxed">
+                              {curriculum}
+                            </p>
+                          );
+                        })()
                       )}
                     </div>
                   )}
@@ -219,6 +248,8 @@ function CourseDetailPage() {
                         <img
                           src={course.instructorImage || "/images/common/dummy-avatar.jpg"}
                           alt={course.instructorName}
+                          loading="lazy"
+                          decoding="async"
                           className="h-16 w-16 rounded-2xl object-cover border-2 border-white shadow-md"
                         />
                         <div>
@@ -228,10 +259,26 @@ function CourseDetailPage() {
                           <p className="text-xs text-slate-500">{course.instructorTitle}</p>
                         </div>
                       </div>
-                      <p className="text-slate-600 text-sm leading-relaxed">
-                        {course.instructorDetail ||
-                          `${course.instructorName} leads this course cohort.`}
-                      </p>
+                      {(() => {
+                        const detail = course.instructorDetail;
+                        if (!detail) {
+                          return (
+                            <p className="text-slate-600 text-sm leading-relaxed">
+                              {`${course.instructorName} leads this course cohort.`}
+                            </p>
+                          );
+                        }
+                        const isHtml = /<[a-z][\s\S]*>/i.test(detail);
+                        if (isHtml) {
+                          return (
+                            <div
+                              className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink"
+                              dangerouslySetInnerHTML={{ __html: detail }}
+                            />
+                          );
+                        }
+                        return <p className="text-slate-600 text-sm leading-relaxed">{detail}</p>;
+                      })()}
                     </div>
                   )}
 
@@ -240,10 +287,31 @@ function CourseDetailPage() {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-brand-red">
                         Course Requirements
                       </h3>
-                      <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                        {course.requirements ||
-                          "No prerequisites required. Open for learners and working professionals."}
-                      </p>
+                      {(() => {
+                        const reqs = course.requirements;
+                        if (!reqs) {
+                          return (
+                            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                              No prerequisites required. Open for learners and working
+                              professionals.
+                            </p>
+                          );
+                        }
+                        const isHtml = /<[a-z][\s\S]*>/i.test(reqs);
+                        if (isHtml) {
+                          return (
+                            <div
+                              className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_ul]:list-none [&_li]:mb-1.5 [&_a]:text-brand-ink [&_a]:font-bold [&_a]:no-underline"
+                              dangerouslySetInnerHTML={{ __html: reqs }}
+                            />
+                          );
+                        }
+                        return (
+                          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            {reqs}
+                          </p>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -261,6 +329,8 @@ function CourseDetailPage() {
                   <img
                     src={course.thumbnail}
                     alt={course.name}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -308,73 +378,6 @@ function CourseDetailPage() {
             </ScrollReveal>
           </div>
         </div>
-
-        {/* Certificate Claim */}
-        <ScrollReveal>
-          <div className="mt-12 premium-card-static p-8 md:p-10 max-w-3xl space-y-6 relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-ink via-brand-navy to-transparent" />
-            <div className="space-y-1">
-              <h3 className="text-xl font-bold text-brand-ink flex items-center gap-2">
-                <Award className="h-5 w-5 text-brand-red" />
-                Claim / Verify Digital Certificate
-              </h3>
-              <p className="text-xs text-slate-500">
-                Enter your full name and student cohort ID to request your official digital
-                credential verification.
-              </p>
-            </div>
-
-            <form onSubmit={handleClaimCertificate} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">Full Name</label>
-                  <input
-                    type="text"
-                    value={claimName}
-                    onChange={(e) => setClaimName(e.target.value)}
-                    placeholder="Full name on certificate"
-                    required
-                    className="premium-input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={claimEmail}
-                    onChange={(e) => setClaimEmail(e.target.value)}
-                    placeholder="Registered student email"
-                    required
-                    className="premium-input"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Certificate ID / Cohort Code
-                </label>
-                <input
-                  type="text"
-                  value={claimCertId}
-                  onChange={(e) => setClaimCertId(e.target.value)}
-                  placeholder="e.g. PECP-2025-AI-018"
-                  required
-                  className="premium-input"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="rounded-full bg-brand-ink px-8 py-3 text-xs font-bold text-white shadow-md hover:bg-black transition-all"
-              >
-                Submit Certificate Verification
-              </button>
-            </form>
-          </div>
-        </ScrollReveal>
       </div>
     </div>
   );

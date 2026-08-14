@@ -3,9 +3,12 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { coursesData } from "@/data/courses";
 import { BookOpen, Mail, Bell, Award, Plus, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getDashboardStats } from "@/lib/api";
+import { getDashboardStats, getCourses } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
+import type { Course } from "@/types";
 
 export const Route = createFileRoute("/admin/dashboard")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Admin Dashboard | Red Dot Technologies" }],
   }),
@@ -14,17 +17,21 @@ export const Route = createFileRoute("/admin/dashboard")({
 
 function AdminDashboardPage() {
   const [stats, setStats] = useState({
-    coursesCount: coursesData.length,
-    contactsCount: 14,
-    subscriptionsCount: 42,
-    certificatesCount: 9,
+    coursesCount: 0,
+    contactsCount: 0,
+    subscriptionsCount: 0,
+    certificatesCount: 0,
   });
+  const [recentCourses, setRecentCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     getDashboardStats().then((data) => {
       if (data) {
         setStats(data);
       }
+    });
+    getCourses().then((data) => {
+      setRecentCourses(data && data.length > 0 ? (data as Course[]) : coursesData);
     });
   }, []);
 
@@ -157,7 +164,7 @@ function AdminDashboardPage() {
             </div>
 
             <div className="divide-y divide-slate-100">
-              {coursesData.map((course) => (
+              {recentCourses.map((course) => (
                 <div key={course.id} className="py-3 flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <img

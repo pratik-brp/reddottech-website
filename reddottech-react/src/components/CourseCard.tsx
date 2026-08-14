@@ -97,6 +97,8 @@ function CourseCardComponent({ course }: CourseCardProps) {
                   <img
                     src={course.instructorImage || "/images/common/dummy-avatar.jpg"}
                     alt={course.instructorName}
+                    loading="lazy"
+                    decoding="async"
                     className="h-10 w-10 rounded-full object-cover border-2 border-white shadow-md"
                   />
                   <span className="absolute -bottom-0.5 -right-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 text-white text-[8px] border-2 border-white">

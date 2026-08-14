@@ -1,16 +1,39 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "http://localhost:5000/api";
+import { getToken } from "./auth";
 
-export async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
+// Same-origin by default (served behind the Vite dev proxy in development and a
+// reverse proxy / API route in production). Override with VITE_API_BASE_URL.
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "/api";
+
+interface FetchOptions extends RequestInit {
+  /** When true, throws on HTTP errors even for reads (default: writes throw, reads fall back). */
+  throwOnError?: boolean;
+}
+
+export async function fetchApi<T>(endpoint: string, options?: FetchOptions): Promise<T | null> {
   try {
+    const headers = new Headers(options?.headers);
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+    const token = getToken();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
       ...options,
+      headers,
     });
 
     if (!res.ok) {
-      throw new Error(`API Error: ${res.statusText} (${res.status})`);
+      let message = `API Error: ${res.statusText} (${res.status})`;
+      try {
+        const body = await res.json();
+        if (body?.error) message = body.error;
+      } catch {
+        // ignore non-JSON error responses
+      }
+      throw new Error(message);
     }
 
     const data = await res.json();
@@ -18,12 +41,38 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
   } catch (err) {
     // Reads can gracefully fall back to static/empty data. Writes must not fail
     // silently, otherwise the UI reports success for data that was never saved.
-    if (options?.method && options.method !== "GET") {
+    const method = options?.method || "GET";
+    if (method !== "GET" || options?.throwOnError) {
       throw err;
     }
     console.warn(`[SQLite API Fallback] ${endpoint}:`, err);
     return null;
   }
+}
+
+// 0. Admin Auth API
+export async function adminLogin(email: string, password: string) {
+  return await fetchApi<{ token: string; email: string; name: string }>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+    throwOnError: true,
+  });
+}
+
+export async function logoutAdmin() {
+  return await fetchApi("/auth/logout", { method: "POST", throwOnError: true });
+}
+
+export async function getMe() {
+  return await fetchApi<{ email: string; name?: string }>("/auth/me");
+}
+
+export async function changeAdminPassword(currentPassword: string, newPassword: string) {
+  return await fetchApi("/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify({ currentPassword, newPassword }),
+    throwOnError: true,
+  });
 }
 
 // 1. Dashboard Stats
@@ -37,10 +86,10 @@ export async function getDashboardStats() {
 
   return (
     stats || {
-      contactsCount: 14,
-      subscriptionsCount: 42,
-      certificatesCount: 9,
-      coursesCount: 3,
+      contactsCount: 0,
+      subscriptionsCount: 0,
+      certificatesCount: 0,
+      coursesCount: 0,
     }
   );
 }

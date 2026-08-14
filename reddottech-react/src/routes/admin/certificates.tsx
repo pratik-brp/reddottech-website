@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { Award, Trash2, ShieldCheck, Eye, Plus, X, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { getCertificates, claimCertificate, deleteCertificate } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/certificates")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Certificates Management | Red Dot Admin" }],
   }),
@@ -78,7 +80,8 @@ function AdminCertificatesPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Certificates Control Hub</h2>
             <p className="text-xs text-slate-500">
-              Manage, preview, issue, and verify student AI Unlocked certificate records in SQLite DB.
+              Manage, preview, issue, and verify student AI Unlocked certificate records in SQLite
+              DB.
             </p>
           </div>
           <button
@@ -122,7 +125,7 @@ function AdminCertificatesPage() {
                     <td className="py-4 px-4 text-slate-600 font-medium">{cert.email}</td>
                     <td className="py-4 px-4 text-slate-600">{cert.school || "Not specified"}</td>
                     <td className="py-4 px-4 text-slate-600 font-semibold">
-                      {cert.completed_at || cert.completedDate || "2026-07-23"}
+                      {cert.completed_at || cert.completedDate || "—"}
                     </td>
                     <td className="py-4 px-4">
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 uppercase">
@@ -171,7 +174,10 @@ function AdminCertificatesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleIssueCert} className="space-y-4 text-xs font-semibold text-slate-700">
+            <form
+              onSubmit={handleIssueCert}
+              className="space-y-4 text-xs font-semibold text-slate-700"
+            >
               <div>
                 <label className="block mb-1 font-bold">Student Name *</label>
                 <input
@@ -235,9 +241,12 @@ function AdminCertificatesPage() {
           <div className="relative w-full max-w-3xl rounded-3xl bg-white p-6 sm:p-8 shadow-2xl space-y-6 max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div>
-                <h3 className="font-extrabold text-slate-900 text-lg">Official Certificate Preview</h3>
+                <h3 className="font-extrabold text-slate-900 text-lg">
+                  Official Certificate Preview
+                </h3>
                 <p className="text-xs text-slate-500">
-                  Recipient: <strong className="text-slate-900">{selectedCert.name}</strong> ({selectedCert.email})
+                  Recipient: <strong className="text-slate-900">{selectedCert.name}</strong> (
+                  {selectedCert.email})
                 </p>
               </div>
               <button
@@ -271,16 +280,20 @@ function AdminCertificatesPage() {
                 {selectedCert.name}
               </div>
               <p className="text-slate-700 text-xs max-w-lg mx-auto leading-relaxed mb-8">
-                has successfully completed all five lessons of <strong>AI Unlocked</strong>, demonstrating practical skills in understanding, using, creating with, and responsibly navigating artificial intelligence.
+                has successfully completed all five lessons of <strong>AI Unlocked</strong>,
+                demonstrating practical skills in understanding, using, creating with, and
+                responsibly navigating artificial intelligence.
               </p>
               <div className="flex justify-between items-end text-[11px] text-slate-500 pt-4 border-t border-slate-200">
                 <div className="text-left leading-tight">
-                  <strong className="text-[#16264A] block font-bold">Red Dot Technologies Pvt. Ltd.</strong>
+                  <strong className="text-[#16264A] block font-bold">
+                    Red Dot Technologies Pvt. Ltd.
+                  </strong>
                   Baluwatar, Kathmandu, Nepal
                 </div>
                 <div className="text-right leading-tight">
                   <strong className="text-[#16264A] block font-bold">
-                    {selectedCert.completed_at || selectedCert.completedDate || "2026-07-23"}
+                    {selectedCert.completed_at || selectedCert.completedDate || "—"}
                   </strong>
                   Date of completion
                 </div>

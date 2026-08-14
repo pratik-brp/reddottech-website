@@ -17,10 +17,13 @@ export function NewHeroSection() {
       if (scene) {
         const tiltX = gsap.quickTo(scene, "rotationX", { duration: 0.5, ease: "power3.out" });
         const tiltY = gsap.quickTo(scene, "rotationY", { duration: 0.5, ease: "power3.out" });
+        let rect = scene.getBoundingClientRect();
+        const updateRect = () => {
+          rect = scene.getBoundingClientRect();
+        };
         const onMove = (e: MouseEvent) => {
-          const r = scene.getBoundingClientRect();
-          const px = (e.clientX - r.left) / r.width - 0.5;
-          const py = (e.clientY - r.top) / r.height - 0.5;
+          const px = (e.clientX - rect.left) / rect.width - 0.5;
+          const py = (e.clientY - rect.top) / rect.height - 0.5;
           tiltY(px * 18);
           tiltX(-py * 14);
         };
@@ -30,9 +33,11 @@ export function NewHeroSection() {
         };
         scene.addEventListener("pointermove", onMove);
         scene.addEventListener("pointerleave", onLeave);
+        window.addEventListener("resize", updateRect);
         return () => {
           scene.removeEventListener("pointermove", onMove);
           scene.removeEventListener("pointerleave", onLeave);
+          window.removeEventListener("resize", updateRect);
         };
       }
     },

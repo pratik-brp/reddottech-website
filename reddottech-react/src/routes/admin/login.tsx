@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ShieldCheck, Mail, Lock, ArrowRight, CheckCircle2, KeyRound } from "lucide-react";
+import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { adminLogin } from "@/lib/api";
+import { setToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
@@ -9,22 +11,31 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@reddottech.com.np");
-  const [password, setPassword] = useState("password123");
-  const [remember, setRemember] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      localStorage.setItem("admin_auth", "true");
-      localStorage.setItem("admin_email", email);
-      toast.success("Welcome back! Admin authentication successful.");
+    try {
+      const result = await adminLogin(email, password);
+      if (!result?.token) {
+        throw new Error("Sign-in failed. Please try again.");
+      }
+      setToken(result.token, result.email || email);
+      toast.success(`Welcome back, ${result.name || "Administrator"}!`);
       navigate({ to: "/admin/dashboard" });
-    }, 600);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Sign-in failed. Please try again.";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -69,19 +80,19 @@ function AdminLoginPage() {
           </p>
         </div>
 
-        {/* Demo Banner */}
-        <div className="rounded-2xl border border-brand-red/30 bg-brand-red/10 p-4 backdrop-blur-md text-xs space-y-1">
-          <div className="flex items-center gap-2 font-black text-rose-300 uppercase tracking-wider">
-            <KeyRound className="h-4 w-4" />
-            <span>Development Quick Login</span>
-          </div>
-          <p className="text-slate-300 font-medium">
-            Email: <strong className="text-white">admin@reddottech.com.np</strong> | Password: <strong className="text-white">password123</strong>
-          </p>
-        </div>
-
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="rounded-3xl border border-white/10 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-3xl border border-white/10 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl space-y-6"
+        >
+          {/* Error Banner */}
+          {error && (
+            <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs font-semibold text-rose-300">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           {/* Email Field */}
           <div className="space-y-2">
             <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
@@ -94,6 +105,7 @@ function AdminLoginPage() {
               <input
                 type="email"
                 required
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@reddottech.com.np"
@@ -104,18 +116,9 @@ function AdminLoginPage() {
 
           {/* Password Field */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
-                Password
-              </label>
-              <button
-                type="button"
-                onClick={() => toast.info("Password reset request sent to administrator email.")}
-                className="text-xs font-bold text-rose-400 hover:underline"
-              >
-                Forgot password?
-              </button>
-            </div>
+            <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
+              Password
+            </label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                 <Lock className="h-5 w-5" />
@@ -123,30 +126,13 @@ function AdminLoginPage() {
               <input
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full rounded-xl border border-white/10 bg-slate-950/80 py-3.5 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-500 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
               />
             </div>
-          </div>
-
-          {/* Remember Me Checkbox */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-brand-red focus:ring-brand-red"
-              />
-              <span className="text-xs font-semibold text-slate-300">Keep me logged in</span>
-            </label>
-
-            <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              2FA Active
-            </span>
           </div>
 
           {/* Submit Button */}
@@ -168,7 +154,10 @@ function AdminLoginPage() {
 
         {/* Footer Link back to public site */}
         <div className="text-center pt-2">
-          <Link to="/" className="text-xs font-bold text-slate-400 hover:text-white transition-colors">
+          <Link
+            to="/"
+            className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+          >
             ← Return to Red Dot Public Website
           </Link>
         </div>

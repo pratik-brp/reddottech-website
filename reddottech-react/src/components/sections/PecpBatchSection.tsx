@@ -52,6 +52,8 @@ export function PecpBatchSection() {
             <img
               src="/images/pecp/batch.png"
               alt="PECP Batch Students Classroom Background"
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover object-center"
             />
 

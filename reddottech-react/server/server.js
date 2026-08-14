@@ -1,17 +1,56 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import express from "express";
-import cors from "cors";
 import { db } from "./db.js";
+import { requireAuth, authHandlers } from "./auth.js";
+import { seedDatabase } from "./seed.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Restrict CORS to known origins (dev defaults). Requests without an Origin
+// header (e.g. curl / same-origin server-to-server) are always allowed.
+const allowedOrigins = new Set(
+  (
+    process.env.CORS_ORIGINS ||
+    "http://localhost:3000,http://localhost:5173,http://localhost:4173,http://127.0.0.1:3000,http://127.0.0.1:5173"
+  )
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean),
+);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && !allowedOrigins.has(origin)) {
+    return res.status(403).json({ success: false, error: "Origin not allowed by CORS policy." });
+  }
+  res.setHeader("Access-Control-Allow-Origin", origin || "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 app.use(express.json());
+
+// Idempotent seed on boot (default settings + first admin account).
+seedDatabase();
 
 // Health Check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Red Dot SQLite Backend Server is active" });
 });
+
+// -------------------------------------------------------------------
+// AUTH API
+// -------------------------------------------------------------------
+app.post("/api/auth/login", authHandlers.login);
+app.post("/api/auth/logout", authHandlers.logout);
+app.get("/api/auth/me", authHandlers.me);
+app.post("/api/auth/change-password", authHandlers.changePassword);
 
 // -------------------------------------------------------------------
 // 1. COURSES API
@@ -92,7 +131,7 @@ app.get("/api/courses/:id", (req, res) => {
   }
 });
 
-app.post("/api/courses", (req, res) => {
+app.post("/api/courses", requireAuth, (req, res) => {
   try {
     const body = req.body;
     const id = Date.now().toString();
@@ -144,7 +183,7 @@ app.post("/api/courses", (req, res) => {
   }
 });
 
-app.put("/api/courses/:id", (req, res) => {
+app.put("/api/courses/:id", requireAuth, (req, res) => {
   try {
     const body = req.body;
     const stmt = db.prepare(`
@@ -196,7 +235,7 @@ app.put("/api/courses/:id", (req, res) => {
   }
 });
 
-app.delete("/api/courses/:id", (req, res) => {
+app.delete("/api/courses/:id", requireAuth, (req, res) => {
   try {
     const result = db.prepare("DELETE FROM courses WHERE id = ?").run(req.params.id);
     res.json({ success: true, deleted: result.changes });
@@ -208,7 +247,7 @@ app.delete("/api/courses/:id", (req, res) => {
 // -------------------------------------------------------------------
 // 2. CERTIFICATES API
 // -------------------------------------------------------------------
-app.get("/api/certificates", (req, res) => {
+app.get("/api/certificates", requireAuth, (req, res) => {
   try {
     const certs = db.prepare("SELECT * FROM certificates ORDER BY created_at DESC").all();
     res.json({ success: true, data: certs });
@@ -237,7 +276,7 @@ app.post("/api/certificates/claim", (req, res) => {
   }
 });
 
-app.delete("/api/certificates/:id", (req, res) => {
+app.delete("/api/certificates/:id", requireAuth, (req, res) => {
   try {
     const result = db.prepare("DELETE FROM certificates WHERE id = ?").run(req.params.id);
     res.json({ success: true, deleted: result.changes });
@@ -249,7 +288,7 @@ app.delete("/api/certificates/:id", (req, res) => {
 // -------------------------------------------------------------------
 // 3. CONTACTS API
 // -------------------------------------------------------------------
-app.get("/api/contacts", (req, res) => {
+app.get("/api/contacts", requireAuth, (req, res) => {
   try {
     const contacts = db.prepare("SELECT * FROM contacts ORDER BY created_at DESC").all();
     res.json({ success: true, data: contacts });
@@ -270,14 +309,25 @@ app.post("/api/contacts", (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `);
 
-    const result = stmt.run(first_name, last_name || "", email, phone || "", subject || "General Inquiry", message);
-    res.json({ success: true, id: result.lastInsertRowid, message: "Inquiry submitted successfully" });
+    const result = stmt.run(
+      first_name,
+      last_name || "",
+      email,
+      phone || "",
+      subject || "General Inquiry",
+      message,
+    );
+    res.json({
+      success: true,
+      id: result.lastInsertRowid,
+      message: "Inquiry submitted successfully",
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.delete("/api/contacts/:id", (req, res) => {
+app.delete("/api/contacts/:id", requireAuth, (req, res) => {
   try {
     const result = db.prepare("DELETE FROM contacts WHERE id = ?").run(req.params.id);
     res.json({ success: true, deleted: result.changes });
@@ -289,7 +339,7 @@ app.delete("/api/contacts/:id", (req, res) => {
 // -------------------------------------------------------------------
 // 4. SUBSCRIPTIONS API
 // -------------------------------------------------------------------
-app.get("/api/subscriptions", (req, res) => {
+app.get("/api/subscriptions", requireAuth, (req, res) => {
   try {
     const subs = db.prepare("SELECT * FROM subscriptions ORDER BY created_at DESC").all();
     res.json({ success: true, data: subs });
@@ -313,7 +363,7 @@ app.post("/api/subscriptions", (req, res) => {
   }
 });
 
-app.delete("/api/subscriptions/:id", (req, res) => {
+app.delete("/api/subscriptions/:id", requireAuth, (req, res) => {
   try {
     const result = db.prepare("DELETE FROM subscriptions WHERE id = ?").run(req.params.id);
     res.json({ success: true, deleted: result.changes });
@@ -338,7 +388,7 @@ app.get("/api/settings", (req, res) => {
   }
 });
 
-app.post("/api/settings", (req, res) => {
+app.post("/api/settings", requireAuth, (req, res) => {
   try {
     const settings = req.body;
     const stmt = db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)");
@@ -356,12 +406,16 @@ app.post("/api/settings", (req, res) => {
 // -------------------------------------------------------------------
 // 6. DASHBOARD STATS OVERVIEW API
 // -------------------------------------------------------------------
-app.get("/api/stats", (req, res) => {
+app.get("/api/stats", requireAuth, (req, res) => {
   try {
     const contactsCount = db.prepare("SELECT COUNT(*) as count FROM contacts").get().count;
-    const subscriptionsCount = db.prepare("SELECT COUNT(*) as count FROM subscriptions").get().count;
+    const subscriptionsCount = db
+      .prepare("SELECT COUNT(*) as count FROM subscriptions")
+      .get().count;
     const certificatesCount = db.prepare("SELECT COUNT(*) as count FROM certificates").get().count;
-    const coursesCount = db.prepare("SELECT COUNT(*) as count FROM courses WHERE status = 'published'").get().count;
+    const coursesCount = db
+      .prepare("SELECT COUNT(*) as count FROM courses WHERE status = 'published'")
+      .get().count;
 
     res.json({
       success: true,
@@ -377,6 +431,16 @@ app.get("/api/stats", (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Red Dot SQLite Backend Server running on http://localhost:${PORT}`);
-});
+// Export the app so the production entry (server/prod-entry.js) can compose
+// Express + the SSR handler into a single HTTP server.
+export { app };
+
+// Only start listening when run directly (`node server/server.js`).
+const isDirectRun =
+  process.argv[1] != null && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isDirectRun) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Red Dot SQLite Backend Server running on http://localhost:${PORT}`);
+  });
+}

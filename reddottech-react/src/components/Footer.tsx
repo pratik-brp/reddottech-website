@@ -95,6 +95,8 @@ export function Footer() {
                 <img
                   src="/logo.png"
                   alt="Red Dot Technologies"
+                  loading="lazy"
+                  decoding="async"
                   className="h-9 md:h-10 w-auto object-contain"
                 />
               </Link>

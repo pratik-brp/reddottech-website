@@ -33,6 +33,7 @@ dist-ssr
 
 .vercel
 .env*
+!.env.example
 
 # SQLite WAL/SHM
 *.sqlite-wal

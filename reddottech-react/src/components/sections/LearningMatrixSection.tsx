@@ -179,6 +179,8 @@ export function LearningMatrixSection() {
                   <img
                     src="/images/pecp-hero-card-bg.png"
                     alt="PECP Executive Education"
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   {/* Gradient overlay for optimal readability & executive ambiance */}

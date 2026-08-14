@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { Trash2, Mail, Phone, Calendar, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { getContacts, deleteContact } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/contacts")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Contact Submissions | Red Dot Admin" }],
   }),
@@ -42,7 +44,8 @@ function AdminContactsPage() {
     <AdminLayout title="Contact Submissions &amp; Leads">
       <div className="space-y-6">
         <p className="text-xs text-slate-500">
-          Inbound student and corporate inquiries submitted via the website contact form (Stored in SQLite DB).
+          Inbound student and corporate inquiries submitted via the website contact form (Stored in
+          SQLite DB).
         </p>
 
         <div className="space-y-4">
@@ -68,7 +71,7 @@ function AdminContactsPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-[11px] text-slate-400 flex items-center gap-1">
                       <Calendar className="h-3.5 w-3.5" />
-                      {contact.created_at || "2026-07-28"}
+                      {contact.created_at || "—"}
                     </span>
                     <button
                       onClick={() => handleDelete(contact.id)}

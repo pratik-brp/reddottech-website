@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -14,12 +14,11 @@ import {
 } from "lucide-react";
 import { Magnetic } from "@/components/motion/Magnetic";
 
-export function Navbar() {
+export const Navbar = memo(function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const routerState = useRouterState();
+  const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const currentPath = routerState.location.pathname;
 
   useEffect(() => {
     let ticking = false;
@@ -290,4 +289,4 @@ export function Navbar() {
       </div>
     </header>
   );
-}
+});

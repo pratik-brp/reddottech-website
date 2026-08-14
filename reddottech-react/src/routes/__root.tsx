@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
+import { PauseOffscreenAnimations } from "@/components/PauseOffscreenAnimations";
 
 import appCss from "../styles.css?url";
 
@@ -60,12 +61,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </button>
-          <a
-            href="/"
+          <Link
+            to="/"
             className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-background px-6 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-slate-100"
           >
             Go home
-          </a>
+          </Link>
         </div>
       </div>
     </div>
@@ -131,6 +132,7 @@ function RootComponent() {
 
   return (
     <SmoothScroll>
+      <PauseOffscreenAnimations />
       <QueryClientProvider client={queryClient}>
         <Toaster position="top-right" richColors />
         <Navbar />

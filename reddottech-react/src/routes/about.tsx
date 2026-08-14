@@ -277,6 +277,8 @@ function AboutPage() {
                 <img
                   src="/images/about/about.png"
                   alt="Who We Are - Red Dot Technologies"
+                  loading="lazy"
+                  decoding="async"
                   className="relative z-10 w-full max-w-lg h-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-[1.02]"
                 />
               </div>

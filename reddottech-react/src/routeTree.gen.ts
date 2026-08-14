@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as AbouttRouteImport } from './routes/aboutt'
 import { Route as AiUnlockedRouteImport } from './routes/ai-unlocked'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FreeRouteImport } from './routes/free'
@@ -36,11 +35,6 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AbouttRoute = AbouttRouteImport.update({
-  id: '/aboutt',
-  path: '/aboutt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AiUnlockedRoute = AiUnlockedRouteImport.update({
@@ -122,7 +116,6 @@ const AdminCoursesCreateRoute = AdminCoursesCreateRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/aboutt': typeof AbouttRoute
   '/ai-unlocked': typeof AiUnlockedRoute
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
@@ -142,7 +135,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/aboutt': typeof AbouttRoute
   '/ai-unlocked': typeof AiUnlockedRoute
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
@@ -163,7 +155,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/aboutt': typeof AbouttRoute
   '/ai-unlocked': typeof AiUnlockedRoute
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
@@ -185,7 +176,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
-    | '/aboutt'
     | '/ai-unlocked'
     | '/contact'
     | '/free'
@@ -205,7 +195,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
-    | '/aboutt'
     | '/ai-unlocked'
     | '/contact'
     | '/free'
@@ -225,7 +214,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
-    | '/aboutt'
     | '/ai-unlocked'
     | '/contact'
     | '/free'
@@ -246,7 +234,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AbouttRoute: typeof AbouttRoute
   AiUnlockedRoute: typeof AiUnlockedRoute
   ContactRoute: typeof ContactRoute
   FreeRoute: typeof FreeRoute
@@ -278,13 +265,6 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/aboutt': {
-      id: '/aboutt'
-      path: '/aboutt'
-      fullPath: '/aboutt'
-      preLoaderRoute: typeof AbouttRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ai-unlocked': {
@@ -398,7 +378,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AbouttRoute: AbouttRoute,
   AiUnlockedRoute: AiUnlockedRoute,
   ContactRoute: ContactRoute,
   FreeRoute: FreeRoute,

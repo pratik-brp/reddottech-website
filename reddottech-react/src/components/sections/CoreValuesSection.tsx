@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
@@ -16,6 +16,28 @@ import {
 
 export function CoreValuesSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const TOTAL_VALUES = 5;
+  const AUTO_CYCLE_MS = 4000;
+
+  // Auto-cycle through values
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % TOTAL_VALUES);
+    }, AUTO_CYCLE_MS);
+  }, []);
+
+  useEffect(() => {
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startTimer]);
+
+  // Reset timer on manual click
+  const handleSelect = (idx: number) => {
+    setActiveIndex(idx);
+    startTimer();
+  };
 
   const values = [
     {
@@ -26,7 +48,7 @@ export function CoreValuesSection() {
       tagline: "Setting Nepal's Benchmark for World-Class Executive Training",
       desc: "We uphold uncompromising standards across every course, syllabus design, instructor selection, and certification exam—ensuring learners receive education on par with international tier-1 universities.",
       icon: Award,
-      image: "/images/about/core-excellence.png",
+      image: "/images/about/core-excellence.jpg",
       accentGradient: "from-rose-500 via-brand-red to-rose-700",
       themeColor: "text-brand-red",
       themeBg: "bg-brand-red",
@@ -129,11 +151,11 @@ export function CoreValuesSection() {
   const CurrentIcon = current.icon;
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? values.length - 1 : prev - 1));
+    handleSelect(activeIndex === 0 ? values.length - 1 : activeIndex - 1);
   };
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev === values.length - 1 ? 0 : prev + 1));
+    handleSelect(activeIndex === values.length - 1 ? 0 : activeIndex + 1);
   };
 
   return (
@@ -185,7 +207,7 @@ export function CoreValuesSection() {
             return (
               <button
                 key={v.id}
-                onClick={() => setActiveIndex(idx)}
+                onClick={() => handleSelect(idx)}
                 className={`group flex-1 min-w-[140px] text-center rounded-2xl p-3.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-2 ${
                   isActive
                     ? "bg-white border-2 border-brand-red/50 shadow-xl scale-[1.03]"
@@ -251,6 +273,8 @@ export function CoreValuesSection() {
                   <img
                     src={current.image}
                     alt={current.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />

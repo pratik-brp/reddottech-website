@@ -1,10 +1,12 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { coursesData } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowLeft, ArrowRight as ArrowRightIcon } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { getCourses } from "@/lib/api";
+import type { Course } from "@/types";
 
 export function CoursesSliderSection() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -20,6 +22,20 @@ export function CoursesSliderSection() {
 
   const [canPrev, setCanPrev] = useState(true);
   const [canNext, setCanNext] = useState(true);
+  const [courses, setCourses] = useState<Course[]>(coursesData);
+
+  // Load courses from the backend, falling back to the static catalog offline.
+  useEffect(() => {
+    getCourses().then((data) => {
+      if (data && data.length > 0) {
+        setCourses(data as Course[]);
+      }
+    });
+  }, []);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const visibleRef = useRef(true);
+  const hoveringRef = useRef(false);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
@@ -36,23 +52,52 @@ export function CoursesSliderSection() {
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
 
-    // 3-second auto slide timer
+    // 3-second auto slide timer — only advances while on-screen and unhovered
     const autoSlideTimer = setInterval(() => {
-      if (emblaApi) {
+      if (emblaApi && visibleRef.current && !hoveringRef.current) {
         emblaApi.scrollNext();
       }
     }, 3000);
 
-    return () => clearInterval(autoSlideTimer);
+    return () => {
+      clearInterval(autoSlideTimer);
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
   }, [emblaApi, onSelect]);
 
+  // Pause autoplay while the section is scrolled out of view
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        visibleRef.current = entries.some((entry) => entry.isIntersecting);
+      },
+      { rootMargin: "100px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="section-padding-lg bg-[var(--color-background)] relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      onMouseEnter={() => {
+        hoveringRef.current = true;
+      }}
+      onMouseLeave={() => {
+        hoveringRef.current = false;
+      }}
+      className="section-padding-lg bg-[var(--color-background)] relative overflow-hidden"
+    >
       {/* Background Lighting Orbs */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
           className="animate-float absolute top-[20%] left-[10%] h-80 w-80 rounded-full opacity-20 blur-[100px]"
-          style={{ background: "radial-gradient(circle, rgba(217, 31, 38, 0.4) 0%, transparent 70%)" }}
+          style={{
+            background: "radial-gradient(circle, rgba(217, 31, 38, 0.4) 0%, transparent 70%)",
+          }}
         />
         <div className="absolute inset-0 bg-grid-pattern opacity-20" />
       </div>
@@ -71,7 +116,8 @@ export function CoursesSliderSection() {
               Upskill with Our <span className="gradient-text">Popular Courses</span>
             </h2>
             <p className="text-sm sm:text-base text-slate-600 font-medium">
-              Explore university-backed certifications co-designed with top U.S. faculty and industry leaders.
+              Explore university-backed certifications co-designed with top U.S. faculty and
+              industry leaders.
             </p>
           </div>
 
@@ -108,12 +154,10 @@ export function CoursesSliderSection() {
           </div>
         </div>
 
-
-
         {/* Course Cards Carousel */}
         <div ref={emblaRef} className="overflow-hidden -mx-3">
           <div className="flex">
-            {coursesData.map((course) => (
+            {courses.map((course) => (
               <div
                 key={course.id}
                 className="flex-[0_0_100%] min-w-0 px-3 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
@@ -127,4 +171,3 @@ export function CoursesSliderSection() {
     </section>
   );
 }
-

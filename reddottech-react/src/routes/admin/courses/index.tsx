@@ -5,8 +5,10 @@ import { Plus, Trash2, Edit, ExternalLink, X, Save, CheckCircle2 } from "lucide-
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getCourses, deleteCourse, updateCourse } from "@/lib/api";
+import { requireAdminRoute } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/courses/")({
+  beforeLoad: requireAdminRoute,
   head: () => ({
     meta: [{ title: "Course Management | Red Dot Admin" }],
   }),
@@ -67,7 +69,8 @@ function AdminCoursesIndexPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Manage Courses Catalog</h2>
             <p className="text-xs text-slate-500">
-              Create, view, edit, or remove professional training programs &amp; PECP modules stored in SQLite DB.
+              Create, view, edit, or remove professional training programs &amp; PECP modules stored
+              in SQLite DB.
             </p>
           </div>
           <Link
@@ -117,7 +120,9 @@ function AdminCoursesIndexPage() {
                     </div>
                   </td>
 
-                  <td className="py-4 px-4 text-slate-600 font-medium">{course.instructorName || course.instructor_name || "Faculty Lead"}</td>
+                  <td className="py-4 px-4 text-slate-600 font-medium">
+                    {course.instructorName || course.instructor_name || "Faculty Lead"}
+                  </td>
 
                   <td className="py-4 px-4 font-extrabold text-slate-900">
                     {course.price
@@ -129,7 +134,9 @@ function AdminCoursesIndexPage() {
 
                   <td className="py-4 px-4 text-slate-600">{course.duration || "4 weeks"}</td>
 
-                  <td className="py-4 px-4 capitalize text-slate-600 font-semibold">{course.delivery || "online"}</td>
+                  <td className="py-4 px-4 capitalize text-slate-600 font-semibold">
+                    {course.delivery || "online"}
+                  </td>
 
                   <td className="py-4 px-4">
                     <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200 uppercase">
@@ -195,7 +202,10 @@ function AdminCoursesIndexPage() {
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="space-y-4 text-xs font-semibold text-slate-700">
+            <form
+              onSubmit={handleEditSubmit}
+              className="space-y-4 text-xs font-semibold text-slate-700"
+            >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block mb-1 font-bold">Course Title</label>
@@ -240,7 +250,9 @@ function AdminCoursesIndexPage() {
                   <input
                     type="text"
                     value={editingCourse.duration || ""}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, duration: e.target.value })}
+                    onChange={(e) =>
+                      setEditingCourse({ ...editingCourse, duration: e.target.value })
+                    }
                     className="w-full rounded-xl border border-slate-300 p-2.5 bg-slate-50 focus:border-brand-red focus:outline-none"
                   />
                 </div>
@@ -249,7 +261,9 @@ function AdminCoursesIndexPage() {
                   <label className="block mb-1 font-bold">Delivery Mode</label>
                   <select
                     value={editingCourse.delivery || "online"}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, delivery: e.target.value })}
+                    onChange={(e) =>
+                      setEditingCourse({ ...editingCourse, delivery: e.target.value })
+                    }
                     className="w-full rounded-xl border border-slate-300 p-2.5 bg-slate-50 focus:border-brand-red focus:outline-none"
                   >
                     <option value="online">Online</option>
@@ -281,7 +295,9 @@ function AdminCoursesIndexPage() {
                   <input
                     type="text"
                     value={editingCourse.certification || ""}
-                    onChange={(e) => setEditingCourse({ ...editingCourse, certification: e.target.value })}
+                    onChange={(e) =>
+                      setEditingCourse({ ...editingCourse, certification: e.target.value })
+                    }
                     className="w-full rounded-xl border border-slate-300 p-2.5 bg-slate-50 focus:border-brand-red focus:outline-none"
                   />
                 </div>
@@ -304,7 +320,9 @@ function AdminCoursesIndexPage() {
                 <textarea
                   rows={3}
                   value={editingCourse.description || ""}
-                  onChange={(e) => setEditingCourse({ ...editingCourse, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditingCourse({ ...editingCourse, description: e.target.value })
+                  }
                   className="w-full rounded-xl border border-slate-300 p-2.5 bg-slate-50 focus:border-brand-red focus:outline-none"
                 />
               </div>
