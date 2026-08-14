@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 import { db } from "./db.js";
 import { hashPassword } from "./auth.js";
 
@@ -24,8 +23,8 @@ export function seedDatabase() {
   // Default admin account (only when the admin table is empty)
   const adminCount = db.prepare("SELECT COUNT(*) AS count FROM admin_users").get().count;
   if (adminCount === 0) {
-    const email = (process.env.ADMIN_EMAIL || "admin@reddottech.com.np").toLowerCase().trim();
-    const password = process.env.ADMIN_PASSWORD || crypto.randomBytes(9).toString("base64url");
+    const email = (process.env.ADMIN_EMAIL || "info@reddottech.com.np").toLowerCase().trim();
+    const password = process.env.ADMIN_PASSWORD || "admin123";
 
     const { salt, hash } = hashPassword(password);
     db.prepare(
@@ -37,7 +36,7 @@ export function seedDatabase() {
     if (process.env.ADMIN_PASSWORD) {
       console.log("   Password: from ADMIN_PASSWORD environment variable (not printed).");
     } else {
-      console.log(`   Password: ${password} (auto-generated — change it after first login)`);
+      console.log("   Password: admin123 (default — change it after first login)");
     }
     console.log("   You can change the password anytime under Admin → Settings → Change Password.");
   }

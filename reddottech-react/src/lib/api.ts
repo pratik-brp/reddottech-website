@@ -75,6 +75,36 @@ export async function changeAdminPassword(currentPassword: string, newPassword: 
   });
 }
 
+// Image File Upload Helper
+export async function uploadImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64Data = reader.result as string;
+        const res = await fetchApi<{ url: string }>("/upload", {
+          method: "POST",
+          body: JSON.stringify({
+            filename: file.name,
+            base64Data,
+          }),
+          throwOnError: true,
+        });
+        if (res?.url) {
+          resolve(res.url);
+        } else {
+          resolve(base64Data);
+        }
+      } catch (err) {
+        // Fallback to direct client-side data URL
+        resolve(reader.result as string);
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
 // 1. Dashboard Stats
 export async function getDashboardStats() {
   const stats = await fetchApi<{
@@ -107,14 +137,14 @@ export async function createCourse(course: any) {
   });
 }
 
-export async function updateCourse(id: string, course: any) {
+export async function updateCourse(id: string | number, course: any) {
   return await fetchApi(`/courses/${id}`, {
     method: "PUT",
     body: JSON.stringify(course),
   });
 }
 
-export async function deleteCourse(id: string) {
+export async function deleteCourse(id: string | number) {
   return await fetchApi(`/courses/${id}`, {
     method: "DELETE",
   });

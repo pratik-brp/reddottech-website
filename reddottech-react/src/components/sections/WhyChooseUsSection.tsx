@@ -89,10 +89,10 @@ export function WhyChooseUsSection() {
           </p>
         </div>
 
-        {/* 2-Column Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        {/* 2-Column Grid Layout - Perfectly Matching Heights */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
           {/* Left Column: Interactive Feature Cards List (5 Cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-3.5">
+          <div className="lg:col-span-5 flex flex-col gap-3.5 h-full">
             {features.map((feature, index) => {
               const FIcon = feature.icon;
               const isActive = active === index;
@@ -100,7 +100,7 @@ export function WhyChooseUsSection() {
                 <button
                   key={feature.title}
                   onClick={() => setActive(index)}
-                  className={`group relative flex items-center gap-4 rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 border overflow-hidden cursor-pointer ${
+                  className={`group relative flex-1 flex items-center gap-4 rounded-2xl px-4 py-3.5 sm:px-5 sm:py-4 text-left transition-all duration-200 border overflow-hidden cursor-pointer ${
                     isActive
                       ? "bg-white border-brand-red/40 shadow-xl shadow-slate-200/70 ring-1 ring-brand-red/30"
                       : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 hover:shadow-md"
@@ -114,7 +114,7 @@ export function WhyChooseUsSection() {
                   />
 
                   {/* Card Thumbnail Image */}
-                  <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 shadow-xs">
+                  <div className="relative h-14 w-16 sm:h-16 sm:w-20 shrink-0 overflow-hidden rounded-xl border border-slate-200 shadow-xs">
                     <img
                       src={feature.image}
                       alt={feature.title}
@@ -124,11 +124,11 @@ export function WhyChooseUsSection() {
                     />
                     <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-transparent transition-colors" />
                     <div
-                      className={`absolute bottom-1 right-1 flex h-6 w-6 items-center justify-center rounded-lg transition-colors ${
+                      className={`absolute bottom-1 right-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-lg transition-colors ${
                         isActive ? "bg-brand-red text-white shadow-xs" : "bg-slate-900/80 text-white"
                       }`}
                     >
-                      <FIcon className="h-3.5 w-3.5" />
+                      <FIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </div>
                   </div>
 
@@ -136,7 +136,7 @@ export function WhyChooseUsSection() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3
-                        className={`display-font text-base font-extrabold tracking-tight transition-colors duration-200 ${
+                        className={`display-font text-sm sm:text-base font-extrabold tracking-tight transition-colors duration-200 ${
                           isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
                         }`}
                       >
@@ -150,7 +150,7 @@ export function WhyChooseUsSection() {
                         {feature.id}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-slate-500 leading-relaxed line-clamp-2 font-medium">
+                    <p className="mt-0.5 text-xs text-slate-500 leading-relaxed line-clamp-2 font-medium">
                       {feature.description}
                     </p>
                   </div>
@@ -159,9 +159,9 @@ export function WhyChooseUsSection() {
             })}
           </div>
 
-          {/* Right Column: Dynamic Feature Spotlight Box (7 Cols) - Fixed in Place */}
-          <div className="lg:col-span-7 flex flex-col">
-            <div className="relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 text-white shadow-2xl border border-slate-800 flex flex-col justify-between">
+          {/* Right Column: Dynamic Feature Spotlight Box (7 Cols) - Equal Height */}
+          <div className="lg:col-span-7 flex flex-col h-full">
+            <div className="relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-slate-900 via-brand-ink to-slate-950 text-white shadow-2xl border border-slate-800 flex flex-col justify-between h-full">
               {/* Feature Hero Showcase Image Header (Fixed Height) */}
               <div className="relative h-56 sm:h-64 w-full overflow-hidden shrink-0 bg-slate-950">
                 <img

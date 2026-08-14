@@ -1,9 +1,17 @@
 import path from "node:path";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { db } from "./db.js";
 import { requireAuth, authHandlers } from "./auth.js";
 import { seedDatabase } from "./seed.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.resolve(__dirname, "../public/uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = new Set(
   (
     process.env.CORS_ORIGINS ||
-    "http://localhost:3000,http://localhost:5173,http://localhost:4173,http://127.0.0.1:3000,http://127.0.0.1:5173"
+    "http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:4173,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:5175"
   )
     .split(",")
     .map((s) => s.trim())
@@ -34,7 +42,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use("/uploads", express.static(uploadsDir));
 
 // Idempotent seed on boot (default settings + first admin account).
 seedDatabase();
@@ -42,6 +52,44 @@ seedDatabase();
 // Health Check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", message: "Red Dot SQLite Backend Server is active" });
+});
+
+// Image Upload Endpoint
+app.post("/api/upload", requireAuth, (req, res) => {
+  try {
+    const { filename, base64Data } = req.body || {};
+    if (!base64Data) {
+      return res.status(400).json({ success: false, error: "No image data provided." });
+    }
+
+    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    let buffer;
+    let ext = ".jpg";
+
+    if (matches && matches.length === 3) {
+      const mime = matches[1].toLowerCase();
+      if (mime === "image/jpeg" || mime === "image/jpg") ext = ".jpg";
+      else if (mime === "image/webp") ext = ".webp";
+      else if (mime === "image/svg+xml") ext = ".svg";
+      else if (mime === "image/png") ext = ".png";
+      buffer = Buffer.from(matches[2], "base64");
+    } else {
+      buffer = Buffer.from(base64Data, "base64");
+    }
+
+    const cleanName = (filename || "upload")
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-zA-Z0-9-_]/g, "_");
+    const uniqueName = `${cleanName}-${Date.now()}${ext}`;
+    const filePath = path.join(uploadsDir, uniqueName);
+
+    fs.writeFileSync(filePath, buffer);
+
+    const publicUrl = `/uploads/${uniqueName}`;
+    res.json({ success: true, url: publicUrl, filename: uniqueName });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 // -------------------------------------------------------------------
@@ -189,10 +237,14 @@ app.put("/api/courses/:id", requireAuth, (req, res) => {
     const stmt = db.prepare(`
       UPDATE courses SET
         name = @name,
+        category = @category,
         description = @description,
         long_description = @long_description,
+        thumbnail = @thumbnail,
+        banner_image = @banner_image,
         instructor_name = @instructor_name,
         instructor_title = @instructor_title,
+        instructor_image = @instructor_image,
         instructor_detail = @instructor_detail,
         duration = @duration,
         start_date = @start_date,
@@ -211,18 +263,22 @@ app.put("/api/courses/:id", requireAuth, (req, res) => {
     stmt.run({
       id: req.params.id,
       name: body.name || "Course",
+      category: body.category || "Professional Certification",
       description: body.description || "",
       long_description: body.longDescription || body.description || "",
-      instructor_name: body.instructorName || "Instructor",
-      instructor_title: body.instructorTitle || "Faculty Lead",
-      instructor_detail: body.instructorDetail || "",
+      thumbnail: body.thumbnail || "/images/courses/course-ai.jpg",
+      banner_image: body.bannerImage || "/images/courses/banner-ai.jpg",
+      instructor_name: body.instructorName || body.instructor_name || "Instructor",
+      instructor_title: body.instructorTitle || body.instructor_title || "Faculty Lead",
+      instructor_image: body.instructorImage || body.instructor_image || "/images/instructor/instructor1.png",
+      instructor_detail: body.instructorDetail || body.instructor_detail || "",
       duration: body.duration || "4 weeks",
-      start_date: body.startDate || "Rolling Admission",
+      start_date: body.startDate || body.start_date || "Rolling Admission",
       price: Number(body.price) || 0,
       delivery: body.delivery || "online",
       mode: body.mode || "Self-Paced",
       language: body.language || "English",
-      skill_level: body.skillLevel || "beginner",
+      skill_level: body.skillLevel || body.skill_level || "beginner",
       certification: body.certification || "PECP Certified",
       status: body.status || "published",
       curriculum: body.curriculum || "",

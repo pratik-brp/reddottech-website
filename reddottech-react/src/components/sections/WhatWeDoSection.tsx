@@ -111,8 +111,9 @@ export function WhatWeDoSection() {
                 delay={0.1 * idx}
                 className="flex"
               >
-                <div
-                  className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white p-7 shadow-xs transition-all duration-400 hover:-translate-y-1.5 ${s.glowBorder}`}
+                <Link
+                  to="/contact"
+                  className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-[2rem] border border-slate-200/90 bg-white p-7 shadow-xs transition-all duration-400 hover:-translate-y-1.5 cursor-pointer ${s.glowBorder}`}
                 >
                   {/* Top Gradient Accent Rail */}
                   <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${s.color}`} />
@@ -152,12 +153,12 @@ export function WhatWeDoSection() {
 
                   {/* Bottom Footer Action Link */}
                   <div className="mt-8 pt-4 border-t border-slate-100 relative z-10 flex items-center justify-between text-xs font-bold text-slate-500">
-                    <span className="group-hover:text-brand-ink transition-colors">Learn More</span>
+                    <span className="group-hover:text-brand-red transition-colors font-extrabold">Learn More</span>
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 group-hover:bg-brand-red group-hover:text-white transition-colors duration-300">
                       <ArrowRight className="h-3.5 w-3.5 stroke-[2.5]" />
                     </div>
                   </div>
-                </div>
+                </Link>
               </ScrollReveal>
             );
           })}

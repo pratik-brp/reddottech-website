@@ -1,20 +1,32 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ShieldCheck, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { Lock, Eye, EyeOff, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { adminLogin } from "@/lib/api";
 import { setToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
+  head: () => ({
+    meta: [
+      { title: "Admin Login | Red Dot Technologies Pvt. Ltd." },
+      {
+        name: "description",
+        content: "Administrative login portal for Red Dot Technologies Pvt. Ltd.",
+      },
+    ],
+  }),
   component: AdminLoginPage,
 });
 
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("info@reddottech.com.np");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,13 +36,13 @@ function AdminLoginPage() {
     try {
       const result = await adminLogin(email, password);
       if (!result?.token) {
-        throw new Error("Sign-in failed. Please try again.");
+        throw new Error("Invalid credentials. Please try again.");
       }
       setToken(result.token, result.email || email);
       toast.success(`Welcome back, ${result.name || "Administrator"}!`);
       navigate({ to: "/admin/dashboard" });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Sign-in failed. Please try again.";
+      const message = err instanceof Error ? err.message : "Sign-in failed. Please verify your credentials.";
       setError(message);
       toast.error(message);
     } finally {
@@ -39,129 +51,162 @@ function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white relative overflow-hidden font-sans p-6">
-      {/* Background ambient lighting */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full opacity-20 blur-[150px]"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 50%, transparent) 0%, transparent 70%)",
-          }}
-        />
-        <div className="absolute inset-0 bg-grid-pattern opacity-[0.05]" />
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f2f5] font-sans p-4 sm:p-6 relative">
+      {/* Subtle Background Pattern */}
+      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" aria-hidden="true" />
 
-      <div className="relative z-10 w-full max-w-md space-y-8">
-        {/* Header Logo & Title */}
-        <div className="text-center space-y-4">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-brand-red text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-brand-red/30">
-              R
-            </div>
-            <div className="text-left">
-              <span className="block text-xl font-black text-white tracking-tight">Red Dot</span>
-              <span className="block text-xs font-semibold text-slate-400">Technologies</span>
-            </div>
+      <div className="relative z-10 w-full max-w-[440px] space-y-6">
+        {/* Brand Logo Header */}
+        <div className="text-center">
+          <Link to="/" className="inline-block transition-transform hover:scale-105 duration-200">
+            <img
+              src="/logo.png"
+              alt="Red Dot Technologies Pvt. Ltd."
+              className="h-14 sm:h-16 w-auto object-contain mx-auto drop-shadow-xs"
+            />
           </Link>
-
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md">
-            <ShieldCheck className="h-4 w-4 text-emerald-400" />
-            <span className="text-xs font-black uppercase tracking-widest text-slate-300">
-              Admin Control Panel Login
-            </span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Sign In to <span className="gradient-text">Administrator Studio</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 font-medium">
-            Enter your administrative credentials to manage courses, certificates, and inquiries.
-          </p>
         </div>
 
-        {/* Login Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-3xl border border-white/10 bg-slate-900/90 p-8 shadow-2xl backdrop-blur-xl space-y-6"
-        >
-          {/* Error Banner */}
-          {error && (
-            <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs font-semibold text-rose-300">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Email Field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
-              Admin Email Address
-            </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                <Mail className="h-5 w-5" />
+        {/* Classic Clean Login Box */}
+        <div className="rounded-2xl bg-white border border-slate-200/90 p-8 sm:p-10 shadow-xl shadow-slate-200/60">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Error Banner */}
+            {error && (
+              <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700 animate-shake">
+                <AlertCircle className="h-4 w-4 shrink-0 text-brand-red" />
+                <span>{error}</span>
               </div>
+            )}
+
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700">
+                Email
+              </label>
               <input
                 type="email"
                 required
                 autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@reddottech.com.np"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/80 py-3.5 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-500 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
+                placeholder="info@reddottech.com.np"
+                className="w-full rounded-lg border border-slate-300 bg-[#edf2f7]/60 px-3.5 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:bg-white focus:border-brand-red focus:outline-none focus:ring-2 focus:ring-brand-red/15 transition-all duration-200"
               />
             </div>
-          </div>
 
-          {/* Password Field */}
-          <div className="space-y-2">
-            <label className="block text-xs font-black uppercase tracking-wider text-slate-300">
-              Password
-            </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                <Lock className="h-5 w-5" />
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-lg border border-slate-300 bg-[#edf2f7]/60 px-3.5 py-2.5 pr-10 text-sm font-medium text-slate-900 placeholder-slate-400 focus:bg-white focus:border-brand-red focus:outline-none focus:ring-2 focus:ring-brand-red/15 transition-all duration-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <input
-                type="password"
-                required
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-xl border border-white/10 bg-slate-950/80 py-3.5 pl-11 pr-4 text-sm font-medium text-white placeholder-slate-500 focus:border-brand-red focus:outline-none focus:ring-1 focus:ring-brand-red"
-              />
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full btn-primary py-4 text-sm font-black tracking-wider uppercase shadow-xl shadow-brand-red/20 justify-center cursor-pointer"
-          >
-            {isLoading ? (
-              <span>Authenticating Admin...</span>
-            ) : (
-              <>
-                <span>Sign In to Admin Dashboard</span>
-                <ArrowRight className="h-4 w-4" />
-              </>
-            )}
-          </button>
-        </form>
+            {/* Remember Me Checkbox */}
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-brand-red focus:ring-brand-red/20 cursor-pointer accent-brand-red"
+              />
+              <label
+                htmlFor="remember-me"
+                className="text-xs sm:text-sm font-medium text-slate-600 cursor-pointer select-none"
+              >
+                Remember me
+              </label>
+            </div>
 
-        {/* Footer Link back to public site */}
-        <div className="text-center pt-2">
+            {/* Action Row: Forgot Password & Log In Button */}
+            <div className="pt-3 flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => setShowForgotModal(true)}
+                className="text-xs sm:text-sm font-semibold text-slate-500 hover:text-brand-red underline transition-colors cursor-pointer"
+              >
+                Forgot your password?
+              </button>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#1a202c] hover:bg-black text-white font-extrabold text-xs tracking-wider uppercase px-6 py-2.5 shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-60 cursor-pointer"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>LOGGING IN...</span>
+                  </>
+                ) : (
+                  <span>LOG IN</span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Back Link */}
+        <div className="text-center">
           <Link
             to="/"
-            className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
+            className="text-xs font-semibold text-slate-500 hover:text-brand-red transition-colors"
           >
-            ← Return to Red Dot Public Website
+            ← Return to Red Dot Technologies Home
           </Link>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl space-y-4 border border-slate-200">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-base font-bold text-slate-900">Reset Password</h4>
+                <p className="text-xs text-slate-500">Administrative Account Assistance</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              To request a password reset for your administrator account, please contact the IT Administrator directly at{" "}
+              <a href="mailto:info@reddottech.com.np" className="text-brand-red font-bold underline">
+                info@reddottech.com.np
+              </a>{" "}
+              or call the office at <strong>01 4535691</strong>.
+            </p>
+
+            <button
+              onClick={() => setShowForgotModal(false)}
+              className="w-full rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white hover:bg-black transition-colors cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

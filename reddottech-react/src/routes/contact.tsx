@@ -495,7 +495,7 @@ function ContactPage() {
             <div className="relative rounded-[2rem] overflow-hidden shadow-xl border border-slate-200/80">
               <iframe
                 title="Red Dot Technologies Location Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3531.8!2d85.3303128!3d27.723054!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19057fa77a2b%3A0x766ba8ecfbddab60!2sBRP%20Group!5e0!3m2!1sen!2snp"
+                src="https://maps.google.com/maps?q=27.723054,85.3303128&hl=en&z=17&output=embed"
                 width="100%"
                 height="420"
                 style={{ border: 0 }}
