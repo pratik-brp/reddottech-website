@@ -11,6 +11,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "typecheck": "tsc --noEmit",
+    "package:cpanel": "node scripts/package-cpanel.js",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."

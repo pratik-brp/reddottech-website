@@ -77,11 +77,14 @@ function ContactPage() {
       return;
     }
     setIsSubmitting(true);
+    const assignedEmail = settings.contact_email || "info@reddottech.com.np";
+
     try {
       const names = form.fullName.trim().split(" ");
       const firstName = names[0] || form.fullName;
       const lastName = names.slice(1).join(" ") || "";
 
+      // 1. Save record to local MySQL database for Admin Panel tracking
       await submitContact({
         first_name: firstName,
         last_name: lastName,
@@ -91,12 +94,37 @@ function ContactPage() {
         message: form.message,
       });
 
+      // 2. Dispatch email directly to the assigned inbox via FormSubmit
+      try {
+        await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(assignedEmail)}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            _subject: `New Website Inquiry: ${form.subject || "General Inquiry"} — ${form.fullName}`,
+            _template: "table",
+            _captcha: "false",
+            "Full Name": form.fullName,
+            "Email Address": form.email,
+            "Phone Number": form.phone || "Not provided",
+            "Inquiry Topic": form.subject || "General Inquiry",
+            "Message": form.message,
+            "Submission Source": "Red Dot Technologies Website (Contact Page)",
+            "Submitted Date": new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
+          }),
+        });
+      } catch (emailErr) {
+        console.warn("[Contact FormSubmit Error]", emailErr);
+      }
+
       toast.success(
-        "Your message has been sent and saved to our database! Our admissions team will contact you within 24 hours.",
+        "Your message has been sent successfully! Our team will contact you shortly.",
       );
       setForm({ fullName: "", email: "", phone: "", subject: "", message: "" });
     } catch {
-      toast.error("Failed to submit inquiry.");
+      toast.error("Failed to submit inquiry. Please try again or call us directly.");
     } finally {
       setIsSubmitting(false);
     }

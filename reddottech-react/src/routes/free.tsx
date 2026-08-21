@@ -213,6 +213,28 @@ Scope + Schedule + Cost (quality is the center of the triangle).
         subject: "Webinar RSVP",
         message: "Reserved a free community webinar RSVP pass.",
       });
+
+      try {
+        await fetch("https://formsubmit.co/ajax/info@reddottech.com.np", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            _subject: `New Free Community Webinar RSVP: ${rsvpName}`,
+            _template: "table",
+            _captcha: "false",
+            "Attendee Name": rsvpName,
+            "Attendee Email": rsvpEmail,
+            "Program / Event": "Free Tech & AI Community Webinar Series",
+            "Timestamp": new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
+          }),
+        });
+      } catch (emailErr) {
+        console.warn("[RSVP FormSubmit Error]", emailErr);
+      }
+
       toast.success(
         `RSVP confirmed for ${rsvpName}! Webinar access link will be sent to ${rsvpEmail}.`,
       );

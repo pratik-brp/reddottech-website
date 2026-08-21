@@ -263,7 +263,7 @@
 }
 
 /* ──────────────────────────────────────────────
-   KEYFRAME ANIMATIONS
+   KEYFRAME ANIMATIONS (60FPS GPU Accelerated)
    ────────────────────────────────────────────── */
 @keyframes float-y {
 
@@ -273,85 +273,85 @@
   }
 
   50% {
-    transform: translate3d(0, -22px, 0);
+    transform: translate3d(0, -20px, 0);
   }
 }
 
 @keyframes spin-slow {
   to {
-    transform: rotate(360deg);
+    transform: rotate3d(0, 0, 1, 360deg);
   }
 }
 
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translate3d(0, 28px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(32px);
+    transform: translate3d(0, 32px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-in-down {
   from {
     opacity: 0;
-    transform: translateY(-24px);
+    transform: translate3d(0, -24px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-in-left {
   from {
     opacity: 0;
-    transform: translateX(-40px);
+    transform: translate3d(-36px, 0, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes fade-in-right {
   from {
     opacity: 0;
-    transform: translateX(40px);
+    transform: translate3d(36px, 0, 0);
   }
 
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes scale-in {
   from {
     opacity: 0;
-    transform: scale(0.92);
+    transform: scale3d(0.92, 0.92, 1);
   }
 
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale3d(1, 1, 1);
   }
 }
 
@@ -473,10 +473,16 @@
    ────────────────────────────────────────────── */
 @utility animate-float {
   animation: float-y 7s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @utility animate-spin-slow {
   animation: spin-slow 26s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @utility animate-rise {
@@ -519,10 +525,16 @@
 
 @utility animate-marquee {
   animation: marquee-x 32s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @utility animate-orb {
   animation: orb-drift 18s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* ──────────────────────────────────────────────
@@ -681,30 +693,33 @@
 }
 
 /* ──────────────────────────────────────────────
-   SCROLL REVEAL SYSTEM
+   SCROLL REVEAL SYSTEM (Hardware Accelerated)
    ────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 24px, 0);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal.reveal-left {
-  transform: translateX(-40px);
+  transform: translate3d(-32px, 0, 0);
 }
 
 .reveal.reveal-right {
-  transform: translateX(40px);
+  transform: translate3d(32px, 0, 0);
 }
 
 .reveal.reveal-scale {
-  transform: scale(0.92);
+  transform: scale3d(0.94, 0.94, 1);
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0) translateX(0) scale(1);
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
 }
 
 /* Stagger children */

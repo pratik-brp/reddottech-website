@@ -29,6 +29,7 @@ export function Magnetic({ children, strength = 0.35, className = "" }: Magnetic
   };
 
   const onMouseEnter = () => {
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
     const el = ref.current;
     if (!el) return;
     if (isButtonLike(el.firstElementChild)) {
@@ -40,6 +41,7 @@ export function Magnetic({ children, strength = 0.35, className = "" }: Magnetic
   };
 
   const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
     const el = ref.current;
     if (!el || isButtonLike(el.firstElementChild)) return;
 
@@ -65,7 +67,7 @@ export function Magnetic({ children, strength = 0.35, className = "" }: Magnetic
       rafRef.current = null;
     }
     rectRef.current = null;
-    el.style.transition = "";
+    el.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
     setTransform(0, 0);
   };
 
@@ -83,7 +85,7 @@ export function Magnetic({ children, strength = 0.35, className = "" }: Magnetic
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className={`inline-block transition-transform duration-300 ease-out will-change-transform ${className}`}
+      className={`inline-block transition-transform duration-300 ease-out transform-gpu will-change-transform ${className}`}
     >
       {children}
     </div>

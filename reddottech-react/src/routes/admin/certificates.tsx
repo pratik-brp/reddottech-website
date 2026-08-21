@@ -195,6 +195,16 @@ function AdminCertificatesPage() {
     }
     const txt = `${cert.course_name || ""} ${cert.school || ""} ${cert.certificate_id || ""} ${cert.code || ""}`.toLowerCase();
     if (
+      txt.includes("advanced") ||
+      txt.includes("aifa") ||
+      txt.includes("level 2") ||
+      txt.includes("level-2") ||
+      txt.includes("level 02") ||
+      txt.includes("architect") ||
+      txt.includes("finance-advanced")
+    )
+      return "finance-advanced";
+    if (
       txt.includes("health") ||
       txt.includes("aihp") ||
       txt.includes("clinical") ||
@@ -252,6 +262,8 @@ function AdminCertificatesPage() {
       const trackPrefix =
         newCertTrack === "healthcare"
           ? "RDT-AIHP"
+          : newCertTrack === "finance-advanced"
+          ? "RDT-AIFA"
           : newCertTrack === "finance"
           ? "RDT-AIFP"
           : newCertTrack === "foundations"
@@ -390,9 +402,9 @@ function AdminCertificatesPage() {
     >
 
       <div className="space-y-4 sm:space-y-6">
-        {/* ── 4 Course Track Metric Cards (2x2 Grid on Mobile, 4-Column on Desktop) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-          {(["healthcare", "finance", "foundations", "pecp"] as CertTrackKey[]).map((tKey) => {
+        {/* ── 5 Course Track Metric Cards (Responsive Grid) ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3.5">
+          {(["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]).map((tKey) => {
             const cfg = CERT_TRACK_CONFIGS[tKey];
             const count = certs.filter((c) => detectTrack(c) === tKey).length;
             const isSelected = trackFilter === tKey;
@@ -400,7 +412,7 @@ function AdminCertificatesPage() {
               <div
                 key={tKey}
                 onClick={() => setTrackFilter(isSelected ? "all" : tKey)}
-                className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? "bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-brand-red/50"
                     : "bg-white text-slate-800 border-slate-200 hover:border-slate-300 shadow-2xs"
@@ -461,7 +473,8 @@ function AdminCertificatesPage() {
             >
               <option value="all">All Tracks ({certs.length})</option>
               <option value="healthcare">AI Healthcare (9 Modules)</option>
-              <option value="finance">AI Finance (8 Modules)</option>
+              <option value="finance">AI Finance Level 1 (8 Modules)</option>
+              <option value="finance-advanced">Advanced AI Finance Level 2 (12 Modules)</option>
               <option value="foundations">AI Foundations (5 Modules)</option>
               <option value="pecp">PECP Executive</option>
             </select>
@@ -510,6 +523,7 @@ function AdminCertificatesPage() {
                         >
                           {cTrack === "healthcare" && <Stethoscope className="h-2.5 w-2.5" />}
                           {cTrack === "finance" && <Building2 className="h-2.5 w-2.5" />}
+                          {cTrack === "finance-advanced" && <Sparkles className="h-2.5 w-2.5 text-purple-600" />}
                           {cTrack === "foundations" && <Sparkles className="h-2.5 w-2.5" />}
                           {cTrack === "pecp" && <Award className="h-2.5 w-2.5" />}
                           <span>{cfg.badge}</span>
@@ -620,6 +634,7 @@ function AdminCertificatesPage() {
                           >
                             {cTrack === "healthcare" && <Stethoscope className="h-3 w-3" />}
                             {cTrack === "finance" && <Building2 className="h-3 w-3" />}
+                            {cTrack === "finance-advanced" && <Sparkles className="h-3 w-3 text-purple-600" />}
                             {cTrack === "foundations" && <Sparkles className="h-3 w-3" />}
                             {cTrack === "pecp" && <Award className="h-3 w-3" />}
                             <span>{cfg.title}</span>
@@ -744,7 +759,8 @@ function AdminCertificatesPage() {
                   className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none cursor-pointer"
                 >
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
-                  <option value="finance">AI for Financial Professionals (8 Modules)</option>
+                  <option value="finance">AI for Financial Professionals (Level 1 · 8 Modules)</option>
+                  <option value="finance-advanced">Advanced AI for Finance Professionals (Level 2 · 12 Modules)</option>
                   <option value="foundations">AI Unlocked — AI Foundations (5 Modules)</option>
                   <option value="pecp">PECP — Professional Executive Certificate Program</option>
                 </select>
@@ -808,6 +824,24 @@ function AdminCertificatesPage() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
+            </div>
+
+            {/* Track Switcher Bar in Preview Modal */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-100">
+              <span className="text-[10px] font-bold uppercase text-slate-400 mr-1">Preview Track:</span>
+              {(["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]).map((k) => (
+                <button
+                  key={k}
+                  onClick={() => setActivePreviewTrack(k)}
+                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer shrink-0 ${
+                    activePreviewTrack === k
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {CERT_TRACK_CONFIGS[k].badge}
+                </button>
+              ))}
             </div>
 
             <div

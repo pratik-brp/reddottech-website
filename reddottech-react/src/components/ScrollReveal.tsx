@@ -19,7 +19,7 @@ export function ScrollReveal({
   className = "",
   direction = "up",
   delay = 0,
-  threshold = 0.15,
+  threshold = 0.05,
   as: Tag = "div",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLElement>(null);
@@ -28,6 +28,13 @@ export function ScrollReveal({
     const el = ref.current;
     if (!el) return;
 
+    // Check if element is already visible in viewport on mount
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.classList.add("visible");
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -35,7 +42,7 @@ export function ScrollReveal({
           observer.unobserve(el);
         }
       },
-      { threshold, rootMargin: "0px 0px -40px 0px" },
+      { threshold, rootMargin: "50px 0px -20px 0px" },
     );
 
     observer.observe(el);

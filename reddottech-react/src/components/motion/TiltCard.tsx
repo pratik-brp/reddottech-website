@@ -6,7 +6,7 @@ interface TiltCardProps {
   maxTilt?: number;
 }
 
-export function TiltCard({ children, className = "", maxTilt = 10 }: TiltCardProps) {
+export function TiltCard({ children, className = "", maxTilt = 8 }: TiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
   const posRef = useRef({ x: 0, y: 0 });
@@ -15,10 +15,11 @@ export function TiltCard({ children, className = "", maxTilt = 10 }: TiltCardPro
   const setTransform = (rx: number, ry: number) => {
     const el = ref.current;
     if (!el) return;
-    el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
   };
 
   const onMouseEnter = () => {
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
     const el = ref.current;
     if (!el) return;
     rectRef.current = el.getBoundingClientRect();
@@ -26,6 +27,7 @@ export function TiltCard({ children, className = "", maxTilt = 10 }: TiltCardPro
   };
 
   const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== "undefined" && window.matchMedia("(hover: none)").matches) return;
     const rect = rectRef.current;
     if (!rect) return;
     posRef.current = { x: e.clientX, y: e.clientY };
@@ -47,7 +49,7 @@ export function TiltCard({ children, className = "", maxTilt = 10 }: TiltCardPro
       rafRef.current = null;
     }
     rectRef.current = null;
-    el.style.transition = "";
+    el.style.transition = "transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
     setTransform(0, 0);
   };
 
@@ -65,7 +67,7 @@ export function TiltCard({ children, className = "", maxTilt = 10 }: TiltCardPro
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className={`transition-transform duration-300 ease-out will-change-transform ${className}`}
+      className={`transition-transform duration-300 ease-out transform-gpu will-change-transform ${className}`}
     >
       {children}
     </div>

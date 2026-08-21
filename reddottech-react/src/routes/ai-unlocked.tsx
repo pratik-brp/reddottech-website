@@ -814,31 +814,31 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         1
                       </span>
-                      <span className="truncate">Neural Networks, Transformers &amp; LLMs</span>
+                      <span className="min-w-0 flex-1 leading-snug">Neural Networks, Transformers &amp; LLMs</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         2
                       </span>
-                      <span className="truncate">Prompt Engineering &amp; Role Conditioning</span>
+                      <span className="min-w-0 flex-1 leading-snug">Prompt Engineering &amp; Role Conditioning</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         3
                       </span>
-                      <span className="truncate">Multimodal Image, Audio &amp; Video Gen</span>
+                      <span className="min-w-0 flex-1 leading-snug">Multimodal Image, Audio &amp; Video Gen</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         4
                       </span>
-                      <span className="truncate">AI for Productivity &amp; Research</span>
+                      <span className="min-w-0 flex-1 leading-snug">AI for Productivity &amp; Research</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         5
                       </span>
-                      <span className="truncate">Ethics, Hallucinations &amp; AI Safety</span>
+                      <span className="min-w-0 flex-1 leading-snug">Ethics, Hallucinations &amp; AI Safety</span>
                     </li>
                   </ul>
                 </div>
@@ -902,31 +902,31 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         1
                       </span>
-                      <span className="truncate">Clinical AI &amp; Diagnostic CNN Foundations</span>
+                      <span className="min-w-0 flex-1 leading-snug">Clinical AI &amp; Diagnostic CNN Foundations</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         2
                       </span>
-                      <span className="truncate">Electronic Health Records &amp; Data Realities</span>
+                      <span className="min-w-0 flex-1 leading-snug">Electronic Health Records &amp; Data Realities</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         3
                       </span>
-                      <span className="truncate">Case Studies: TB X-ray, Retinopathy &amp; Cry</span>
+                      <span className="min-w-0 flex-1 leading-snug">Case Studies: TB X-ray, Retinopathy &amp; Cry</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         4
                       </span>
-                      <span className="truncate">Ambient Generative Clinical Scribing</span>
+                      <span className="min-w-0 flex-1 leading-snug">Ambient Generative Clinical Scribing</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         5
                       </span>
-                      <span className="truncate">10-20-70 Deployment &amp; Hospital Governance</span>
+                      <span className="min-w-0 flex-1 leading-snug">10-20-70 Deployment &amp; Hospital Governance</span>
                     </li>
                   </ul>
                 </div>
@@ -989,31 +989,31 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         1
                       </span>
-                      <span className="truncate">Banking AI Foundations &amp; Value Levers</span>
+                      <span className="min-w-0 flex-1 leading-snug">Banking AI Foundations &amp; Value Levers</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         2
                       </span>
-                      <span className="truncate">Credit Risk ML vs Traditional Scorecards</span>
+                      <span className="min-w-0 flex-1 leading-snug">Credit Risk ML vs Traditional Scorecards</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         3
                       </span>
-                      <span className="truncate">Real-Time Fraud &amp; Mule Account Graphs</span>
+                      <span className="min-w-0 flex-1 leading-snug">Real-Time Fraud &amp; Mule Account Graphs</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         4
                       </span>
-                      <span className="truncate">Generative Banking &amp; Policy RAG Search</span>
+                      <span className="min-w-0 flex-1 leading-snug">Generative Banking &amp; Policy RAG Search</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         5
                       </span>
-                      <span className="truncate">Model Risk Management &amp; NRB Compliance</span>
+                      <span className="min-w-0 flex-1 leading-snug">Model Risk Management &amp; NRB Compliance</span>
                     </li>
                   </ul>
                 </div>
@@ -1080,31 +1080,31 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         1
                       </span>
-                      <span className="truncate">From Practitioner to Enterprise Architect</span>
+                      <span className="min-w-0 flex-1 leading-snug">From Practitioner to Enterprise Architect</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         2
                       </span>
-                      <span className="truncate">The AI Capability Stack for Financial Institutions</span>
+                      <span className="min-w-0 flex-1 leading-snug">The AI Capability Stack for Financial Institutions</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         3
                       </span>
-                      <span className="truncate">Advanced Model Risk Management &amp; Validation</span>
+                      <span className="min-w-0 flex-1 leading-snug">Advanced Model Risk Management &amp; Validation</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         4
                       </span>
-                      <span className="truncate">Explainability in Regulated Environments (XAI)</span>
+                      <span className="min-w-0 flex-1 leading-snug">Explainability in Regulated Environments (XAI)</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         5
                       </span>
-                      <span className="truncate">Agentic AI, Multi-Agent Systems &amp; Macro Risk</span>
+                      <span className="min-w-0 flex-1 leading-snug">Agentic AI, Multi-Agent Systems &amp; Macro Risk</span>
                     </li>
                   </ul>
                 </div>
@@ -1433,7 +1433,7 @@ function AiUnlockedPage() {
                           </span>
                         )}
                       </div>
-                      <p className="truncate font-bold leading-tight text-[11px]">
+                      <p className="break-words line-clamp-2 font-bold leading-tight text-[11px]">
                         {lesson.title}
                       </p>
                     </div>

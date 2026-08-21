@@ -173,25 +173,31 @@ function CoursesPage() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-brand-red/20 bg-white px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
-            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.14em] text-brand-red">
-              World-Class Course Catalog
-            </span>
-          </div>
+          <ScrollReveal direction="up" delay={0}>
+            {/* Badge */}
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-brand-red/20 bg-white px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.14em] text-brand-red">
+                World-Class Course Catalog
+              </span>
+            </div>
+          </ScrollReveal>
 
-          {/* Heading */}
-          <h1 className="display-font mt-3 sm:mt-6 text-2xl sm:text-5xl lg:text-6xl font-black text-brand-ink leading-[1.1] tracking-tight max-w-4xl mx-auto">
-            Master In-Demand Skills with{" "}
-            <span className="gradient-text">Global Certifications</span>
-          </h1>
+          <ScrollReveal direction="up" delay={100}>
+            {/* Heading */}
+            <h1 className="display-font mt-3 sm:mt-6 text-2xl sm:text-5xl lg:text-6xl font-black text-brand-ink leading-[1.1] tracking-tight max-w-4xl mx-auto">
+              Master In-Demand Skills with{" "}
+              <span className="gradient-text">Global Certifications</span>
+            </h1>
+          </ScrollReveal>
 
-          {/* Subtitle */}
-          <p className="mt-2 sm:mt-4 text-xs sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-            Choose from our industry-led certification cohorts co-developed with university
-            professors and senior tech leaders.
-          </p>
+          <ScrollReveal direction="up" delay={200}>
+            {/* Subtitle */}
+            <p className="mt-2 sm:mt-4 text-xs sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+              Choose from our industry-led certification cohorts co-developed with university
+              professors and senior tech leaders.
+            </p>
+          </ScrollReveal>
         </div>
       </section>
 

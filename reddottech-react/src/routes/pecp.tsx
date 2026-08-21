@@ -639,7 +639,7 @@ function PecpPage() {
 
                       {/* Floating Top Tag */}
                       <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
-                        <span className="rounded-full bg-slate-900/90 border border-white/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[11px] font-black uppercase tracking-wider text-white shadow-xs truncate max-w-[100px] sm:max-w-none">
+                        <span className="rounded-full bg-slate-900/90 border border-white/20 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[11px] font-black uppercase tracking-wider text-white shadow-xs whitespace-nowrap">
                           {aud.tag}
                         </span>
                       </div>
@@ -721,7 +721,7 @@ function PecpPage() {
                       <div className="flex h-8 w-8 sm:h-14 sm:w-14 items-center justify-center rounded-lg sm:rounded-2xl bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-xs transition-transform duration-300 group-hover:scale-105 shrink-0">
                         <IconComponent className="h-4 w-4 sm:h-7 sm:w-7 stroke-[2.2]" />
                       </div>
-                      <span className="rounded-full bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-slate-700 truncate max-w-[90px] sm:max-w-none">
+                      <span className="rounded-full bg-slate-100 border border-slate-200/80 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-700 whitespace-nowrap">
                         {pillar.badge}
                       </span>
                     </div>
