@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = new Set(
   (
     process.env.CORS_ORIGINS ||
-    "http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:4173,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:5175"
+    "http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:4173,http://127.0.0.1:3000,http://127.0.0.1:5173,http://127.0.0.1:5175,https://reddottech.com.np,https://www.reddottech.com.np,http://reddottech.com.np"
   )
     .split(",")
     .map((s) => s.trim())
@@ -53,6 +53,12 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: "5mb" }));
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({ success: false, error: "Invalid JSON body provided." });
+  }
+  next();
+});
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 app.use("/uploads", express.static(uploadsDir));
 
@@ -310,11 +316,11 @@ app.post("/api/courses", requireAuth, async (req, res) => {
         slug,
         body.description || "",
         body.longDescription || body.description || "",
-        body.thumbnail || "/images/courses/ai.jpg",
-        body.bannerImage || "/images/courses/courses_hero_banner.jpg",
+        body.thumbnail !== undefined ? body.thumbnail : "",
+        body.bannerImage !== undefined ? body.bannerImage : (body.banner_image || ""),
         body.instructorName || "Instructor",
         body.instructorTitle || "Faculty Lead",
-        body.instructorImage || "/images/instructor/instructor1.png",
+        body.instructorImage !== undefined ? body.instructorImage : (body.instructor_image || ""),
         body.instructorDetail || "",
         body.duration || "4 weeks",
         body.startDate || "Rolling Admission",
@@ -341,6 +347,16 @@ app.post("/api/courses", requireAuth, async (req, res) => {
 app.put("/api/courses/:id", requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
+    const instructorImage = body.instructorImage !== undefined
+      ? body.instructorImage
+      : (body.instructor_image !== undefined ? body.instructor_image : "");
+    const bannerImage = body.bannerImage !== undefined
+      ? body.bannerImage
+      : (body.banner_image !== undefined ? body.banner_image : "");
+    const thumbnail = body.thumbnail !== undefined
+      ? body.thumbnail
+      : (body.thumbnail_image !== undefined ? body.thumbnail_image : "");
+
     await run(
       `UPDATE courses SET
         name = ?,
@@ -370,11 +386,11 @@ app.put("/api/courses/:id", requireAuth, async (req, res) => {
         body.category || "Professional Certification",
         body.description || "",
         body.longDescription || body.description || "",
-        body.thumbnail || "/images/courses/ai.jpg",
-        body.bannerImage || "/images/courses/courses_hero_banner.jpg",
+        thumbnail,
+        bannerImage,
         body.instructorName || body.instructor_name || "Instructor",
         body.instructorTitle || body.instructor_title || "Faculty Lead",
-        body.instructorImage || body.instructor_image || "/images/instructor/instructor1.png",
+        instructorImage,
         body.instructorDetail || body.instructor_detail || "",
         body.duration || "4 weeks",
         body.startDate || body.start_date || "Rolling Admission",

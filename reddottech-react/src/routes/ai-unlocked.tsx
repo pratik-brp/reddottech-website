@@ -57,6 +57,7 @@ import {
   FINANCE_SOURCES,
   type TrackConfig,
 } from "@/lib/ai-course-utils";
+import { printOfficialCertificate } from "@/lib/certificate-print";
 
 interface AiUnlockedSearch {
   track?: "foundations" | "healthcare" | "finance";
@@ -1941,8 +1942,8 @@ function AiUnlockedPage() {
                             key={sIdx}
                             className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-6 space-y-2"
                           >
-                            <h2 className="text-sm sm:text-lg font-black text-slate-900 flex items-baseline gap-1.5">
-                              <span className="text-xs font-bold text-slate-400">
+                            <h2 className="text-sm sm:text-lg font-black text-slate-900 flex items-baseline gap-2">
+                              <span className="text-sm sm:text-lg font-black text-brand-red shrink-0">
                                 {sIdx + 1}.
                               </span>
                               <span>{section.h}</span>
@@ -2275,17 +2276,35 @@ function AiUnlockedPage() {
                         Scan the official QR code using any Nepali mobile banking app or digital wallet (eSewa, Khalti, ConnectIPS, Mobile Banking).
                       </p>
 
-                      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col items-center justify-center text-center">
+                      <div className="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center">
+                        {/* Fonepay Merchant Header */}
+                        <div className="flex items-center justify-center gap-2 mb-2.5">
+                          <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-[#c8102e] text-white font-black text-[11px] sm:text-xs tracking-tight shadow-xs">
+                            fonepay
+                          </span>
+                          <span className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight">
+                            Red Dot Technologies
+                          </span>
+                        </div>
+
+                        {/* Official QR Code */}
                         <img
                           src="/fonepay-qr.png"
                           alt="Red Dot Technologies Fonepay QR"
-                          className="h-36 w-36 sm:h-40 sm:w-40 object-contain rounded-lg border border-slate-200 shadow-2xs"
+                          className="h-36 w-36 sm:h-44 sm:w-44 object-contain rounded-xl border border-slate-200/90 shadow-2xs bg-white p-1"
                         />
-                        <div className="mt-2 text-[10px] sm:text-[11px] font-extrabold text-slate-800">
-                          Red Dot Technologies Pvt. Ltd.
-                        </div>
-                        <div className="text-[9px] sm:text-[10px] text-slate-500">
-                          Remark: {activeTrackConfig.shortName}
+
+                        {/* Regulatory & Usage Notes */}
+                        <div className="mt-2.5 space-y-0.5">
+                          <div className="text-[10px] sm:text-[11px] font-semibold text-slate-600">
+                            Scan with any Nepali mobile banking or wallet app
+                          </div>
+                          <div className="text-[10px] sm:text-[11px] font-semibold text-slate-600">
+                            नेपाल राष्ट्र बैंकबाट अनुमति प्राप्त
+                          </div>
+                          <div className="pt-1 text-[9px] sm:text-[10px] text-slate-400 font-medium">
+                            Remark: {activeTrackConfig.shortName}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2436,6 +2455,30 @@ function AiUnlockedPage() {
                           </button>
                         </form>
                       )}
+
+                      <div className="pt-2 text-center text-[10.5px] sm:text-[11px] text-slate-500 font-medium border-t border-slate-100">
+                        Questions?{" "}
+                        <a
+                          href="mailto:info@reddottech.com.np"
+                          className="font-bold text-slate-800 hover:text-brand-red hover:underline"
+                        >
+                          info@reddottech.com.np
+                        </a>{" "}
+                        ·{" "}
+                        <a
+                          href="tel:014535691"
+                          className="font-bold text-slate-800 hover:text-brand-red"
+                        >
+                          01 4535691
+                        </a>{" "}
+                        /{" "}
+                        <a
+                          href="tel:014516390"
+                          className="font-bold text-slate-800 hover:text-brand-red"
+                        >
+                          4516390
+                        </a>
+                      </div>
                     </div>
                   </div>
 
@@ -2694,7 +2737,19 @@ function AiUnlockedPage() {
 
                         <button
                           type="button"
-                          onClick={() => window.print()}
+                          onClick={() => {
+                            if (!activeTrackConfig) return;
+                            printOfficialCertificate({
+                              name: certName.trim() || "Candidate Name",
+                              certificateId: certReference,
+                              track: currentTrackId,
+                              courseName: activeTrackConfig.certTitle,
+                              organization: certOrg.trim() || "Red Dot Technologies",
+                              role: certRole.trim(),
+                              department: certDept.trim(),
+                              completedAt: new Date().toISOString(),
+                            });
+                          }}
                           className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white text-xs font-bold px-4 py-2 transition-colors cursor-pointer shadow-2xs"
                         >
                           <Printer className="h-3.5 w-3.5" />
@@ -2707,7 +2762,7 @@ function AiUnlockedPage() {
                     <div className="overflow-x-auto pb-3 -mx-1 sm:mx-0 px-1 sm:px-0">
                       <div
                         id="official-certificate"
-                        className="relative mx-auto min-w-[320px] max-w-[840px] bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)]"
+                        className="relative mx-auto min-w-[320px] max-w-[860px] w-full bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)]"
                       >
                         <div className="border border-[#B8892B] m-2 sm:m-2.5 p-6 sm:p-10 text-center relative bg-white">
                           <img
@@ -2719,7 +2774,7 @@ function AiUnlockedPage() {
                             Certificate of Completion
                           </div>
                           <h2
-                            className="text-2xl sm:text-[32px] text-[#0F1E3D] my-2 leading-tight tracking-tight font-serif"
+                            className="text-2xl sm:text-[28px] text-[#0F1E3D] my-2 leading-tight tracking-tight font-serif font-medium"
                             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                           >
                             {activeTrackConfig.certTitle}
@@ -2733,7 +2788,7 @@ function AiUnlockedPage() {
                           </div>
 
                           <div
-                            className="text-xl sm:text-[30px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-6 sm:px-10 pb-1.5 mb-1.5 font-serif"
+                            className="text-xl sm:text-[28px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-6 sm:px-10 pb-1.5 mb-1.5 font-serif"
                             style={{ fontFamily: "Georgia, serif" }}
                           >
                             {certName || "Candidate Name"}
@@ -2790,8 +2845,16 @@ function AiUnlockedPage() {
                             </div>
                           </div>
 
-                          <div className="mt-4 text-[10px] sm:text-[10.5px] text-[#6B7C96] tracking-[0.8px] font-mono">
-                            Certificate reference: {certReference}
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[10.5px] text-[#6B7C96] tracking-[0.8px] font-mono border-t border-slate-100 pt-3">
+                            <span>Certificate reference: {certReference}</span>
+                            <Link
+                              to="/verify"
+                              search={{ id: certReference }}
+                              className="inline-flex items-center gap-1 text-brand-red font-bold hover:underline"
+                            >
+                              <ShieldCheck className="h-3.5 w-3.5" />
+                              <span>Verify on Official Registry ↗</span>
+                            </Link>
                           </div>
                         </div>
                       </div>

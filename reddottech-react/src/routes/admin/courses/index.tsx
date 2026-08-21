@@ -140,9 +140,9 @@ function AdminCoursesIndexPage() {
         skillLevel: editingCourse.skillLevel || editingCourse.skill_level,
         certification: editingCourse.certification,
         status: editingCourse.status,
-        thumbnail: editingCourse.thumbnail,
-        bannerImage: editingCourse.bannerImage || editingCourse.banner_image,
-        instructorImage: editingCourse.instructorImage || editingCourse.instructor_image,
+        thumbnail: editingCourse.thumbnail !== undefined ? editingCourse.thumbnail : "",
+        bannerImage: editingCourse.bannerImage !== undefined ? editingCourse.bannerImage : (editingCourse.banner_image || ""),
+        instructorImage: editingCourse.instructorImage !== undefined ? editingCourse.instructorImage : (editingCourse.instructor_image || ""),
         description: editingCourse.description,
         requirements: editingCourse.requirements,
         curriculum: editingCourse.curriculum,
@@ -808,7 +808,11 @@ function AdminCoursesIndexPage() {
 
                   <ImageUploadField
                     label="Course Hero Banner Image"
-                    value={editingCourse.bannerImage || editingCourse.banner_image || ""}
+                    value={
+                      editingCourse.bannerImage !== undefined
+                        ? editingCourse.bannerImage
+                        : (editingCourse.banner_image || "")
+                    }
                     onChange={(url) =>
                       setEditingCourse({
                         ...editingCourse,
@@ -823,7 +827,11 @@ function AdminCoursesIndexPage() {
 
                   <ImageUploadField
                     label="Instructor Avatar Photo"
-                    value={editingCourse.instructorImage || editingCourse.instructor_image || ""}
+                    value={
+                      editingCourse.instructorImage !== undefined
+                        ? editingCourse.instructorImage
+                        : (editingCourse.instructor_image || "")
+                    }
                     onChange={(url) =>
                       setEditingCourse({
                         ...editingCourse,

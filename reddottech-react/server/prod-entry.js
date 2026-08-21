@@ -117,7 +117,11 @@ async function handleSsr(req, res) {
 const server = createServer((req, res) => {
   const urlPath = new URL(req.url, `http://${req.headers.host || "localhost"}`).pathname;
 
-  if (urlPath.startsWith("/api")) {
+  if (
+    urlPath.startsWith("/api") ||
+    urlPath.startsWith("/uploads") ||
+    urlPath.startsWith("/storage")
+  ) {
     app(req, res);
     return;
   }

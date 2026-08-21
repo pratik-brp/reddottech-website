@@ -21,6 +21,7 @@ import {
 import { verifyCertificate } from "@/lib/api";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { printOfficialCertificate } from "@/lib/certificate-print";
 
 interface VerifySearch {
   id?: string;
@@ -133,280 +134,17 @@ function CertificateVerificationPage() {
 
   const handlePrintCertificate = () => {
     if (!result) return;
-    const certCode = result.certificateId || `RDT-${String(result.track || "AI").toUpperCase()}-${result.id}`;
-    const certDate = formattedDate(result.completedAt || result.issuedAt);
-    const courseTitle = result.courseName || "AI Foundations: General AI Literacy";
-    const recipientName = result.name || "Valued Professional";
-    const affiliation = [result.role, result.department, result.school || result.organization]
-      .filter(Boolean)
-      .join(" — ");
-
-    const isHealthcare = result.track === "healthcare" || courseTitle.toLowerCase().includes("health");
-    const isFinance =
-      result.track === "finance" ||
-      courseTitle.toLowerCase().includes("finan") ||
-      courseTitle.toLowerCase().includes("bank");
-    const isPecp =
-      result.track === "pecp" ||
-      courseTitle.toLowerCase().includes("pecp") ||
-      courseTitle.toLowerCase().includes("executive");
-
-    const trackColor = isHealthcare ? "#059669" : isFinance ? "#2563eb" : isPecp ? "#C8102E" : "#C8102E";
-    const trackSubtitle = isHealthcare
-      ? "AI for Healthcare Professionals"
-      : isFinance
-      ? "AI for Financial & Banking Professionals"
-      : isPecp
-      ? "Professional Excellence & Certification Program"
-      : "Applied Artificial Intelligence Literacy";
-
-    const printHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Official Certificate - ${recipientName}</title>
-          <style>
-            @page {
-              size: landscape;
-              margin: 8mm;
-            }
-            * {
-              box-sizing: border-box;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              background-color: #ffffff;
-            }
-            body {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-family: 'Georgia', serif;
-            }
-            .parchment {
-              width: 960px;
-              min-height: 640px;
-              border: 12px solid #0c2147;
-              background: #fbfbfb;
-              padding: 16px;
-              box-sizing: border-box;
-              display: flex;
-            }
-            .inner-border {
-              flex: 1;
-              border: 3px solid ${trackColor};
-              background: #ffffff;
-              padding: 40px 52px;
-              text-align: center;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              box-sizing: border-box;
-              position: relative;
-            }
-            .header-block {
-              margin-bottom: 20px;
-            }
-            .logo-wrap {
-              margin-bottom: 12px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 16px;
-            }
-            .logo {
-              height: 48px;
-              width: auto;
-            }
-            .subtitle-top {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 12px;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 0.25em;
-              color: ${trackColor};
-              margin-bottom: 6px;
-            }
-            .title {
-              font-size: 34px;
-              font-weight: 800;
-              color: #0c2147;
-              margin: 0 0 6px 0;
-              line-height: 1.15;
-            }
-            .subtitle-badge {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 12px;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 0.2em;
-              color: #475569;
-              margin: 0;
-            }
-            .cert-body {
-              margin: 20px 0;
-            }
-            .certifies {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 13px;
-              color: #64748b;
-              margin-bottom: 10px;
-            }
-            .student-name {
-              display: inline-block;
-              border-bottom: 2px solid #cbd5e1;
-              padding: 0 36px 6px 36px;
-              font-size: 36px;
-              font-weight: bold;
-              color: #0c2147;
-              margin-bottom: 10px;
-            }
-            .school-name {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 13px;
-              font-weight: bold;
-              color: #475569;
-              margin: 0 0 12px 0;
-            }
-            .desc {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 13px;
-              line-height: 1.7;
-              color: #0c2147;
-              max-width: 700px;
-              margin: 0 auto;
-            }
-            .seal-stamp {
-              position: absolute;
-              bottom: 40px;
-              left: 50%;
-              transform: translateX(-50%);
-              width: 80px;
-              height: 80px;
-              border-radius: 50%;
-              border: 2px dashed ${trackColor};
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              font-family: Arial, sans-serif;
-              font-size: 8px;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 0.1em;
-              color: ${trackColor};
-              opacity: 0.85;
-            }
-            .footer {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 11px;
-              color: #475569;
-              border-top: 1.5px solid #f1f5f9;
-              padding-top: 18px;
-              margin-top: 18px;
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-end;
-              text-align: left;
-            }
-            .footer-right {
-              text-align: right;
-            }
-            .company {
-              font-weight: bold;
-              color: #0c2147;
-              font-size: 14px;
-            }
-            .location {
-              font-size: 11px;
-              color: #64748b;
-              margin-top: 2px;
-            }
-            .ref {
-              font-family: monospace;
-              font-weight: bold;
-              font-size: 12px;
-              color: #334155;
-            }
-            .date {
-              font-size: 11px;
-              color: #64748b;
-              margin-top: 2px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="parchment">
-            <div class="inner-border">
-              <div class="header-block">
-                <div class="logo-wrap">
-                  <img src="${window.location.origin}/images/logo/logo-reddot.png" class="logo" alt="Red Dot Technologies" onerror="this.style.display='none'" />
-                </div>
-                <div class="subtitle-top">Official Certificate of Completion</div>
-                <h1 class="title">${courseTitle}</h1>
-                <div class="subtitle-badge">${trackSubtitle}</div>
-              </div>
-              
-              <div class="cert-body">
-                <div class="certifies">This is to officially certify that</div>
-                <div class="student-name">${recipientName}</div>
-                ${affiliation ? `<div class="school-name">${affiliation}</div>` : ""}
-                <div class="desc">
-                  has successfully satisfied all rigorous curriculum modules, practical lab benchmarks, and mastery assessments conducted by Red Dot Technologies in academic collaboration with the University of South Carolina Upstate (USA).
-                </div>
-              </div>
-
-              <div class="seal-stamp">
-                <span>★ ★ ★</span>
-                <span>AUTHENTIC</span>
-                <span>VERIFIED</span>
-              </div>
-
-              <div class="footer">
-                <div>
-                  <div class="company">Red Dot Technologies Pvt. Ltd.</div>
-                  <div class="location">Kathmandu, Nepal • In Partnership with USC Upstate USA</div>
-                </div>
-                <div class="footer-right">
-                  <div class="ref">Ref ID: ${certCode}</div>
-                  <div class="date">Issued: ${certDate}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    const printIframe = document.createElement("iframe");
-    printIframe.style.position = "fixed";
-    printIframe.style.right = "0";
-    printIframe.style.bottom = "0";
-    printIframe.style.width = "0";
-    printIframe.style.height = "0";
-    printIframe.style.border = "0";
-    document.body.appendChild(printIframe);
-
-    const doc = printIframe.contentWindow?.document;
-    if (doc) {
-      doc.open();
-      doc.write(printHtml);
-      doc.close();
-
-      setTimeout(() => {
-        printIframe.contentWindow?.focus();
-        printIframe.contentWindow?.print();
-        setTimeout(() => {
-          document.body.removeChild(printIframe);
-        }, 2000);
-      }, 350);
-    }
+    printOfficialCertificate({
+      name: result.name,
+      certificateId: result.certificateId || `RDT-${String(result.track || "AI").toUpperCase()}-${result.id}`,
+      track: result.track,
+      courseName: result.courseName,
+      organization: result.organization || result.school,
+      role: result.role,
+      department: result.department,
+      completedAt: result.completedAt,
+      issuedAt: result.issuedAt,
+    });
   };
 
   const formattedDate = (dateStr?: string) => {
@@ -687,7 +425,7 @@ function CertificateVerificationPage() {
                       <Building2 className="h-3 w-3" />
                       <span>Issuing Authority</span>
                     </div>
-                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 truncate">
+                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
                       Red Dot Technologies &amp; USC Upstate
                     </div>
                   </div>

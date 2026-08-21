@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { getCertificates, claimCertificate, deleteCertificate } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
+import { printOfficialCertificate } from "@/lib/certificate-print";
 
 export const Route = createFileRoute("/admin/certificates")({
   beforeLoad: requireAdminRoute,
@@ -320,225 +321,17 @@ function AdminCertificatesPage() {
   const handlePrintCertificate = () => {
     if (!selectedCert) return;
     const certTrack = detectTrack(selectedCert);
-    const cfg = CERT_TRACK_CONFIGS[certTrack];
-    const certId = selectedCert.certificate_id || selectedCert.code || `RDT-${certTrack.toUpperCase()}-${selectedCert.id}`;
-    const certDate = formatDisplayDate(selectedCert.created_at || selectedCert.completed_at);
-
-    const printHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>Certificate - ${selectedCert.name}</title>
-          <style>
-            @page {
-              size: landscape;
-              margin: 10mm;
-            }
-            * {
-              box-sizing: border-box;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              background-color: #ffffff;
-            }
-            body {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-family: 'Georgia', serif;
-            }
-            .parchment {
-              width: 960px;
-              min-height: 640px;
-              border: 12px solid #0c2147;
-              background: #fbfbfb;
-              padding: 16px;
-              box-sizing: border-box;
-              display: flex;
-            }
-            .inner-border {
-              flex: 1;
-              border: 3px solid ${cfg.borderAccent};
-              background: #ffffff;
-              padding: 44px 56px;
-              text-align: center;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              box-sizing: border-box;
-            }
-            .header-block {
-              margin-bottom: 24px;
-            }
-            .logo-wrap {
-              margin-bottom: 16px;
-              display: flex;
-              justify-content: center;
-            }
-            .logo {
-              height: 52px;
-              width: auto;
-            }
-            .subtitle-top {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 13px;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 0.25em;
-              color: #C8102E;
-              margin-bottom: 8px;
-            }
-            .title {
-              font-size: 38px;
-              font-weight: 800;
-              color: #0c2147;
-              margin: 0 0 8px 0;
-              line-height: 1.15;
-            }
-            .subtitle-badge {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 13px;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 0.2em;
-              color: #C8102E;
-              margin: 0;
-            }
-            .cert-body {
-              margin: 28px 0;
-            }
-            .certifies {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 14px;
-              color: #64748b;
-              margin-bottom: 14px;
-            }
-            .student-name {
-              display: inline-block;
-              border-bottom: 2.5px solid #cbd5e1;
-              padding: 0 40px 8px 40px;
-              font-size: 38px;
-              font-weight: 500;
-              color: #0c2147;
-              margin-bottom: 12px;
-            }
-            .school-name {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 14px;
-              font-weight: bold;
-              color: #475569;
-              margin: 0 0 16px 0;
-            }
-            .desc {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 14px;
-              line-height: 1.8;
-              color: #0c2147;
-              max-width: 720px;
-              margin: 0 auto;
-            }
-            .footer {
-              font-family: Arial, Helvetica, sans-serif;
-              font-size: 12px;
-              color: #475569;
-              border-top: 1.5px solid #f1f5f9;
-              padding-top: 24px;
-              margin-top: 24px;
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-end;
-              text-align: left;
-            }
-            .footer-right {
-              text-align: right;
-            }
-            .company {
-              font-weight: bold;
-              color: #0c2147;
-              font-size: 15px;
-            }
-            .location {
-              font-size: 12px;
-              color: #64748b;
-              margin-top: 2px;
-            }
-            .ref {
-              font-family: monospace;
-              font-weight: bold;
-              font-size: 13px;
-              color: #334155;
-            }
-            .date {
-              font-size: 12px;
-              color: #64748b;
-              margin-top: 2px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="parchment">
-            <div class="inner-border">
-              <div class="header-block">
-                <div class="logo-wrap">
-                  <img src="${window.location.origin}/logo.png" class="logo" alt="Red Dot Technologies" onerror="this.style.display='none'" />
-                </div>
-                <div class="subtitle-top">Certificate of Completion</div>
-                <h1 class="title">${cfg.title}</h1>
-                <div class="subtitle-badge">${cfg.subtitle}</div>
-              </div>
-              
-              <div class="cert-body">
-                <div class="certifies">This certifies that</div>
-                <div class="student-name">${selectedCert.name}</div>
-                ${selectedCert.school ? `<div class="school-name">${selectedCert.school}</div>` : ""}
-                <div class="desc">${cfg.descriptionTemplate(selectedCert.name, selectedCert.school || "Red Dot Technologies")}</div>
-              </div>
-
-              <div class="footer">
-                <div>
-                  <div class="company">Red Dot Technologies Pvt. Ltd.</div>
-                  <div class="location">Baluwatar, Kathmandu, Nepal</div>
-                </div>
-                <div class="footer-right">
-                  <div class="ref">Ref: ${certId}</div>
-                  <div class="date">Issued: ${certDate}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    const printIframe = document.createElement("iframe");
-    printIframe.style.position = "fixed";
-    printIframe.style.right = "0";
-    printIframe.style.bottom = "0";
-    printIframe.style.width = "0";
-    printIframe.style.height = "0";
-    printIframe.style.border = "0";
-    document.body.appendChild(printIframe);
-
-    const doc = printIframe.contentWindow?.document;
-    if (doc) {
-      doc.open();
-      doc.write(printHtml);
-      doc.close();
-
-      setTimeout(() => {
-        printIframe.contentWindow?.focus();
-        printIframe.contentWindow?.print();
-        setTimeout(() => {
-          document.body.removeChild(printIframe);
-        }, 2000);
-      }, 350);
-    }
+    printOfficialCertificate({
+      name: selectedCert.name,
+      certificateId: selectedCert.certificate_id || selectedCert.code || `RDT-${certTrack.toUpperCase()}-${selectedCert.id}`,
+      track: certTrack,
+      courseName: selectedCert.course_name,
+      organization: selectedCert.school || selectedCert.organization,
+      role: selectedCert.role,
+      department: selectedCert.department,
+      completedAt: selectedCert.completed_at,
+      issuedAt: selectedCert.created_at,
+    });
   };
 
   const previewTrackConfig = CERT_TRACK_CONFIGS[activePreviewTrack] || CERT_TRACK_CONFIGS.foundations;
@@ -994,19 +787,19 @@ function AdminCertificatesPage() {
 
             <div
               id="admin-certificate-parchment"
-              className="relative mx-auto w-full max-w-[840px] bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)]"
+              className="relative mx-auto w-full max-w-[860px] bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)]"
             >
-              <div className="border border-[#B8892B] m-2 sm:m-2.5 p-5 sm:p-10 text-center relative bg-white">
+              <div className="border border-[#B8892B] m-2 sm:m-2.5 p-6 sm:p-10 text-center relative bg-white">
                 <img
                   src="/logo.png"
                   alt="Red Dot Technologies"
-                  className="h-10 sm:h-12 w-auto mx-auto mb-3 sm:mb-4 object-contain"
+                  className="h-10 sm:h-12 w-auto mx-auto mb-4 object-contain"
                 />
-                <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[3px] sm:tracking-[4.5px] text-[#B8892B]">
+                <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[3.5px] sm:tracking-[4.5px] text-[#B8892B]">
                   Certificate of Completion
                 </div>
                 <h2
-                  className="text-2xl sm:text-[32px] text-[#0F1E3D] my-1.5 sm:my-2 leading-tight tracking-tight font-serif"
+                  className="text-2xl sm:text-[28px] text-[#0F1E3D] my-2 leading-tight tracking-tight font-serif font-medium"
                   style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   {previewTrackConfig.title}
@@ -1015,12 +808,12 @@ function AdminCertificatesPage() {
                   {previewTrackConfig.subtitle}
                 </div>
 
-                <div className="text-[#6B7C96] text-xs sm:text-[13px] italic mt-4 sm:mt-5 mb-1">
+                <div className="text-[#6B7C96] text-xs sm:text-[13px] italic mt-5 mb-1">
                   This is to certify that
                 </div>
 
                 <div
-                  className="text-xl sm:text-[30px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-5 sm:px-10 pb-1 sm:pb-1.5 mb-1 sm:mb-1.5 font-serif"
+                  className="text-xl sm:text-[28px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-6 sm:px-10 pb-1.5 mb-1.5 font-serif"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   {selectedCert.name || "Candidate Name"}

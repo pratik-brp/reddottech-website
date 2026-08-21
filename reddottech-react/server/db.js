@@ -114,10 +114,18 @@ async function createTables() {
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL,
       school VARCHAR(255),
+      track VARCHAR(50),
+      course_name VARCHAR(255),
+      certificate_id VARCHAR(100),
+      organization VARCHAR(255),
+      role VARCHAR(100),
+      department VARCHAR(100),
+      status VARCHAR(50) DEFAULT 'valid',
       completed_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
-      INDEX idx_certificates_email (email)
+      INDEX idx_certificates_email (email),
+      INDEX idx_certificates_cert_id (certificate_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
     `CREATE TABLE IF NOT EXISTS contacts (
@@ -198,6 +206,25 @@ async function createTables() {
 
   for (const q of queries) {
     await pool.query(q);
+  }
+
+  // Safe migration for existing MySQL certificates table
+  const certCols = [
+    { name: "track", type: "VARCHAR(50)" },
+    { name: "course_name", type: "VARCHAR(255)" },
+    { name: "certificate_id", type: "VARCHAR(100)" },
+    { name: "organization", type: "VARCHAR(255)" },
+    { name: "role", type: "VARCHAR(100)" },
+    { name: "department", type: "VARCHAR(100)" },
+    { name: "status", type: "VARCHAR(50) DEFAULT 'valid'" },
+  ];
+
+  for (const col of certCols) {
+    try {
+      await pool.query(`ALTER TABLE certificates ADD COLUMN ${col.name} ${col.type}`);
+    } catch {
+      // Column already exists
+    }
   }
 }
 

@@ -4,7 +4,6 @@ import {
   ArrowRight,
   Sparkles,
   Target,
-  HeartHandshake,
   ShieldCheck,
   CheckCircle2,
   Globe2,
@@ -72,13 +71,6 @@ const pillars = [
     label: "Our Mission",
     text: "To empower individuals and organizations in Nepal with industry-relevant skills, global certifications, and career-focused training that open doors to opportunities at home and beyond.",
     color: "from-amber-500 to-orange-600",
-  },
-  {
-    svg: "/images/about/choose-us-3.svg",
-    icon: HeartHandshake,
-    label: "Our Promise",
-    text: "Practical, career-transforming skills backed by 1-on-1 mentorship and job placement support to help every learner advance.",
-    color: "from-blue-600 to-indigo-600",
   },
 ];
 
@@ -251,16 +243,14 @@ export function HomeAboutSection() {
           </div>
         </div>
 
-        {/* Bottom Interactive Vision, Mission & Promise Cards */}
-        <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
-          {pillars.map((item, index) => {
+        {/* Bottom Interactive Vision & Mission Cards */}
+        <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {pillars.map((item) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.label}
-                className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white p-3.5 sm:p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
-                  index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"
-                }`}
+                className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
               >
                 <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${item.color}`} />
                 <div className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-red/8 text-brand-red transition-all duration-300 group-hover:bg-brand-red group-hover:text-white group-hover:scale-110 mb-2.5 sm:mb-4 p-1.5 sm:p-2.5">
@@ -270,8 +260,8 @@ export function HomeAboutSection() {
                     <Icon className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                   )}
                 </div>
-                <h3 className="display-font text-xs sm:text-lg font-bold text-brand-ink">{item.label}</h3>
-                <p className="mt-1 sm:mt-2 text-[11px] sm:text-sm leading-relaxed text-slate-500 font-medium">
+                <h3 className="display-font text-sm sm:text-lg font-bold text-brand-ink">{item.label}</h3>
+                <p className="mt-1 sm:mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 font-medium">
                   {item.text}
                 </p>
               </div>
