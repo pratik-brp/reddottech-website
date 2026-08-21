@@ -485,3 +485,66 @@ export async function deleteAiLead(id: string) {
     method: "DELETE",
   });
 }
+
+// 8. AI Course Access Verification & Live Status Check
+export async function verifyAiAccessCode(track: string, code: string): Promise<{
+  success: boolean;
+  valid: boolean;
+  lead?: {
+    id: string;
+    name: string;
+    email: string;
+    org?: string;
+    track: string;
+  };
+  error?: string;
+}> {
+  try {
+    const res = await fetchApi<{
+      success: boolean;
+      valid: boolean;
+      lead?: any;
+      error?: string;
+    }>("/ai-access/verify-code", {
+      method: "POST",
+      body: JSON.stringify({ track, code }),
+    });
+    return res || { success: false, valid: false, error: "Empty response from server." };
+  } catch (err: any) {
+    return {
+      success: false,
+      valid: false,
+      error: err?.message || "Failed to verify access code with server.",
+    };
+  }
+}
+
+export async function checkAiAccessStatus(track: string, code: string): Promise<{
+  success: boolean;
+  active: boolean;
+  lead?: {
+    id: string;
+    name: string;
+    email: string;
+    org?: string;
+    track: string;
+  };
+  message?: string;
+}> {
+  try {
+    const res = await fetchApi<{
+      success: boolean;
+      active: boolean;
+      lead?: any;
+      message?: string;
+    }>(`/ai-access/check-status?track=${encodeURIComponent(track)}&code=${encodeURIComponent(code)}`);
+    return res || { success: false, active: false, message: "Empty response from server." };
+  } catch (err: any) {
+    return {
+      success: false,
+      active: false,
+      message: err?.message || "Network error checking access status.",
+    };
+  }
+}
+

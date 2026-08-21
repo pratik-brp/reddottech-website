@@ -10,8 +10,6 @@ import {
   Plus,
   Trash2,
   Mail,
-  Building2,
-  Stethoscope,
   Clock,
   ShieldCheck,
   Send,
@@ -19,7 +17,6 @@ import {
   X,
   AlertCircle,
   Eye,
-  Image as ImageIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { requireAdminRoute } from "@/lib/auth";
@@ -155,6 +152,9 @@ function AdminAiUnlockedPage() {
     tested: boolean;
     valid: boolean;
     track?: string;
+    studentName?: string;
+    studentEmail?: string;
+    isEnrolled?: boolean;
   }>({ tested: false, valid: false });
 
   // ── Manual Add Modal State ──
@@ -319,17 +319,27 @@ function AdminAiUnlockedPage() {
       TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026"
     );
 
+    const matchingLead = leads.find(
+      (l) => l.accessCode?.trim().toUpperCase() === clean && l.status === "verified"
+    );
+
     if (isHealth) {
       setValidationResult({
         tested: true,
         valid: true,
         track: "AI for Healthcare Professionals (Clinical)",
+        studentName: matchingLead?.name,
+        studentEmail: matchingLead?.email,
+        isEnrolled: !!matchingLead,
       });
     } else if (isFin) {
       setValidationResult({
         tested: true,
         valid: true,
         track: "AI for Financial Professionals (Banking)",
+        studentName: matchingLead?.name,
+        studentEmail: matchingLead?.email,
+        isEnrolled: !!matchingLead,
       });
     } else {
       setValidationResult({ tested: true, valid: false });
@@ -562,8 +572,19 @@ function AdminAiUnlockedPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500 text-[11px]">Ready for client delivery</span>
+            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setNewTrack(genTrack);
+                  setShowAddModal(true);
+                }}
+                className="text-emerald-700 hover:text-emerald-800 font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Enrol Student with this Token</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -624,11 +645,20 @@ function AdminAiUnlockedPage() {
                     {validationResult.valid ? (
                       <>
                         <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <div>
+                        <div className="space-y-0.5">
                           <p className="font-semibold">Valid Access Token</p>
-                          <p className="text-[11px] text-emerald-700 mt-0.5">
+                          <p className="text-[11px] text-emerald-700">
                             Track: {validationResult.track}
                           </p>
+                          {validationResult.isEnrolled ? (
+                            <p className="text-[10px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded inline-block mt-1">
+                              ✓ Active Enrolment: {validationResult.studentName} ({validationResult.studentEmail})
+                            </p>
+                          ) : (
+                            <p className="text-[10px] text-slate-500 italic mt-0.5">
+                              Cryptographically valid, not yet assigned to an active student in queue.
+                            </p>
+                          )}
                         </div>
                       </>
                     ) : (
@@ -637,7 +667,7 @@ function AdminAiUnlockedPage() {
                         <div>
                           <p className="font-semibold">Invalid Token</p>
                           <p className="text-[11px] text-rose-700 mt-0.5">
-                            Checksum failed or code is corrupted.
+                            Checksum failed or code format is invalid.
                           </p>
                         </div>
                       </>
@@ -648,7 +678,7 @@ function AdminAiUnlockedPage() {
             </div>
 
             <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-              Validates cryptographic signature against active course salts.
+              Validates cryptographic signature against active course salts and cross-references database enrolments.
             </p>
           </div>
         </div>

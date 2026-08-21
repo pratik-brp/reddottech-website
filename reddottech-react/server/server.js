@@ -446,10 +446,10 @@ app.post("/api/certificates/claim", formLimiter, async (req, res) => {
       (resolvedTrack === "healthcare"
         ? "AI for Healthcare Professionals"
         : resolvedTrack === "finance"
-        ? "AI for Financial Professionals"
-        : resolvedTrack === "pecp"
-        ? "Professional Executive Certificate"
-        : "AI Foundations: General AI Literacy");
+          ? "AI for Financial Professionals"
+          : resolvedTrack === "pecp"
+            ? "Professional Executive Certificate"
+            : "AI Foundations: General AI Literacy");
 
     const autoCertCode =
       certificate_id || `RDT-${resolvedTrack.toUpperCase()}-${Date.now().toString().slice(-6)}`;
@@ -538,8 +538,8 @@ app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
       cert.track === "healthcare"
         ? "AI for Healthcare Professionals"
         : cert.track === "finance"
-        ? "AI for Financial & Banking Professionals"
-        : cert.course_name || "AI Foundations: General AI Literacy";
+          ? "AI for Financial & Banking Professionals"
+          : cert.course_name || "AI Foundations: General AI Literacy";
 
     const certCode = cert.certificate_id || `RDT-${String(cert.track || "AI").toUpperCase()}-${cert.id}`;
 
@@ -734,6 +734,125 @@ app.post("/api/settings", requireAuth, async (req, res) => {
 // -------------------------------------------------------------------
 // 6. AI COURSE LEADS & PAYMENT VERIFICATIONS API
 // -------------------------------------------------------------------
+const B32_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+function fnv32(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+
+function checksumForServer(salt, body) {
+  let h = fnv32(salt + "|" + body);
+  let o = "";
+  for (let i = 0; i < 4; i++) {
+    o += B32_ALPHABET[h % 32];
+    h = Math.floor(h / 32);
+  }
+  return o;
+}
+
+function validateAccessCodeServer(rawCode, salt) {
+  const c = String(rawCode || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+  const m = c.match(/^RDT([A-Z0-9]{5})([A-Z0-9]{4})$/);
+  if (!m) return false;
+  return checksumForServer(salt, m[1]) === m[2];
+}
+
+// Access code validation endpoint (public rate-limited)
+app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
+  try {
+    const { track, code } = req.body || {};
+    const cleanCode = String(code || "").trim().toUpperCase();
+    const cleanTrack = String(track || "").trim().toLowerCase();
+
+    if (!cleanCode || !cleanTrack) {
+      return res.status(400).json({ success: false, valid: false, error: "Track and access code are required." });
+    }
+
+    const salt = cleanTrack === "healthcare" ? "RDT-AIHP-2026" : cleanTrack === "finance" ? "RDT-AIFP-2026" : "";
+    if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
+      return res.status(400).json({ success: false, valid: false, error: "Invalid access code format or checksum mismatch." });
+    }
+
+    // Verify against MySQL database: Must be an active verified enrolment/lead
+    const lead = await get(
+      "SELECT id, name, email, org, track, status, access_code AS accessCode FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
+      [cleanCode, cleanTrack]
+    );
+
+    if (!lead) {
+      return res.status(403).json({
+        success: false,
+        valid: false,
+        error: "This access code is invalid, revoked, or no active verified enrolment was found in the system.",
+      });
+    }
+
+    res.json({
+      success: true,
+      valid: true,
+      lead: {
+        id: lead.id,
+        name: lead.name,
+        email: lead.email,
+        org: lead.org,
+        track: lead.track,
+      },
+    });
+  } catch (err) {
+    console.error("[AI Access Verify Code Error]", err);
+    res.status(500).json({ success: false, valid: false, error: "Server error during code verification." });
+  }
+});
+
+// Live course access check endpoint (public rate-limited)
+app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
+  try {
+    const cleanCode = String(req.query.code || "").trim().toUpperCase();
+    const cleanTrack = String(req.query.track || "").trim().toLowerCase();
+
+    if (!cleanCode || !cleanTrack) {
+      return res.json({ success: true, active: false, message: "Missing code or track parameter." });
+    }
+
+    const salt = cleanTrack === "healthcare" ? "RDT-AIHP-2026" : cleanTrack === "finance" ? "RDT-AIFP-2026" : "";
+    if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
+      return res.json({ success: true, active: false, message: "Invalid code format." });
+    }
+
+    // Check if lead/access code still exists in MySQL with verified status
+    const lead = await get(
+      "SELECT id, name, email, org, track, status FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
+      [cleanCode, cleanTrack]
+    );
+
+    if (!lead) {
+      return res.json({ success: true, active: false, message: "Access code revoked or not found in database." });
+    }
+
+    res.json({
+      success: true,
+      active: true,
+      lead: {
+        id: lead.id,
+        name: lead.name,
+        email: lead.email,
+        org: lead.org,
+        track: lead.track,
+      },
+    });
+  } catch (err) {
+    console.error("[AI Access Check Status Error]", err);
+    res.status(500).json({ success: false, active: false, error: "Server error checking access status." });
+  }
+});
+
 app.get("/api/ai-leads", requireAuth, async (req, res) => {
   try {
     const rows = await query(
@@ -756,17 +875,39 @@ app.get("/api/ai-leads", requireAuth, async (req, res) => {
 
 app.post("/api/ai-leads", formLimiter, async (req, res) => {
   try {
-    const { name, email, org, track, txn, receipt_url, receiptUrl } = req.body || {};
+    const {
+      id,
+      name,
+      email,
+      org,
+      track,
+      txn,
+      receipt_url,
+      receiptUrl,
+      status,
+      accessCode,
+      access_code,
+      notes,
+      emailSent,
+      email_sent,
+      emailSentAt,
+      email_sent_at,
+    } = req.body || {};
 
     if (!name || !email || !track) {
       return res.status(400).json({ success: false, error: "Name, email, and track are required." });
     }
 
     const finalReceiptUrl = receipt_url || receiptUrl || null;
-    const leadId = `lead-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+    const finalStatus = status || "pending";
+    const finalAccessCode = accessCode || access_code ? String(accessCode || access_code).trim().toUpperCase() : null;
+    const finalEmailSent = emailSent || email_sent ? 1 : 0;
+    const finalEmailSentAt = emailSentAt || email_sent_at ? new Date(emailSentAt || email_sent_at) : null;
+    const leadId = id || `lead-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+
     await run(
       `INSERT INTO ai_leads (id, name, email, org, track, txn, status, access_code, notes, email_sent, email_sent_at, receipt_url)
-       VALUES (?, ?, ?, ?, ?, ?, 'pending', NULL, NULL, 0, NULL, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         leadId,
         String(name).trim(),
@@ -774,6 +915,11 @@ app.post("/api/ai-leads", formLimiter, async (req, res) => {
         org ? String(org).trim() : null,
         track,
         txn ? String(txn).trim() : null,
+        finalStatus,
+        finalAccessCode,
+        notes ? String(notes).trim() : null,
+        finalEmailSent,
+        finalEmailSentAt,
         finalReceiptUrl,
       ]
     );
@@ -788,7 +934,8 @@ app.post("/api/ai-leads", formLimiter, async (req, res) => {
         track,
         txn: txn ? String(txn).trim() : null,
         receiptUrl: finalReceiptUrl,
-        status: "pending",
+        status: finalStatus,
+        accessCode: finalAccessCode,
         date: new Date().toISOString(),
       },
     });
@@ -800,7 +947,7 @@ app.post("/api/ai-leads", formLimiter, async (req, res) => {
 
 app.put("/api/ai-leads/:id", requireAuth, async (req, res) => {
   try {
-    const { status, accessCode, notes, emailSent, emailSentAt, receiptUrl, receipt_url } = req.body || {};
+    const { status, accessCode, access_code, notes, emailSent, emailSentAt, receiptUrl, receipt_url } = req.body || {};
     const updates = [];
     const params = [];
 
@@ -808,9 +955,10 @@ app.put("/api/ai-leads/:id", requireAuth, async (req, res) => {
       updates.push("status = ?");
       params.push(status);
     }
-    if (accessCode !== undefined) {
+    const resolvedCode = accessCode !== undefined ? accessCode : access_code;
+    if (resolvedCode !== undefined) {
       updates.push("access_code = ?");
-      params.push(accessCode);
+      params.push(resolvedCode ? String(resolvedCode).trim().toUpperCase() : null);
     }
     if (notes !== undefined) {
       updates.push("notes = ?");
@@ -900,7 +1048,7 @@ app.get("/api/admin/system-info", requireAuth, async (req, res) => {
         try {
           const st = fs.statSync(path.join(uploadsDir, f));
           uploadsSizeBytes += st.size;
-        } catch {}
+        } catch { }
       }
     }
 

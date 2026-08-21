@@ -8,7 +8,6 @@ import {
   X,
   Search,
   Mail,
-  CheckCircle2,
   Send,
   Copy,
   Users,

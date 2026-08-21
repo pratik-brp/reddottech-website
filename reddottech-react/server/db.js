@@ -184,13 +184,15 @@ async function createTables() {
       status VARCHAR(50) DEFAULT 'pending',
       access_code VARCHAR(100),
       notes TEXT,
+      receipt_url VARCHAR(500),
       email_sent TINYINT(1) DEFAULT 0,
       email_sent_at DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
       INDEX idx_ai_leads_track (track),
       INDEX idx_ai_leads_status (status),
-      INDEX idx_ai_leads_email (email)
+      INDEX idx_ai_leads_email (email),
+      INDEX idx_ai_leads_access_code (access_code)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`
   ];
 

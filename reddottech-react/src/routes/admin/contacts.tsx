@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Trash2,
   Mail,
-  Phone,
   Calendar,
   Search,
   Download,

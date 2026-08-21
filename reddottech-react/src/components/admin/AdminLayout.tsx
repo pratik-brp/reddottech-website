@@ -58,7 +58,7 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
           setAdminEmail(user.email);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     getDashboardStats()
       .then((data) => {
@@ -67,7 +67,7 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
           setStats(data);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     const handleEmailUpdated = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
@@ -151,9 +151,8 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
 
       {/* Permanently Fixed Left Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 min-w-[16rem] max-w-[16rem] bg-white text-slate-700 flex flex-col border-r border-slate-200 shadow-xs transition-transform duration-200 ease-in-out lg:transition-none lg:translate-x-0 ${
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 min-w-[16rem] max-w-[16rem] bg-white text-slate-700 flex flex-col border-r border-slate-200 shadow-xs transition-transform duration-200 ease-in-out lg:transition-none lg:translate-x-0 ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         {/* Logo Brand Header */}
         <div className="h-16 px-6 border-b border-slate-100 flex items-center justify-between shrink-0">
@@ -193,11 +192,10 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
                   key={item.name}
                   to={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold select-none ${
-                    active
+                  className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold select-none ${active
                       ? "bg-slate-900 text-white shadow-xs"
                       : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <Icon className={`h-4 w-4 shrink-0 ${active ? "text-white" : "text-slate-400"}`} />
@@ -206,11 +204,10 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
 
                   {item.count !== null && item.count > 0 && (
                     <span
-                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
-                        active
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${active
                           ? "bg-white/20 text-white"
                           : "bg-slate-100 text-slate-600"
-                      }`}
+                        }`}
                     >
                       {item.count}
                     </span>

@@ -22,6 +22,7 @@ import {
   updateSettings,
   changeAdminPassword,
   changeAdminEmail,
+  getCachedSettings,
 } from "@/lib/api";
 import { requireAdminRoute, getAdminEmail } from "@/lib/auth";
 
@@ -41,30 +42,37 @@ function AdminSettingsPage() {
   );
   const [activeTab, setActiveTab] = useState<SettingsTab>("banner");
 
+  const cached = getCachedSettings();
+
   // Tab 1: Banner Settings
-  const [batchTitle, setBatchTitle] = useState(
-    "First batch begins November 15, 2025.\nLimited seats available."
+  const [batchTitle, setBatchTitle] = useState<string>(
+    () =>
+      cached?.batch_banner_title
+        ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n")
+        : "Next batch begins August 15, 2026.\nLimited seats available."
   );
-  const [batchSubtitle, setBatchSubtitle] = useState(
-    "Take the next step toward a globally recognized career."
+  const [batchSubtitle, setBatchSubtitle] = useState<string>(
+    () => cached?.batch_banner_subtitle || "Take the next step toward a globally recognized career."
   );
-  const [batchBtnText, setBatchBtnText] = useState("Enroll Now");
+  const [batchBtnText, setBatchBtnText] = useState<string>(
+    () => cached?.batch_banner_button_text || "Enroll Now"
+  );
   const [isSubmittingBanner, setIsSubmittingBanner] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
 
   // Tab 2: Contact & Social Info
-  const [contactPhone, setContactPhone] = useState("+977 9801234567");
-  const [contactSecondaryPhone, setContactSecondaryPhone] = useState("+977 01-4455667");
-  const [contactEmail, setContactEmail] = useState("info@reddottech.com.np");
-  const [admissionsEmail, setAdmissionsEmail] = useState("admissions@reddottech.com.np");
-  const [whatsappNumber, setWhatsappNumber] = useState("+977 9801234567");
-  const [officeAddress, setOfficeAddress] = useState("Tinkune, Kathmandu, Nepal");
-  const [googleMapsUrl, setGoogleMapsUrl] = useState("https://maps.google.com");
-  const [officeHours, setOfficeHours] = useState("Sun - Fri: 9:00 AM - 6:00 PM");
-  const [socialFacebook, setSocialFacebook] = useState("https://facebook.com/reddottechnepal");
-  const [socialInstagram, setSocialInstagram] = useState("https://instagram.com/reddottech");
-  const [socialLinkedin, setSocialLinkedin] = useState("https://linkedin.com/company/reddottech");
-  const [socialTiktok, setSocialTiktok] = useState("https://tiktok.com/@reddottech");
+  const [contactPhone, setContactPhone] = useState<string>(() => cached?.contact_phone || "01 4535691");
+  const [contactSecondaryPhone, setContactSecondaryPhone] = useState<string>(() => cached?.contact_secondary_phone || "01 4516390");
+  const [contactEmail, setContactEmail] = useState<string>(() => cached?.contact_email || "info@reddottech.com.np");
+  const [admissionsEmail, setAdmissionsEmail] = useState<string>(() => cached?.admissions_email || "admissions@reddottech.com.np");
+  const [whatsappNumber, setWhatsappNumber] = useState<string>(() => cached?.whatsapp_number || "+977 9801234567");
+  const [officeAddress, setOfficeAddress] = useState<string>(() => cached?.office_address || "Baluwatar-04, Kathmandu, Bagmati, Nepal");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState<string>(() => cached?.google_maps_url || "https://maps.app.goo.gl/KmrWV2r6kDgn7cFg6");
+  const [officeHours, setOfficeHours] = useState<string>(() => cached?.office_hours || "Mon – Fri: 9:00 AM – 5:00 PM (NPT)");
+  const [socialFacebook, setSocialFacebook] = useState<string>(() => cached?.social_facebook || "https://www.facebook.com/profile.php?id=61576029361697");
+  const [socialInstagram, setSocialInstagram] = useState<string>(() => cached?.social_instagram || "https://www.instagram.com/reddot.tech/");
+  const [socialLinkedin, setSocialLinkedin] = useState<string>(() => cached?.social_linkedin || "https://www.linkedin.com/company/red-dot-technologies-nepal/");
+  const [socialTiktok, setSocialTiktok] = useState<string>(() => cached?.social_tiktok || "https://www.tiktok.com/@reddot.tech");
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 
   // Tab 3: Password & Security
@@ -305,7 +313,7 @@ function AdminSettingsPage() {
                     rows={3}
                     value={batchTitle}
                     onChange={(e) => setBatchTitle(e.target.value)}
-                    placeholder="e.g. First batch begins November 15, 2025. Limited seats available."
+                    placeholder="e.g. Next batch begins August 15, 2026. Limited seats available."
                     className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium leading-relaxed"
                   />
                 </div>
@@ -380,7 +388,7 @@ function AdminSettingsPage() {
                     {batchSubtitle || "Take the next step toward a globally recognized career."}
                   </p>
                   <h4 className="text-sm font-bold leading-snug whitespace-pre-line">
-                    {batchTitle || "First batch begins November 15, 2025."}
+                    {batchTitle || "Next batch begins August 15, 2026."}
                   </h4>
                   <div className="pt-1">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-brand-red font-bold text-xs px-4 py-1.5 shadow-sm">

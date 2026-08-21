@@ -32,7 +32,14 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
-import { claimCertificate, verifyCertificate, createAiLead, uploadPaymentReceipt } from "@/lib/api";
+import {
+  claimCertificate,
+  verifyCertificate,
+  createAiLead,
+  uploadPaymentReceipt,
+  verifyAiAccessCode,
+  checkAiAccessStatus,
+} from "@/lib/api";
 import { PageHero } from "@/components/PageHero";
 import { sanitizeHtml } from "@/lib/sanitize";
 
@@ -92,7 +99,9 @@ function useTabFade(key: string) {
       const t = setTimeout(() => {
         setVisible(true);
         prevKey.current = key;
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        if (!key.startsWith("catalog_")) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
       }, 80);
       return () => clearTimeout(t);
     }
@@ -105,22 +114,14 @@ function AiUnlockedPage() {
   const search = useSearch({ from: "/ai-unlocked" });
   const navigateRouter = useNavigate({ from: "/ai-unlocked" });
 
-  // If search.track is undefined or null, we show the Course Catalog Hub Landing!
-  // If search.track is set, we open the Course Player for that track.
-  const [currentTrackId, setCurrentTrackId] = useState<"foundations" | "healthcare" | "finance" | null>(
-    search.track || null
-  );
-
-  // Active view inside track: "home" | "sources" | "pay" | "cert" | lessonId | "q_" + lessonId
-  const [activeView, setActiveView] = useState<string>(
-    search.view || search.lesson || "home"
-  );
+  // Single source of truth from router search params
+  const currentTrackId: "foundations" | "healthcare" | "finance" | null = search.track || null;
 
   const [mobileSideOpen, setMobileSideOpen] = useState(false);
 
   // Track config for active track (if selected)
   const activeTrackConfig: TrackConfig | null = currentTrackId
-    ? TRACK_CONFIGS[currentTrackId]
+    ? TRACK_CONFIGS[currentTrackId] || null
     : null;
 
   const currentLessons: Lesson[] = useMemo(() => {
@@ -169,7 +170,16 @@ function AiUnlockedPage() {
       const raw = localStorage.getItem(cfg.storageKey);
       if (raw) {
         try {
-          loaded[tid] = JSON.parse(raw);
+          const parsed = JSON.parse(raw);
+          // If paid track is not actively unlocked, completely wipe any progress or answers
+          if (cfg.isPaid && !parsed.unlocked) {
+            loaded[tid] = { done: {}, answers: {}, unlocked: false };
+            try {
+              localStorage.setItem(cfg.storageKey, JSON.stringify(loaded[tid]));
+            } catch {}
+          } else {
+            loaded[tid] = parsed;
+          }
         } catch {
           loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
         }
@@ -219,80 +229,89 @@ function AiUnlockedPage() {
     return !activeTrackConfig.freePreviewIds.includes(lessonId);
   };
 
-  // Sync Search Params on load or update
-  useEffect(() => {
-    if (search.track !== undefined && search.track !== currentTrackId) {
-      setCurrentTrackId(search.track || null);
-    }
-    if (search.lesson) {
-      setActiveView(search.lesson);
-    } else if (search.view) {
-      setActiveView(search.view);
-    }
-  }, [search.track, search.lesson, search.view]);
-
-  const openCourse = (track: "foundations" | "healthcare" | "finance", initialView: string = "home") => {
-    setCurrentTrackId(track);
-    setActiveView(initialView);
-    navigateRouter({
-      search: {
-        track,
-        lesson: initialView.startsWith("q_") || initialView.startsWith("h") || initialView.startsWith("m") || initialView.startsWith("l") ? initialView : undefined,
-        view: initialView === "home" || initialView === "sources" || initialView === "pay" || initialView === "cert" ? initialView : undefined,
-      },
-    });
-  };
-
-  const backToCatalog = () => {
-    setCurrentTrackId(null);
-    setActiveView("home");
-    navigateRouter({
-      search: { track: undefined, lesson: undefined, view: undefined },
-    });
-  };
-
-  const navigateView = (view: string) => {
-    if (!activeTrackConfig || !currentTrackId) return;
-
-    // Paywall intercept for locked modules
-    const targetId = view.startsWith("q_") ? view.slice(2) : view;
+  const rawActiveView = search.lesson || search.view || "home";
+  const activeView = useMemo(() => {
+    if (!activeTrackConfig) return "home";
+    const targetId = rawActiveView.startsWith("q_") ? rawActiveView.slice(2) : rawActiveView;
     if (
       activeTrackConfig.isPaid &&
       !isTrackUnlocked &&
       targetId !== "home" &&
       targetId !== "sources" &&
-      isLessonLocked(targetId)
+      (isLessonLocked(targetId) || rawActiveView === "cert")
     ) {
-      setActiveView("pay");
+      return "pay";
+    }
+    return rawActiveView;
+  }, [rawActiveView, activeTrackConfig, isTrackUnlocked]);
+
+  const openCourse = (track: "foundations" | "healthcare" | "finance", initialView: string = "home") => {
+    const isSpecial = initialView === "home" || initialView === "sources" || initialView === "pay" || initialView === "cert";
+    navigateRouter({
+      search: {
+        track,
+        view: isSpecial ? initialView : undefined,
+        lesson: !isSpecial ? initialView : undefined,
+      },
+    });
+  };
+
+  const backToCatalog = () => {
+    setMobileSideOpen(false);
+    navigateRouter({
+      search: {},
+    });
+    setTimeout(() => {
+      const catalogEl = document.getElementById("course-catalog");
+      if (catalogEl) {
+        catalogEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 120);
+  };
+
+  const navigateView = (view: string) => {
+    if (!currentTrackId) return;
+    setMobileSideOpen(false);
+
+    // Paywall intercept for locked modules
+    const targetId = view.startsWith("q_") ? view.slice(2) : view;
+    if (
+      activeTrackConfig?.isPaid &&
+      !isTrackUnlocked &&
+      targetId !== "home" &&
+      targetId !== "sources" &&
+      (isLessonLocked(targetId) || view === "cert")
+    ) {
+      navigateRouter({
+        search: { track: currentTrackId, view: "pay", lesson: undefined },
+      });
       toast.info("This module is part of the full programme. Unlock access below.");
       return;
     }
 
-    setActiveView(view);
-    setMobileSideOpen(false);
-
-    if (view === "home" || view === "sources" || view === "pay" || view === "cert") {
-      navigateRouter({
-        search: { track: currentTrackId, view, lesson: undefined },
-      });
-    } else {
-      navigateRouter({
-        search: { track: currentTrackId, lesson: view, view: undefined },
-      });
-    }
+    const isSpecial = view === "home" || view === "sources" || view === "pay" || view === "cert";
+    navigateRouter({
+      search: {
+        track: currentTrackId,
+        view: isSpecial ? view : undefined,
+        lesson: !isSpecial ? view : undefined,
+      },
+    });
   };
 
   const contentVisible = useTabFade(`${currentTrackId || "catalog"}_${activeView}`);
 
-  // Progress metrics
+  // Progress metrics: When a paid track is locked, progress and passed status are strictly reset to 0
   const totalLessons = currentLessons.length;
-  const completedCount = Object.values(currentTrackState.done || {}).filter(Boolean).length;
+  const completedCount = isTrackUnlocked
+    ? Object.values(currentTrackState.done || {}).filter(Boolean).length
+    : 0;
   const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  const isCourseComplete = totalLessons > 0 && completedCount === totalLessons;
+  const isCourseComplete = isTrackUnlocked && totalLessons > 0 && completedCount === totalLessons;
 
   // ── Quiz Option Selection ──
   const handleQuizAnswer = (lessonId: string, qIndex: number, optionIndex: number) => {
-    if (!currentTrackId) return;
+    if (!currentTrackId || isLessonLocked(lessonId)) return;
     const lesson = currentLessons.find((l) => l.id === lessonId);
     if (!lesson) return;
 
@@ -323,6 +342,7 @@ function AiUnlockedPage() {
 
   // ── Paywall & Code Unlock Form State ──
   const [enteredCode, setEnteredCode] = useState("");
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [requestName, setRequestName] = useState("");
   const [requestEmail, setRequestEmail] = useState("");
   const [requestOrg, setRequestOrg] = useState("");
@@ -330,6 +350,79 @@ function AiUnlockedPage() {
   const [requestReceiptUrl, setRequestReceiptUrl] = useState("");
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
   const [requestSubmitted, setRequestSubmitted] = useState(false);
+
+  // ── Auto-Synchronize & Re-verify Course Access with Server Database ──
+  // If an administrator deletes the student/lead from the Payment Verification Queue in the admin panel,
+  // this hook detects that the access code is no longer valid in MySQL and immediately revokes & resets all course access!
+  useEffect(() => {
+    if (!currentTrackId || !activeTrackConfig?.isPaid) return;
+
+    // If marked unlocked but no accessCode is present for paid track, reset immediately
+    if (currentTrackState.unlocked && !currentTrackState.accessCode) {
+      updateTrackState(currentTrackId, () => ({
+        done: {},
+        answers: {},
+        unlocked: false,
+        accessCode: undefined,
+        lead: undefined,
+        requestedLead: undefined,
+      }));
+      setCertClaimed(false);
+      setCertName("");
+      setCertEmail("");
+      return;
+    }
+
+    // If not unlocked on a paid track, ensure done and answers are wiped clean
+    if (!currentTrackState.unlocked) {
+      const hasDone = Object.keys(currentTrackState.done || {}).length > 0;
+      const hasAnswers = Object.keys(currentTrackState.answers || {}).length > 0;
+      if (hasDone || hasAnswers) {
+        updateTrackState(currentTrackId, (prev) => ({
+          ...prev,
+          done: {},
+          answers: {},
+          unlocked: false,
+        }));
+      }
+    }
+
+    // If accessCode is present, check live verification status against MySQL database
+    if (currentTrackState.accessCode) {
+      let isMounted = true;
+      checkAiAccessStatus(currentTrackId, currentTrackState.accessCode)
+        .then((res) => {
+          if (!isMounted) return;
+          if (!res || !res.active) {
+            // Access revoked / deleted by admin -> FULLY WIPE ALL PROGRESS & LOCK COURSE
+            updateTrackState(currentTrackId, () => ({
+              done: {},
+              answers: {},
+              unlocked: false,
+              accessCode: undefined,
+              lead: undefined,
+              requestedLead: undefined,
+            }));
+            setCertClaimed(false);
+            setCertName("");
+            setCertEmail("");
+            setCertOrg("");
+            setCertRole("");
+            setCertDept("");
+            toast.warning("Course access has been revoked or removed by the administrator. All progress has been fully reset.");
+            // Redirect to paywall view
+            navigateView("pay");
+          }
+        })
+        .catch(() => {
+          // Network offline fallback continues gracefully
+        });
+
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [currentTrackId, currentTrackState.unlocked, currentTrackState.accessCode, activeTrackConfig?.isPaid]);
 
   const handleReceiptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -350,26 +443,53 @@ function AiUnlockedPage() {
     }
   };
 
-  const handleVerifyCode = (e: React.FormEvent) => {
+  const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentTrackId || !activeTrackConfig) return;
     const salt = activeTrackConfig.salt || "";
-    if (!enteredCode.trim()) {
+    const cleanCode = enteredCode.trim().toUpperCase();
+    if (!cleanCode) {
       toast.error("Please enter an access code.");
       return;
     }
 
-    if (validateAccessCode(enteredCode.trim(), salt)) {
-      updateTrackState(currentTrackId, (prev) => ({
-        ...prev,
-        unlocked: true,
-        accessCode: enteredCode.trim().toUpperCase(),
-      }));
-      toast.success(`✓ Full Access Unlocked for ${activeTrackConfig.name}!`);
-      setEnteredCode("");
-      navigateView("home");
-    } else {
-      toast.error("Invalid access code. Please check the code format or contact support.");
+    if (!validateAccessCode(cleanCode, salt)) {
+      toast.error("Invalid access code format or checksum mismatch.");
+      return;
+    }
+
+    setIsVerifyingCode(true);
+    try {
+      const res = await verifyAiAccessCode(currentTrackId, cleanCode);
+      if (res && res.valid) {
+        updateTrackState(currentTrackId, (prev) => ({
+          ...prev,
+          unlocked: true,
+          accessCode: cleanCode,
+          ...(res.lead
+            ? {
+                lead: {
+                  name: res.lead.name || prev.lead?.name || "",
+                  email: res.lead.email || prev.lead?.email || "",
+                  org: res.lead.org || prev.lead?.org || "",
+                  role: prev.lead?.role || "",
+                  dept: prev.lead?.dept || "",
+                  date: new Date().toISOString(),
+                  captured: false,
+                },
+              }
+            : {}),
+        }));
+        toast.success(`✓ Full Access Unlocked for ${activeTrackConfig.name}!`);
+        setEnteredCode("");
+        navigateView("home");
+      } else {
+        toast.error(res?.error || "Access code is invalid, revoked, or no active verified enrolment was found.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to verify access code with server. Please try again.");
+    } finally {
+      setIsVerifyingCode(false);
     }
   };
 
@@ -1025,7 +1145,8 @@ function AiUnlockedPage() {
           <div className="flex items-center gap-2.5">
             <button
               onClick={backToCatalog}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors cursor-pointer shrink-0"
+              title="Return to AI Unlocked 3 Courses"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               <span>All Courses</span>
@@ -1041,25 +1162,6 @@ function AiUnlockedPage() {
                 {activeTrackConfig.name}
               </h2>
             </div>
-          </div>
-
-          {/* Right: Quick Action Controls — AI Unlocked & Get in Touch */}
-          <div className="flex items-center gap-2 self-end sm:self-center">
-            <Link
-              to="/ai-unlocked"
-              onClick={backToCatalog}
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 px-3.5 py-1.5 text-xs font-bold text-brand-ink transition-all shadow-2xs cursor-pointer"
-            >
-              <span>AI Unlocked</span>
-            </Link>
-
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-1.5 rounded-full bg-brand-ink hover:bg-brand-red text-white px-3.5 py-1.5 text-xs font-extrabold shadow-sm transition-all cursor-pointer"
-            >
-              <span>Get in Touch</span>
-              <ArrowRight className="h-3 w-3" />
-            </Link>
           </div>
         </div>
 
@@ -1169,8 +1271,8 @@ function AiUnlockedPage() {
 
               {/* Modules List */}
               {currentLessons.map((lesson, idx) => {
-                const isDone = currentTrackState.done?.[lesson.id];
                 const isLocked = isLessonLocked(lesson.id);
+                const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
                 const isActive =
                   activeView === lesson.id || activeView === `q_${lesson.id}`;
 
@@ -1192,14 +1294,22 @@ function AiUnlockedPage() {
                     <span
                       className={[
                         "flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-md text-[10px] font-black transition-colors",
-                        isDone
-                          ? "bg-emerald-500 text-white"
-                          : isActive
-                            ? "bg-white text-brand-red"
-                            : "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
+                        isLocked
+                          ? "bg-amber-50 text-amber-600 border border-amber-200/60"
+                          : isDone
+                            ? "bg-emerald-500 text-white"
+                            : isActive
+                              ? "bg-white text-brand-red"
+                              : "bg-slate-100 text-slate-600 group-hover:bg-slate-200",
                       ].join(" ")}
                     >
-                      {isDone ? <Check className="h-3 w-3 stroke-[3]" /> : idx + 1}
+                      {isLocked ? (
+                        <Lock className="h-2.5 w-2.5 text-amber-600" />
+                      ) : isDone ? (
+                        <Check className="h-3 w-3 stroke-[3]" />
+                      ) : (
+                        idx + 1
+                      )}
                     </span>
 
                     <div className="min-w-0 flex-1">
@@ -1207,12 +1317,14 @@ function AiUnlockedPage() {
                         <span className="text-[9px] font-extrabold uppercase tracking-wider opacity-75">
                           {lesson.tag}
                         </span>
-                        {isDone ? (
+                        {isLocked ? (
+                          <span className="inline-flex items-center gap-0.5 text-[8px] bg-amber-50 text-amber-700 border border-amber-200/70 px-1 py-0.2 rounded font-bold">
+                            <Lock className="h-2 w-2" /> LOCKED
+                          </span>
+                        ) : isDone ? (
                           <span className="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded font-black">
                             PASSED
                           </span>
-                        ) : isLocked ? (
-                          <Lock className="h-2.5 w-2.5 text-amber-500" />
                         ) : !activeTrackConfig.isPaid ? null : (
                           <span className="text-[8px] bg-emerald-100 text-emerald-800 px-1 rounded font-bold">
                             FREE
@@ -1603,8 +1715,8 @@ function AiUnlockedPage() {
 
                   <div className="grid grid-cols-1 gap-2.5">
                     {currentLessons.map((lesson, idx) => {
-                      const isDone = currentTrackState.done?.[lesson.id];
                       const isLocked = isLessonLocked(lesson.id);
+                      const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
 
                       return (
                         <div
@@ -1689,6 +1801,48 @@ function AiUnlockedPage() {
               if (activeView !== lesson.id && activeView !== `q_${lesson.id}`)
                 return null;
               const isQuizMode = activeView === `q_${lesson.id}`;
+              const isLocked = isLessonLocked(lesson.id);
+
+              if (isLocked) {
+                return (
+                  <div
+                    key={lesson.id}
+                    className="bg-white rounded-2xl border border-amber-200/90 shadow-sm p-6 sm:p-10 text-center space-y-4 max-w-2xl mx-auto my-6 animate-fade-in-up"
+                  >
+                    <div className="h-16 w-16 mx-auto rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center text-3xl shadow-inner">
+                      <Lock className="h-8 w-8 text-amber-600" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                        {lesson.tag} · Module Locked
+                      </span>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-900">
+                        {lesson.title}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed font-medium">
+                        This module is part of the full verified <span className="font-bold text-slate-900">{activeTrackConfig.name}</span> programme. Please unlock full access using your verified Access Code to access all lessons, quizzes, and digital credential.
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                      <button
+                        onClick={() => navigateView("pay")}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-brand-red text-white font-extrabold text-xs sm:text-sm px-6 py-3 shadow-md transition-all cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-amber-400" />
+                        <span>Unlock Full Course Access</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => navigateView("home")}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm px-4 py-3 transition-colors cursor-pointer"
+                      >
+                        <span>Course Overview</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <div
@@ -1712,7 +1866,7 @@ function AiUnlockedPage() {
                       {/* Mode switch pills (Material vs Quiz) */}
                       <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                         <button
-                          onClick={() => setActiveView(lesson.id)}
+                          onClick={() => navigateView(lesson.id)}
                           className={[
                             "px-3 py-1 rounded-md text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer",
                             !isQuizMode
@@ -1723,7 +1877,7 @@ function AiUnlockedPage() {
                           Material
                         </button>
                         <button
-                          onClick={() => setActiveView(`q_${lesson.id}`)}
+                          onClick={() => navigateView(`q_${lesson.id}`)}
                           className={[
                             "px-3 py-1 rounded-md text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer",
                             isQuizMode
@@ -1887,7 +2041,7 @@ function AiUnlockedPage() {
                         </button>
 
                         <button
-                          onClick={() => setActiveView(`q_${lesson.id}`)}
+                          onClick={() => navigateView(`q_${lesson.id}`)}
                           className="inline-flex items-center gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white text-xs font-black px-4 sm:px-5 py-2 sm:py-2.5 shadow-xs hover:shadow-md transition-all cursor-pointer"
                         >
                           <span>Take {lesson.tag} Assessment</span>
@@ -1992,7 +2146,7 @@ function AiUnlockedPage() {
                         {/* Bottom navigation */}
                         <div className="flex items-center justify-between pt-1">
                           <button
-                            onClick={() => setActiveView(lesson.id)}
+                            onClick={() => navigateView(lesson.id)}
                             className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold px-3 py-2 transition-colors cursor-pointer"
                           >
                             <ChevronLeft className="h-3.5 w-3.5" />
@@ -2317,9 +2471,17 @@ function AiUnlockedPage() {
 
                         <button
                           type="submit"
-                          className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-extrabold py-2.5 shadow-xs transition-all cursor-pointer"
+                          disabled={isVerifyingCode}
+                          className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-xs sm:text-sm font-extrabold py-2.5 shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
                         >
-                          Verify &amp; Unlock Course →
+                          {isVerifyingCode ? (
+                            <>
+                              <RotateCcw className="h-4 w-4 animate-spin" />
+                              <span>Verifying Code...</span>
+                            </>
+                          ) : (
+                            <span>Verify &amp; Unlock Course →</span>
+                          )}
                         </button>
                       </form>
 
@@ -2338,7 +2500,26 @@ function AiUnlockedPage() {
             ══════════════════════════════════════════════════════════ */}
             {activeView === "cert" && (
               <div className="space-y-4 sm:space-y-5 animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
-                {!isCourseComplete ? (
+                {!isTrackUnlocked && activeTrackConfig.isPaid ? (
+                  <div className="bg-white rounded-xl sm:rounded-2xl border border-amber-200 p-6 sm:p-10 text-center space-y-4 shadow-2xs max-w-2xl mx-auto">
+                    <div className="mx-auto h-16 w-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl shadow-inner text-amber-600">
+                      <Lock className="h-8 w-8 text-amber-600" />
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-black text-slate-900">
+                      Certificate Locked — Enrolment Required
+                    </h2>
+                    <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
+                      Official Certificate issuance is available only to verified students enrolled in <span className="font-bold text-slate-800">{activeTrackConfig.name}</span>. Please unlock the course with your Access Code to proceed.
+                    </p>
+                    <button
+                      onClick={() => navigateView("pay")}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 shadow-xs transition-all cursor-pointer"
+                    >
+                      <Lock className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Unlock Course with Access Code</span>
+                    </button>
+                  </div>
+                ) : !isCourseComplete ? (
                   <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 p-6 sm:p-10 text-center space-y-4 shadow-2xs">
                     <div className="mx-auto h-16 w-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-2xl shadow-inner">
                       🔒
