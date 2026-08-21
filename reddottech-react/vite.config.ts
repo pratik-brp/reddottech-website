@@ -18,13 +18,17 @@ export default defineConfig({
     react(),
   ],
   resolve: {
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
     tsconfigPaths: true,
   },
   server: {
     proxy: {
-      // Forward API calls to the Express + SQLite backend during development so
-      // the frontend can use same-origin "/api/..." URLs everywhere.
+      // Forward API calls to the Express backend during development
       "/api": {
+        target: process.env.VITE_DEV_PROXY_TARGET || "http://localhost:5000",
+        changeOrigin: true,
+      },
+      "/uploads": {
         target: process.env.VITE_DEV_PROXY_TARGET || "http://localhost:5000",
         changeOrigin: true,
       },

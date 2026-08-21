@@ -2,13 +2,11 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Award,
   Sparkles,
   Target,
   HeartHandshake,
   ShieldCheck,
   CheckCircle2,
-  Users,
   Globe2,
   ChevronRight,
 } from "lucide-react";
@@ -129,7 +127,6 @@ export function HomeAboutSection() {
         </div>
 
         {/* Main Content Grid */}
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Column: Composite Image & Floating Glass Badges */}
           <div className="lg:col-span-6 relative">
@@ -150,8 +147,8 @@ export function HomeAboutSection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none" />
 
-                    {/* Bottom Glass Spotlight Bar */}
-                    <div className="absolute bottom-4 left-4 right-4 z-20 p-4 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-white/15 flex items-center justify-between text-white shadow-2xl">
+                    {/* Bottom Spotlight Bar */}
+                    <div className="absolute bottom-4 left-4 right-4 z-20 p-4 rounded-2xl bg-slate-900 border border-white/15 flex items-center justify-between text-white shadow-2xl">
                       <div className="flex items-center gap-3.5 min-w-0">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red text-white shadow-md">
                           <Globe2 className="h-5 w-5 stroke-[2]" />
@@ -176,58 +173,66 @@ export function HomeAboutSection() {
           </div>
 
           {/* Right Column: Tabbed Interactive Storytelling */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-6 flex flex-col justify-between space-y-5 sm:space-y-6">
             {/* Tab Selector Buttons */}
-            <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 max-w-fit">
+            <div className="grid grid-cols-3 sm:flex sm:flex-wrap gap-1 sm:gap-2 p-1 sm:p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 w-full sm:max-w-fit select-none">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
+                    type="button"
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold transition-colors duration-200 ${isActive
-                        ? "bg-white text-brand-ink shadow-md"
-                        : "text-slate-600 hover:text-brand-ink hover:bg-white/50"
+                    className={`flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs font-extrabold transition-all duration-200 text-center cursor-pointer ${isActive
+                      ? "bg-white text-brand-ink shadow-md"
+                      : "text-slate-600 hover:text-brand-ink hover:bg-white/50"
                       }`}
                   >
-                    <Icon className={`h-4 w-4 ${isActive ? "text-brand-red" : "text-slate-400"}`} />
-                    <span>{tab.label}</span>
+                    <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isActive ? "text-brand-red" : "text-slate-400"}`} />
+                    <span className="truncate">{tab.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Active Tab Panel (Absolutely Rigid Fixed Height Box) */}
-            <div className="rounded-[2.25rem] border border-slate-200/90 bg-white p-7 sm:p-9 pb-8 sm:pb-9 shadow-xl relative overflow-hidden flex flex-col justify-between gap-6 h-[560px] sm:h-[480px] lg:h-[500px]">
-              <div key={activeTab} className="space-y-4 animate-fade-in flex-1">
-                <div className="flex items-center gap-2">
+            {/* Active Tab Panel (Fixed Stable Height Box) */}
+            <div className="rounded-[2rem] sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-5 sm:p-8 pb-6 sm:pb-8 shadow-xl relative overflow-hidden flex flex-col justify-between gap-4 sm:gap-5 min-h-[460px] sm:min-h-[480px] lg:min-h-[475px]">
+              <div className="space-y-3 sm:space-y-3.5 flex-1 flex flex-col justify-between">
+                {/* Badge area with fixed min-height */}
+                <div className="flex items-center gap-2 min-h-[26px]">
                   <span className="badge-brand">{currentTab.badge}</span>
                 </div>
 
-                <h3 className="display-font text-2xl sm:text-3xl font-extrabold text-brand-ink leading-snug">
-                  {currentTab.title}
-                </h3>
+                {/* Title area with fixed min-height */}
+                <div className="min-h-[52px] sm:min-h-[64px] flex items-center">
+                  <h3 className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink leading-snug">
+                    {currentTab.title}
+                  </h3>
+                </div>
 
-                <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
-                  {currentTab.subtitle}
-                </p>
+                {/* Subtitle with fixed min-height */}
+                <div className="min-h-[58px] sm:min-h-[68px] flex items-center">
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-medium line-clamp-3">
+                    {currentTab.subtitle}
+                  </p>
+                </div>
 
-                {/* Bullet Points */}
-                <div className="space-y-2.5 pt-3 border-t border-slate-100">
+                {/* Bullet Points with uniform row heights */}
+                <div className="space-y-2 sm:space-y-2.5 pt-2 sm:pt-3 border-t border-slate-100 min-h-[105px] sm:min-h-[115px]">
                   {currentTab.points.map((pt) => (
-                    <div key={pt} className="flex items-start gap-3">
+                    <div key={pt} className="flex items-start gap-2.5 sm:gap-3 min-h-[26px] sm:min-h-[28px]">
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug">{pt}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug line-clamp-2">{pt}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Actions Row */}
-              <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-4 shrink-0">
+              {/* Actions Row (Pinned Stably at Bottom) */}
+              <div className="pt-3 sm:pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 shrink-0 mt-auto">
                 <Magnetic>
-                  <Link to="/about" className="btn-primary group text-xs sm:text-sm py-3 px-6 justify-center w-full sm:w-auto">
+                  <Link to="/about" className="btn-primary group text-xs sm:text-sm py-3 px-6 justify-center w-full sm:w-auto text-center">
                     <span>Learn More</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
@@ -235,7 +240,7 @@ export function HomeAboutSection() {
                 <Magnetic>
                   <Link
                     to="/contact"
-                    className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-brand-ink hover:text-brand-red transition-colors py-2 px-3"
+                    className="inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-extrabold text-brand-ink hover:text-brand-red transition-colors py-2 px-3 w-full sm:w-auto text-center"
                   >
                     <span>Speak to Academic Advisor</span>
                     <ChevronRight className="h-4 w-4 text-brand-red" />
@@ -247,24 +252,26 @@ export function HomeAboutSection() {
         </div>
 
         {/* Bottom Interactive Vision, Mission & Promise Cards */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {pillars.map((item) => {
+        <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-6">
+          {pillars.map((item, index) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.label}
-                className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
+                className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white p-3.5 sm:p-6 shadow-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
+                  index === 2 ? "col-span-2 md:col-span-1" : "col-span-1"
+                }`}
               >
                 <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${item.color}`} />
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-red/8 text-brand-red transition-all duration-300 group-hover:bg-brand-red group-hover:text-white group-hover:scale-110 mb-4 p-2.5">
+                <div className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-red/8 text-brand-red transition-all duration-300 group-hover:bg-brand-red group-hover:text-white group-hover:scale-110 mb-2.5 sm:mb-4 p-1.5 sm:p-2.5">
                   {item.svg ? (
-                    <img src={item.svg} alt={item.label} className="h-6 w-6 object-contain" />
+                    <img src={item.svg} alt={item.label} className="h-4 w-4 sm:h-6 sm:w-6 object-contain" />
                   ) : (
-                    <Icon className="h-6 w-6 stroke-[2.2]" />
+                    <Icon className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                   )}
                 </div>
-                <h3 className="display-font text-lg font-bold text-brand-ink">{item.label}</h3>
-                <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 font-medium">
+                <h3 className="display-font text-xs sm:text-lg font-bold text-brand-ink">{item.label}</h3>
+                <p className="mt-1 sm:mt-2 text-[11px] sm:text-sm leading-relaxed text-slate-500 font-medium">
                   {item.text}
                 </p>
               </div>

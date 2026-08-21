@@ -3,67 +3,32 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, PlayCircle, ChevronDown } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { Magnetic } from "@/components/motion/Magnetic";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import hero3d from "@/assets/hero-3d.webp";
 
 export function NewHeroSection() {
   const container = useRef<HTMLElement>(null);
-  const sceneRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const scene = sceneRef.current;
-      if (scene) {
-        const tiltX = gsap.quickTo(scene, "rotationX", { duration: 0.5, ease: "power3.out" });
-        const tiltY = gsap.quickTo(scene, "rotationY", { duration: 0.5, ease: "power3.out" });
-        let rect = scene.getBoundingClientRect();
-        const updateRect = () => {
-          rect = scene.getBoundingClientRect();
-        };
-        const onMove = (e: MouseEvent) => {
-          const px = (e.clientX - rect.left) / rect.width - 0.5;
-          const py = (e.clientY - rect.top) / rect.height - 0.5;
-          tiltY(px * 18);
-          tiltX(-py * 14);
-        };
-        const onLeave = () => {
-          tiltX(0);
-          tiltY(0);
-        };
-        scene.addEventListener("pointermove", onMove);
-        scene.addEventListener("pointerleave", onLeave);
-        window.addEventListener("resize", updateRect);
-        return () => {
-          scene.removeEventListener("pointermove", onMove);
-          scene.removeEventListener("pointerleave", onLeave);
-          window.removeEventListener("resize", updateRect);
-        };
-      }
-    },
-    { scope: container },
-  );
 
   useGSAP(
     () => {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set(".hero-reveal-item, .hero-float-card, .hero-orb", {
+        gsap.set(".hero-reveal-item, .hero-float-card, .hero-orb, .hero-illust-main", {
           opacity: 1,
           y: 0,
           scale: 1,
         });
         return;
       }
-      gsap.set(".hero-reveal-item", { opacity: 0, y: 30 });
-      gsap.set(".hero-float-card", { opacity: 0, scale: 0.8 });
-      gsap.set(".hero-orb", { opacity: 0, scale: 0.7 });
-      gsap.set(".hero-illust-main", { opacity: 0, scale: 0.7, rotationY: -30, rotationX: 15 });
+      gsap.set(".hero-reveal-item", { opacity: 0, y: 25 });
+      gsap.set(".hero-float-card", { opacity: 0, scale: 0.9 });
+      gsap.set(".hero-orb", { opacity: 0, scale: 0.8 });
+      gsap.set(".hero-illust-main", { opacity: 0, scale: 0.95 });
 
       const tl = gsap.timeline({ delay: 0.1 });
-      tl.to(".hero-orb", { opacity: 1, scale: 1, duration: 1.0, stagger: 0.1, ease: "power3.out" })
+      tl.to(".hero-orb", { opacity: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" })
         .to(
           ".hero-reveal-item",
-          { opacity: 1, y: 0, duration: 0.9, stagger: 0.08, ease: "power3.out" },
+          { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power2.out" },
           "<",
         )
         .to(
@@ -71,43 +36,16 @@ export function NewHeroSection() {
           {
             opacity: 1,
             scale: 1,
-            rotationY: 0,
-            rotationX: 0,
-            duration: 1.0,
-            ease: "power3.out",
+            duration: 0.8,
+            ease: "power2.out",
           },
           "<",
         )
         .to(
           ".hero-float-card",
-          { opacity: 1, scale: 1, duration: 0.8, stagger: 0.15, ease: "back.out(1.6)" },
-          "-=0.4",
+          { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" },
+          "-=0.3",
         );
-
-      // Mouse parallax
-      const moveX = gsap.quickTo(".hero-parallax-layer", "x", {
-        duration: 0.8,
-        ease: "power3.out",
-      });
-      const moveY = gsap.quickTo(".hero-parallax-layer", "y", {
-        duration: 0.8,
-        ease: "power3.out",
-      });
-      let ticking = false;
-      const onMove = (e: MouseEvent) => {
-        if (!ticking) {
-          requestAnimationFrame(() => {
-            const nx = (e.clientX / window.innerWidth - 0.5) * 2;
-            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-            moveX(nx * 14);
-            moveY(ny * 10);
-            ticking = false;
-          });
-          ticking = true;
-        }
-      };
-      window.addEventListener("mousemove", onMove, { passive: true });
-      return () => window.removeEventListener("mousemove", onMove);
     },
     { scope: container },
   );
@@ -119,7 +57,6 @@ export function NewHeroSection() {
       className="relative flex min-h-[100dvh] min-h-screen flex-col justify-center overflow-hidden"
       style={{ background: "var(--gradient-hero)" }}
     >
-
       {/* Animated gradient orbs */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
@@ -147,7 +84,7 @@ export function NewHeroSection() {
       <div className="relative z-10 my-auto mx-auto grid w-full max-w-7xl items-center gap-8 sm:gap-10 px-4 sm:px-6 pt-20 pb-12 sm:pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pt-28 lg:pb-16">
         {/* Left content */}
         <div>
-          <span className="hero-reveal-item inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/70 backdrop-blur-md px-3.5 sm:px-4 py-1.5 shadow-sm">
+          <span className="hero-reveal-item inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white px-3.5 sm:px-4 py-1.5 shadow-sm">
             <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
             <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
               Nepal&apos;s Certification Hub
@@ -169,18 +106,14 @@ export function NewHeroSection() {
           </p>
 
           <div className="hero-reveal-item mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-            <Magnetic>
-              <Link to="/courses" className="btn-primary group py-3 sm:py-3.5 px-6 sm:px-7 text-xs sm:text-sm">
-                <span>Get Started</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-              </Link>
-            </Magnetic>
-            <Magnetic strength={0.25}>
-              <Link to="/pecp" className="btn-secondary group inline-flex items-center gap-2 py-3 sm:py-3.5 px-5 sm:px-6 text-xs sm:text-sm">
-                <PlayCircle className="h-4 w-4 text-brand-red" />
-                <span>Explore PECP</span>
-              </Link>
-            </Magnetic>
+            <Link to="/courses" className="btn-primary group py-3 sm:py-3.5 px-6 sm:px-7 text-xs sm:text-sm">
+              <span>Get Started</span>
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </Link>
+            <Link to="/pecp" className="btn-secondary group inline-flex items-center gap-2 py-3 sm:py-3.5 px-5 sm:px-6 text-xs sm:text-sm">
+              <PlayCircle className="h-4 w-4 text-brand-red" />
+              <span>Explore PECP</span>
+            </Link>
           </div>
 
           {/* Stats */}
@@ -200,29 +133,22 @@ export function NewHeroSection() {
           </dl>
         </div>
 
-        {/* Right visual — 3D tilt illustration */}
-        <div className="hero-parallax-layer scene-3d relative w-full mt-6 sm:mt-8 lg:mt-0 flex justify-center" aria-hidden="true">
+        {/* Right visual — Static 3D Hero Illustration */}
+        <div className="relative w-full mt-6 sm:mt-8 lg:mt-0 flex justify-center" aria-hidden="true">
           <div
-            ref={sceneRef}
-            className="layer-3d relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[440px] lg:max-w-[620px]"
-            style={{ transformStyle: "preserve-3d" }}
+            className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[440px] lg:max-w-[620px]"
           >
-            {/* Back layers */}
+            {/* Ambient Background Glow (Static) */}
             <div
-              className="animate-spin-slow absolute inset-[8%] rounded-full border border-brand-red/20"
-              style={{ transform: "translateZ(-90px)" }}
-            />
-            <div
-              className="absolute inset-[20%] rounded-full"
+              className="absolute inset-[20%] rounded-full opacity-60 pointer-events-none"
               style={{
-                transform: "translateZ(-140px)",
                 background:
-                  "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 30%, transparent) 0%, transparent 70%)",
+                  "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 25%, transparent) 0%, transparent 70%)",
                 filter: "blur(40px)",
               }}
             />
 
-            {/* Core 3D illustration */}
+            {/* Core 3D illustration (Completely Static) */}
             <img
               src={hero3d}
               alt="3D illustration of a graduation cap with floating glass panels and spheres"
@@ -230,14 +156,12 @@ export function NewHeroSection() {
               height={1280}
               fetchPriority="high"
               decoding="async"
-              className="hero-illust-main animate-float relative h-full w-full object-contain"
-              style={{ transform: "translateZ(70px)" }}
+              className="hero-illust-main relative h-full w-full object-contain select-none pointer-events-none"
             />
 
-            {/* Floating glass cards */}
+            {/* Floating glass card (Static Position) */}
             <div
-              className="hero-float-card glass-card animate-float absolute bottom-[6%] right-0 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-4 shadow-[var(--shadow-card-premium)] [animation-delay:2.4s]"
-              style={{ transform: "translateZ(170px)" }}
+              className="hero-float-card glass-card absolute bottom-[6%] right-0 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-4 shadow-xl"
             >
               <p className="display-font text-xl sm:text-3xl font-bold text-brand-red">4.9★</p>
               <p className="mt-0.5 text-[9px] sm:text-xs font-semibold text-slate-500">Learner rating</p>

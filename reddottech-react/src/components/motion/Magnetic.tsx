@@ -6,6 +6,16 @@ interface MagneticProps {
   className?: string;
 }
 
+const isButtonLike = (node: Element | null | undefined) => {
+  if (!node) return false;
+
+  const tag = node.tagName.toLowerCase();
+  if (tag === "button" || tag === "a" || tag === "input") return true;
+
+  const className = node.getAttribute("class") ?? "";
+  return className.includes("btn-") || className.includes("button");
+};
+
 export function Magnetic({ children, strength = 0.35, className = "" }: MagneticProps) {
   const ref = useRef<HTMLDivElement>(null);
   const rectRef = useRef<{ left: number; top: number; width: number; height: number } | null>(null);
@@ -21,11 +31,18 @@ export function Magnetic({ children, strength = 0.35, className = "" }: Magnetic
   const onMouseEnter = () => {
     const el = ref.current;
     if (!el) return;
+    if (isButtonLike(el.firstElementChild)) {
+      el.style.transform = "translate3d(0px, 0px, 0)";
+      return;
+    }
     rectRef.current = el.getBoundingClientRect();
     el.style.transition = "none";
   };
 
   const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const el = ref.current;
+    if (!el || isButtonLike(el.firstElementChild)) return;
+
     const rect = rectRef.current;
     if (!rect) return;
     posRef.current = { x: e.clientX, y: e.clientY };

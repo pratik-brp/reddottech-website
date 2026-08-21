@@ -32,8 +32,9 @@ function AdminCreateCoursePage() {
   const [skillLevel, setSkillLevel] = useState("beginner");
   const [certification, setCertification] = useState("PECP");
   const [status, setStatus] = useState("published");
-  const [thumbnail, setThumbnail] = useState("/images/courses/course-ai.jpg");
-  const [bannerImage, setBannerImage] = useState("/images/hero/banner.jpg");
+  const [thumbnail, setThumbnail] = useState("");
+  const [bannerImage, setBannerImage] = useState("");
+  const [instructorImage, setInstructorImage] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
   const [curriculum, setCurriculum] = useState("");
@@ -53,6 +54,7 @@ function AdminCreateCoursePage() {
         category,
         instructorName,
         instructorTitle,
+        instructorImage,
         instructorDetail,
         price: Number(price) || 0,
         startDate,
@@ -69,7 +71,7 @@ function AdminCreateCoursePage() {
         requirements,
         curriculum,
       });
-      toast.success("Course created and saved to SQLite database!");
+      toast.success("Course created and saved successfully to database!");
       navigate({ to: "/admin/courses" });
     } catch (err) {
       toast.error("Failed to save course to database.");
@@ -79,16 +81,16 @@ function AdminCreateCoursePage() {
   };
 
   return (
-    <AdminLayout title="Add New Course">
-      <div className="max-w-4xl mx-auto bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-xl space-y-7">
-        <div className="border-b border-slate-100 pb-4">
-          <h2 className="text-xl font-extrabold text-slate-900">Create New Course</h2>
-          <p className="text-xs text-slate-500 font-medium mt-1">
+    <AdminLayout title="Add New Course" mobileTitle="New Course">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-10 border border-slate-200 shadow-xl space-y-5 sm:space-y-7">
+        <div className="border-b border-slate-100 pb-3 sm:pb-4">
+          <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">Create New Course</h2>
+          <p className="text-xs text-slate-500 font-medium mt-0.5 sm:mt-1">
             Add a new professional certification module or cohort program to the catalog.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-7 text-xs font-semibold text-slate-700">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-7 text-xs font-semibold text-slate-700">
           {/* 1. General Info */}
           <div className="space-y-4">
             <h4 className="text-xs font-black uppercase tracking-wider text-brand-red flex items-center gap-2">
@@ -310,28 +312,44 @@ function AdminCreateCoursePage() {
             </div>
           </div>
 
-          {/* 3. Media & Visuals (Manual File Upload & Preview) */}
+          {/* 3. Media & Visuals (Direct Device Upload & Database Save) */}
           <div className="space-y-4 pt-2 border-t border-slate-100">
-            <h4 className="text-xs font-black uppercase tracking-wider text-slate-600 flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-slate-400" />
-              Media &amp; Visuals (Upload from Device or Edit URL)
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-brand-red" />
+                Media &amp; Visual Assets (Direct Upload &amp; Database Storage)
+              </h4>
+              <span className="text-[11px] text-slate-400 font-medium">
+                Uploads save automatically to MySQL
+              </span>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               <ImageUploadField
                 label="Course Thumbnail Image"
                 value={thumbnail}
                 onChange={setThumbnail}
-                placeholder="/images/courses/course-ai.jpg"
+                placeholder="https://... or /uploads/thumbnail.jpg"
                 aspectRatio="16/9"
+                description="Displays on course cards, listings & catalog"
               />
 
               <ImageUploadField
                 label="Course Hero Banner Image"
                 value={bannerImage}
                 onChange={setBannerImage}
-                placeholder="/images/hero/banner.jpg"
+                placeholder="https://... or /uploads/banner.jpg"
                 aspectRatio="banner"
+                description="Hero panoramic header on course details page"
+              />
+
+              <ImageUploadField
+                label="Instructor Avatar Photo"
+                value={instructorImage}
+                onChange={setInstructorImage}
+                placeholder="https://... or /uploads/instructor.jpg"
+                aspectRatio="square"
+                description="Lead faculty portrait headshot"
               />
             </div>
           </div>

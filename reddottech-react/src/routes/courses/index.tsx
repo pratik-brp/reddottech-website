@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { coursesData as staticCourses } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
@@ -16,11 +15,22 @@ import {
   Bot,
   TrendingUp,
   BookOpen,
-  Filter,
+  Award,
 } from "lucide-react";
 import { getCourses } from "@/lib/api";
+import { BrandSpinner } from "@/components/ui/BrandSpinner";
+import type { Course } from "@/types";
+
+interface CoursesSearch {
+  category?: string;
+  q?: string;
+}
 
 export const Route = createFileRoute("/courses/")({
+  validateSearch: (search: Record<string, unknown>): CoursesSearch => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+    q: typeof search.q === "string" ? search.q : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Course Catalog | Red Dot Technologies — Professional IT & Business Credentials" },
@@ -34,29 +44,47 @@ export const Route = createFileRoute("/courses/")({
   component: CoursesPage,
 });
 
-const CATEGORY_CONFIG: Record<string, { icon: any; label?: string }> = {
-  All: { icon: Sparkles, label: "All Programs" },
-  "Quality & Management": { icon: ShieldCheck, label: "Quality & Six Sigma" },
-  "Leadership & Management": { icon: Users, label: "Leadership & Mgmt" },
-  "Project Management": { icon: Briefcase, label: "Project Management" },
+const CATEGORY_CONFIG: Record<string, { icon: typeof ShieldCheck; label: string }> = {
+  All: { icon: ShieldCheck, label: "All Disciplines" },
   "Artificial Intelligence": { icon: Bot, label: "Artificial Intelligence" },
+  "Project Management": { icon: Briefcase, label: "Project Management" },
+  "Executive & Leadership": { icon: Users, label: "Executive & Leadership" },
   "Analytics & Data": { icon: TrendingUp, label: "Analytics & Data" },
+  "Quality Management": { icon: Award, label: "Quality Management" },
 };
 
 function CoursesPage() {
-  const [coursesList, setCoursesList] = useState<any[]>(staticCourses);
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = Route.useSearch();
+  const [coursesList, setCoursesList] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.category || "All");
+  const [searchQuery, setSearchQuery] = useState(searchParams.q || "");
   const [isFiltering, setIsFiltering] = useState(false);
   const prevFilterRef = useRef({ cat: "All", q: "" });
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    getCourses().then((data) => {
-      if (data && data.length > 0) {
-        setCoursesList(data);
-      }
-    });
+    if (searchParams.category) {
+      setSelectedCategory(searchParams.category);
+    }
+    if (searchParams.q) {
+      setSearchQuery(searchParams.q);
+    }
+  }, [searchParams.category, searchParams.q]);
+
+  useEffect(() => {
+    getCourses()
+      .then((data) => {
+        if (data) {
+          setCoursesList(data);
+        }
+      })
+      .catch(() => {
+        setCoursesList([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   // Keyboard shortcut (Cmd/Ctrl + K) to focus search
@@ -71,10 +99,26 @@ function CoursesPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Dynamically extract unique categories
+  // Dynamically extract unique categories with curated ordering
   const allCategories = useMemo(() => {
-    const cats = Array.from(new Set(coursesList.map((c) => c.category).filter(Boolean)));
-    return ["All", ...cats];
+    const PREFERRED_ORDER = [
+      "All",
+      "Artificial Intelligence",
+      "Project Management",
+      "Executive & Leadership",
+      "Analytics & Data",
+      "Quality Management",
+    ];
+    const rawCats = Array.from(new Set(coursesList.map((c) => c.category).filter(Boolean))) as string[];
+    const sorted = rawCats.sort((a, b) => {
+      const idxA = PREFERRED_ORDER.indexOf(a);
+      const idxB = PREFERRED_ORDER.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return ["All", ...sorted];
   }, [coursesList]);
 
   const filteredCourses = useMemo(() => {
@@ -110,7 +154,7 @@ function CoursesPage() {
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-slate-50 text-brand-ink selection:bg-brand-red selection:text-white">
       {/* ── Clean Centered Courses Hero Section ── */}
-      <section className="relative overflow-hidden pt-28 sm:pt-36 pb-14 sm:pb-18 border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-slate-50/70">
+      <section className="relative overflow-hidden pt-24 pb-8 sm:pt-36 sm:pb-18 border-b border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-slate-50/70">
         {/* Soft Ambient Background Lighting & Grid */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
@@ -128,23 +172,23 @@ function CoursesPage() {
           <div className="absolute inset-0 bg-grid-pattern opacity-40" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white/80 px-4 py-1.5 backdrop-blur-md shadow-xs">
-            <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-            <span className="text-xs font-black uppercase tracking-[0.14em] text-brand-red">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-brand-red/20 bg-white px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+            <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.14em] text-brand-red">
               World-Class Course Catalog
             </span>
           </div>
 
           {/* Heading */}
-          <h1 className="display-font mt-6 text-3xl sm:text-5xl lg:text-6xl font-black text-brand-ink leading-[1.1] tracking-tight max-w-4xl mx-auto">
+          <h1 className="display-font mt-3 sm:mt-6 text-2xl sm:text-5xl lg:text-6xl font-black text-brand-ink leading-[1.1] tracking-tight max-w-4xl mx-auto">
             Master In-Demand Skills with{" "}
             <span className="gradient-text">Global Certifications</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-4 text-base sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-2 sm:mt-4 text-xs sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
             Choose from our industry-led certification cohorts co-developed with university
             professors and senior tech leaders.
           </p>
@@ -152,14 +196,15 @@ function CoursesPage() {
       </section>
 
       {/* ───────────────────────────────────────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
       {/* ── REDESIGNED PREMIUM STICKY FILTER & COMMAND TOOLBAR ──       */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <section className="sticky top-[4.25rem] z-30 bg-white/85 backdrop-blur-2xl border-b border-slate-200/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3.5">
+      <section id="catalog" className="sticky top-[4.25rem] z-30 bg-white/95 border-b border-slate-200/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] will-change-transform transform-gpu">
+        <div className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-4">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-3.5">
             {/* Search Bar Input */}
             <div className="relative flex-1 max-w-md">
-              <Search className="h-4 w-4 text-brand-red absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="h-4 w-4 text-brand-red absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 ref={searchInputRef}
                 id="course-search"
@@ -167,7 +212,7 @@ function CoursesPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search courses, topics, skills..."
-                className="w-full rounded-full border border-slate-200/90 bg-slate-100/80 pl-10 pr-20 py-2.5 text-xs sm:text-sm font-semibold text-brand-ink placeholder:text-slate-400 focus:outline-none focus:border-brand-red focus:bg-white focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-red)_12%,transparent)] transition-all duration-200"
+                className="w-full rounded-full border border-slate-200/90 bg-slate-100/80 pl-9 pr-16 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-brand-ink placeholder:text-slate-400 focus:outline-none focus:border-brand-red focus:bg-white focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-red)_12%,transparent)] transition-all duration-200"
               />
 
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
@@ -210,7 +255,7 @@ function CoursesPage() {
           </div>
 
           {/* Category Filter Pills (Scrollable & Responsive) */}
-          <div className="mt-3 pt-3 border-t border-slate-100/80 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <div className="mt-2 pt-2 sm:mt-3 sm:pt-3 border-t border-slate-100/80 flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
             {allCategories.map((cat) => {
               const count =
                 cat === "All"
@@ -225,14 +270,14 @@ function CoursesPage() {
                   key={cat}
                   onClick={() => setSelectedCategory(cat as string)}
                   aria-pressed={isActive}
-                  className={`group relative shrink-0 flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 select-none cursor-pointer ${
+                  className={`group relative shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold transition-all duration-300 select-none cursor-pointer ${
                     isActive
                       ? "bg-slate-950 text-white shadow-md shadow-slate-950/20 scale-[1.02] border border-slate-800"
                       : "bg-white text-slate-600 border border-slate-200/90 hover:border-slate-300 hover:text-brand-ink hover:bg-slate-50"
                   }`}
                 >
                   <IconComponent
-                    className={`h-3.5 w-3.5 transition-transform duration-300 ${
+                    className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-300 ${
                       isActive
                         ? "text-brand-red scale-110"
                         : "text-slate-400 group-hover:text-brand-ink group-hover:scale-110"
@@ -240,7 +285,7 @@ function CoursesPage() {
                   />
                   <span>{cat}</span>
                   <span
-                    className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-black transition-colors ${
+                    className={`inline-flex items-center justify-center min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 px-1 sm:px-1.5 rounded-full text-[9px] sm:text-[10px] font-black transition-colors ${
                       isActive
                         ? "bg-brand-red text-white"
                         : "bg-slate-100 border border-slate-200/80 text-slate-600 group-hover:bg-slate-200"
@@ -256,7 +301,7 @@ function CoursesPage() {
             {isActiveFilter && (
               <button
                 onClick={clearFilters}
-                className="lg:hidden shrink-0 inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-bold text-brand-red hover:bg-rose-100 transition-colors"
+                className="lg:hidden shrink-0 inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200 px-2.5 py-1.5 text-[11px] font-bold text-brand-red hover:bg-rose-100 transition-colors"
               >
                 <X className="h-3 w-3" />
                 <span>Reset</span>
@@ -266,12 +311,12 @@ function CoursesPage() {
         </div>
       </section>
 
-      {/* ── Courses Grid ── */}
-      <section className="section-padding bg-surface-elevated flex-1">
-        <div className="mx-auto max-w-7xl px-6">
+      {/* ── Courses Grid (2-Column Mobile Grid) ── */}
+      <section id="courses-grid" className="section-padding bg-surface-elevated flex-1">
+        <div className="mx-auto max-w-7xl px-3.5 sm:px-6">
           {/* Mobile results count */}
-          <div className="sm:hidden mb-6 flex items-center justify-between">
-            <p className="text-xs font-bold text-slate-500">
+          <div className="sm:hidden mb-3 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-slate-500">
               <span className="text-brand-ink tabular-nums font-black">
                 {filteredCourses.length}
               </span>{" "}
@@ -280,18 +325,22 @@ function CoursesPage() {
             {isActiveFilter && (
               <button
                 onClick={clearFilters}
-                className="text-xs font-bold text-brand-red hover:underline flex items-center gap-1"
+                className="text-[11px] font-bold text-brand-red hover:underline flex items-center gap-0.5"
               >
                 <X className="h-3 w-3" /> Clear filters
               </button>
             )}
           </div>
 
-          {filteredCourses.length > 0 ? (
+          {loading ? (
+            <div className="py-28 text-center flex items-center justify-center">
+              <BrandSpinner size="md" message="Loading course catalog from database..." />
+            </div>
+          ) : filteredCourses.length > 0 ? (
             <div
               className={`transition-opacity duration-300 ${isFiltering ? "opacity-0" : "opacity-100"}`}
             >
-              <RevealGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <RevealGroup className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-8">
                 {filteredCourses.map((course, idx) => (
                   <ScrollReveal key={course.id} delay={idx * 60}>
                     <CourseCard course={course} />

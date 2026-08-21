@@ -4,27 +4,18 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { PecpBatchSection } from "@/components/sections/PecpBatchSection";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { LazyBackground } from "@/components/LazyBackground";
 import {
   CheckCircle2,
   ArrowRight,
   Award,
   GraduationCap,
-  Download,
   ShieldCheck,
   Zap,
   Globe2,
   TrendingUp,
   Users,
-  Briefcase,
-  ChevronLeft,
-  ChevronRight,
   BookOpen,
-  Sparkles,
-  Check,
-  Building2,
 } from "lucide-react";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/pecp")({
   head: () => ({
@@ -42,7 +33,6 @@ export const Route = createFileRoute("/pecp")({
 
 function PecpPage() {
   const [activeUscTab, setActiveUscTab] = useState(0);
-  const [activePillarIndex, setActivePillarIndex] = useState(0);
 
   // USC Upstate Interactive Tabs Data
   const uscTabs = [
@@ -207,10 +197,6 @@ function PecpPage() {
     },
   ];
 
-  const handleDownloadSyllabus = () => {
-    toast.success("Downloading full PECP Executive Syllabus PDF...");
-  };
-
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden bg-slate-50 text-brand-ink selection:bg-brand-red selection:text-white">
       {/* Page Hero - Original Site Theme Component */}
@@ -241,19 +227,19 @@ function PecpPage() {
       >
         {/* Metric Highlights Pill Bar */}
         <div className="pt-6 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          <div className="rounded-2xl border border-slate-200/90 bg-white/90 backdrop-blur-md p-4 shadow-sm text-center space-y-1">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm text-center space-y-1">
             <div className="text-2xl font-black text-brand-red">100%</div>
             <div className="text-xs font-bold text-slate-600">U.S. Joint Approval</div>
           </div>
-          <div className="rounded-2xl border border-slate-200/90 bg-white/90 backdrop-blur-md p-4 shadow-sm text-center space-y-1">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm text-center space-y-1">
             <div className="text-2xl font-black text-brand-ink">AACSB</div>
             <div className="text-xs font-bold text-slate-600">Accredited JCBE</div>
           </div>
-          <div className="rounded-2xl border border-slate-200/90 bg-white/90 backdrop-blur-md p-4 shadow-sm text-center space-y-1">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm text-center space-y-1">
             <div className="text-2xl font-black text-brand-red">500+</div>
             <div className="text-xs font-bold text-slate-600">Graduates &amp; Leaders</div>
           </div>
-          <div className="rounded-2xl border border-slate-200/90 bg-white/90 backdrop-blur-md p-4 shadow-sm text-center space-y-1">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm text-center space-y-1">
             <div className="text-2xl font-black text-brand-ink">Global</div>
             <div className="text-xs font-bold text-slate-600">Career Placement</div>
           </div>
@@ -263,56 +249,56 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 1. WHO WE ARE - STRATEGIC JOINT INITIATIVE                     */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-white">
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <section id="who-we-are" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
             {/* Left Text Narrative */}
-            <ScrollReveal direction="left" className="lg:col-span-6 space-y-6">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-xs">
-                  <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-                  <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
+            <ScrollReveal direction="left" className="lg:col-span-6 space-y-4 sm:space-y-6">
+              <div className="space-y-2 sm:space-y-4">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+                  <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
+                  <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
                     Strategic Collaboration
                   </span>
                 </div>
 
-                <h2 className="display-font text-3xl sm:text-5xl font-black tracking-tight text-brand-ink leading-tight">
+                <h2 className="display-font text-2xl sm:text-5xl font-black tracking-tight text-brand-ink leading-tight">
                   <span className="gradient-text">Who</span> We Are
                 </h2>
               </div>
 
-              <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-medium">
+              <p className="text-slate-600 text-xs sm:text-base leading-relaxed font-medium">
                 The Professional Excellence and Certification Program (PECP) is a pioneering
                 collaboration between USC Upstate’s George Dean Johnson College of Business and
                 Economics (USA) and Red Dot Technologies Pvt. Ltd. (Nepal).
               </p>
 
-              <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-medium">
+              <p className="text-slate-600 text-xs sm:text-base leading-relaxed font-medium">
                 The program equips Nepalese professionals with globally recognized certifications
                 and industry-relevant skills, bridging international expertise with local workforce
                 needs. Learners gain the best of both worlds—global standards delivered locally.
               </p>
 
               {/* Verified Features */}
-              <div className="pt-2 space-y-3">
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-800">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+              <div className="pt-2 space-y-2 sm:space-y-3">
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-slate-800">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0" />
                   <span>Jointly offered with USC Upstate JCBE faculty (USA)</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-800">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-slate-800">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0" />
                   <span>Globally recognized U.S.-standard executive certification</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-800">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm font-bold text-slate-800">
+                  <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 shrink-0" />
                   <span>Tailored for Nepal's growing professional &amp; tech workforce</span>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <Link to="/contact" className="btn-primary shadow-lg">
+              <div className="pt-2 sm:pt-4">
+                <Link to="/contact" className="btn-primary shadow-md py-2.5 sm:py-3 px-5 sm:px-7 text-xs sm:text-sm">
                   <span>Explore Admissions</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Link>
               </div>
             </ScrollReveal>
@@ -320,26 +306,26 @@ function PecpPage() {
             {/* Right Visual Image Card */}
             <ScrollReveal direction="right" className="lg:col-span-6 relative">
               <div className="relative mx-auto max-w-md lg:max-w-none">
-                <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-200/90 shadow-2xl bg-gradient-to-br from-white via-slate-50 to-rose-50/40 p-8 flex items-center justify-center min-h-[400px] sm:min-h-[460px]">
+                <div className="relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] border border-slate-200/90 shadow-lg sm:shadow-2xl bg-gradient-to-br from-white via-slate-50 to-rose-50/40 p-4 sm:p-8 flex items-center justify-center min-h-[220px] sm:min-h-[460px]">
                   <img
                     src="/images/pecp/pecp.png"
                     alt="PECP Global Collaboration"
                     loading="lazy"
                     decoding="async"
-                    className="max-h-[350px] sm:max-h-[400px] w-auto max-w-full object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
+                    className="max-h-[180px] sm:max-h-[400px] w-auto max-w-full object-contain drop-shadow-xl transition-transform duration-500 hover:scale-105"
                   />
                 </div>
 
                 {/* Floating Credential Badge */}
-                <div className="absolute -bottom-6 -left-4 sm:left-6 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 p-5 shadow-2xl flex items-center gap-4 animate-float">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-red text-white font-black text-xl shadow-md">
-                    <GraduationCap className="h-6 w-6 stroke-[2.2]" />
+                <div className="absolute -bottom-4 left-2 sm:-bottom-6 sm:left-6 rounded-xl sm:rounded-2xl bg-white border border-slate-200 p-2.5 sm:p-5 shadow-lg flex items-center gap-2.5 sm:gap-4 animate-float">
+                  <div className="flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-xl bg-brand-red text-white font-black text-sm sm:text-xl shadow-xs">
+                    <GraduationCap className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                   </div>
                   <div>
-                    <div className="text-xs font-black uppercase tracking-wider text-brand-ink">
+                    <div className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-brand-ink">
                       U.S. Credential Badge
                     </div>
-                    <div className="text-[11px] font-bold text-slate-500">
+                    <div className="text-[9px] sm:text-[11px] font-bold text-slate-500">
                       USC Upstate Certified
                     </div>
                   </div>
@@ -353,30 +339,30 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 2. ABOUT USC UPSTATE - INTERACTIVE SPOTLIGHT SHOWCASE          */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+      <section id="partnership" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-14 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-rose-500/20 bg-rose-500/5 px-5 py-2 shadow-xs backdrop-blur-md">
-              <span className="h-2.5 w-2.5 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-red">
+          <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-rose-500/20 bg-rose-50 px-3 sm:px-5 py-1 sm:py-2 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-brand-red">
                 Official U.S. Academic Partner
               </span>
             </div>
 
-            <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
+            <h2 className="display-font text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
               About <span className="gradient-text">USC Upstate</span>
             </h2>
 
-            <div className="relative mx-auto max-w-3xl rounded-2xl border border-slate-200/80 bg-white/90 p-6 sm:p-7 shadow-sm backdrop-blur-md">
-              <p className="text-base sm:text-lg text-slate-700 font-normal leading-relaxed text-left sm:text-center">
-                The University of South Carolina Upstate (USC Upstate) is a leading public university in the United States, part of the respected University of South Carolina system. Located in Spartanburg, South Carolina, USC Upstate is home to over 6,000 students and is known for its strong emphasis on business, technology, and professional studies. The George Dean Johnson Jr. College of Business and Economics (JCBE) is particularly recognized for:
+            <div className="relative mx-auto max-w-3xl rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-7 shadow-xs">
+              <p className="text-xs sm:text-base text-slate-700 font-normal leading-relaxed text-left sm:text-center">
+                The University of South Carolina Upstate (USC Upstate) is a leading public university in the United States, part of the respected University of South Carolina system. Located in Spartanburg, South Carolina, USC Upstate is home to over 6,000 students and is known for its strong emphasis on business, technology, and professional studies.
               </p>
             </div>
           </div>
 
           {/* Interactive Tab Switcher */}
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+          <div className="mb-6 sm:mb-12 flex flex-wrap items-center justify-center gap-2 sm:gap-4">
             {uscTabs.map((tab, index) => {
               const IconComp = tab.icon;
               const isActive = activeUscTab === index;
@@ -384,18 +370,18 @@ function PecpPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveUscTab(index)}
-                  className={`group flex items-center gap-3 rounded-full px-6 py-3.5 text-xs sm:text-sm font-black transition-all duration-300 shadow-sm cursor-pointer ${
+                  className={`group flex items-center gap-1.5 sm:gap-3 rounded-full px-3.5 sm:px-6 py-2 sm:py-3.5 text-[11px] sm:text-sm font-black transition-all duration-300 shadow-xs cursor-pointer ${
                     isActive
-                      ? "bg-slate-950 text-white shadow-xl scale-105 border border-slate-800"
+                      ? "bg-slate-950 text-white shadow-md scale-[1.02] border border-slate-800"
                       : "bg-white text-slate-700 hover:bg-slate-100 hover:text-brand-ink border border-slate-200/90"
                   }`}
                 >
                   <div
-                    className={`flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-110 ${
+                    className={`flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full transition-transform duration-300 group-hover:scale-105 ${
                       isActive ? "bg-brand-red text-white" : "bg-slate-100 text-slate-600"
                     }`}
                   >
-                    <IconComp className="h-4 w-4 stroke-[2.5]" />
+                    <IconComp className="h-3 w-3 sm:h-4 sm:w-4 stroke-[2.5]" />
                   </div>
                   <span>{tab.label}</span>
                 </button>
@@ -404,51 +390,51 @@ function PecpPage() {
           </div>
 
           {/* Tab Spotlight Stage */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-10 lg:gap-12 items-stretch">
             {/* Left 7 Columns: Active Tab Stage */}
             <div className="lg:col-span-7 flex flex-col">
-              <div className={`relative h-full flex flex-col justify-between rounded-[2.5rem] border ${uscTabs[activeUscTab].accentBorder} bg-white p-8 sm:p-10 shadow-2xl transition-all duration-500`}>
-                <div className="space-y-6">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <span className={`inline-flex items-center gap-2 rounded-full border px-4 py-1 text-xs font-black uppercase tracking-wider ${uscTabs[activeUscTab].badgeColor}`}>
+              <div className={`relative h-full flex flex-col justify-between rounded-2xl sm:rounded-[2.5rem] border ${uscTabs[activeUscTab].accentBorder} bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl transition-all duration-500`}>
+                <div className="space-y-3.5 sm:space-y-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 sm:px-4 sm:py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider ${uscTabs[activeUscTab].badgeColor}`}>
                       {uscTabs[activeUscTab].badge}
                     </span>
-                    <span className="rounded-full bg-slate-100 border border-slate-200/80 px-3 py-1 text-xs font-black text-slate-700 uppercase tracking-widest">
+                    <span className="rounded-full bg-slate-100 border border-slate-200/80 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-black text-slate-700 uppercase tracking-widest">
                       {uscTabs[activeUscTab].pillStat}
                     </span>
                   </div>
 
-                  <div className="space-y-3 pt-2">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-xs">
+                  <div className="space-y-2 sm:space-y-3 pt-1">
+                    <div className="flex h-10 w-10 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-xs">
                       {(() => {
                         const IconComponent = uscTabs[activeUscTab].icon;
-                        return <IconComponent className="h-8 w-8 stroke-[2.2]" />;
+                        return <IconComponent className="h-5 w-5 sm:h-8 sm:w-8 stroke-[2.2]" />;
                       })()}
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-brand-ink tracking-tight leading-snug">
+                    <h3 className="text-lg sm:text-3xl font-black text-brand-ink tracking-tight leading-snug">
                       {uscTabs[activeUscTab].title}
                     </h3>
                   </div>
 
-                  <div className="space-y-4 pt-2">
-                    <p className="text-base sm:text-lg font-bold text-slate-800 leading-relaxed">
+                  <div className="space-y-2 sm:space-y-4 pt-1">
+                    <p className="text-xs sm:text-base font-bold text-slate-800 leading-relaxed">
                       {uscTabs[activeUscTab].desc}
                     </p>
-                    <p className="text-sm text-slate-600 font-normal leading-relaxed border-l-2 border-brand-red/40 pl-4 py-1 bg-slate-50/60 rounded-r-xl">
+                    <p className="text-[11px] sm:text-sm text-slate-600 font-normal leading-relaxed border-l-2 border-brand-red/40 pl-3 sm:pl-4 py-0.5 bg-slate-50/60 rounded-r-lg">
                       {uscTabs[activeUscTab].subDetail}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
+                <div className="mt-4 sm:mt-8 pt-3 sm:pt-6 border-t border-slate-100 flex items-center justify-between text-[11px] sm:text-xs font-bold text-slate-500">
                   <span>Tab {activeUscTab + 1} of 3</span>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1.5">
                     {uscTabs.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => setActiveUscTab(idx)}
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          activeUscTab === idx ? "w-8 bg-brand-red" : "w-2 bg-slate-200"
+                        className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
+                          activeUscTab === idx ? "w-6 sm:w-8 bg-brand-red" : "w-1.5 sm:w-2 bg-slate-200"
                         }`}
                         aria-label={`Go to tab ${idx + 1}`}
                       />
@@ -460,42 +446,42 @@ function PecpPage() {
 
             {/* Right 5 Columns: Logo Card */}
             <div className="lg:col-span-5 flex flex-col">
-              <div className="relative h-full flex flex-col justify-between rounded-[2.5rem] border border-slate-200/90 bg-white p-8 sm:p-10 shadow-2xl text-slate-900 overflow-hidden group">
-                <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500" />
+              <div className="relative h-full flex flex-col justify-between rounded-2xl sm:rounded-[2.5rem] border border-slate-200/90 bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl text-slate-900 overflow-hidden group">
+                <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500" />
 
-                <div className="space-y-6 text-center">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-white shadow-md">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <div className="space-y-3 sm:space-y-6 text-center">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-950 px-3 py-1 text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-white shadow-xs">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Authorized Partnership
                   </div>
 
-                  <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-50 to-white border border-slate-200/90 shadow-inner flex items-center justify-center min-h-[130px]">
+                  <div className="p-3 sm:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-b from-slate-50 to-white border border-slate-200/90 shadow-inner flex items-center justify-center min-h-[90px] sm:min-h-[130px]">
                     <img
                       src="https://uscupstate.edu/wp-content/uploads/2023/10/COLOR_HOR_BLK_Upstate_Logo-1-e1698410030138.png"
                       alt="USC Upstate Logo"
                       loading="lazy"
                       decoding="async"
-                      className="h-16 sm:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                      className="h-10 sm:h-20 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <h4 className="text-lg font-black text-brand-ink tracking-tight">
+                  <div className="space-y-0.5">
+                    <h4 className="text-sm sm:text-lg font-black text-brand-ink tracking-tight">
                       University of South Carolina Upstate
                     </h4>
-                    <p className="text-xs font-bold text-slate-500">
+                    <p className="text-[10px] sm:text-xs font-bold text-slate-500">
                       Spartanburg, South Carolina (USA)
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-100">
-                  <div className="relative rounded-2xl bg-gradient-to-r from-rose-50 via-slate-50 to-amber-50/50 border border-slate-200/80 p-6 text-brand-ink shadow-sm space-y-2">
-                    <div className="flex items-center gap-2 text-brand-red text-xs font-black uppercase tracking-wider">
-                      <GraduationCap className="h-4 w-4" />
+                <div className="mt-4 sm:mt-8 pt-3 sm:pt-6 border-t border-slate-100">
+                  <div className="relative rounded-xl sm:rounded-2xl bg-gradient-to-r from-rose-50 via-slate-50 to-amber-50/50 border border-slate-200/80 p-3 sm:p-6 text-brand-ink shadow-xs space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-brand-red text-[11px] sm:text-xs font-black uppercase tracking-wider">
+                      <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span>Impact in Nepal</span>
                     </div>
-                    <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed italic">
+                    <p className="text-[11px] sm:text-sm text-slate-700 font-medium leading-relaxed italic">
                       “By partnering with Red Dot Technologies for PECP, USC Upstate extends its academic excellence and global credibility to learners in Nepal, making the U.S.-standard certification accessible and affordable locally.”
                     </p>
                   </div>
@@ -509,7 +495,7 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 3. WHY PECP? - 3D STAGGERED BENTO GRID                         */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-slate-50/90 text-brand-ink border-y border-slate-200/80">
+      <section id="advantages" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-slate-50/90 text-brand-ink border-y border-slate-200/80">
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[750px] w-[1050px] rounded-full opacity-[0.16] blur-[170px]"
@@ -521,87 +507,67 @@ function PecpPage() {
           <div className="absolute inset-0 bg-grid-pattern opacity-[0.04]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-16 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-5 py-2 shadow-xs backdrop-blur-md">
-              <span className="h-2.5 w-2.5 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-red">
+          <div className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-5 py-1 sm:py-2 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-brand-red">
                 Program Advantages
               </span>
             </div>
 
-            <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
-              Why <span className="gradient-text">PECP ?</span>
+            <h2 className="display-font text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
+              Why Choose <span className="gradient-text">PECP?</span>
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
-              Learners gain the best of both worlds—global standards delivered locally.
+            <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+              A transformative professional development experience delivering measurable career advancement.
             </p>
           </div>
 
-          {/* 3D Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-            {whyPecpPillars.map((p, idx) => {
-              const IconComp = p.icon;
-              const isHero = idx === 0;
-
+          {/* Staggered Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 items-stretch">
+            {whyPecpPillars.map((pillar, idx) => {
+              const IconComponent = pillar.icon;
               return (
-                <div
-                  key={p.number}
-                  className={`group relative overflow-hidden rounded-[2.5rem] border border-slate-200/90 bg-white p-8 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:border-brand-red/40 hover:shadow-2xl flex flex-col justify-between ${
-                    isHero ? "md:col-span-2 lg:col-span-2 min-h-[340px]" : "md:col-span-1 lg:col-span-1 min-h-[340px]"
-                  }`}
-                >
-                  <LazyBackground
-                    src={p.bgImage}
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-20 group-hover:opacity-35"
-                  />
+                <ScrollReveal key={pillar.heading} direction="up" delay={idx * 80}>
+                  <div className="group relative h-full flex flex-col justify-between overflow-hidden rounded-xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-3.5 sm:p-7 shadow-xs sm:shadow-lg transition-all duration-300 hover:shadow-xl hover:border-brand-red/40 hover:-translate-y-1">
+                    <div className="absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-white via-white/85 to-white/45" />
-
-                  <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${p.color}`} />
-
-                  <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
-                    <div className="flex items-center justify-between">
-                      <div
-                        className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${p.iconBg} shadow-xs backdrop-blur-md transition-transform duration-500 group-hover:scale-110`}
-                      >
-                        <IconComp className="h-7 w-7 stroke-[2.2]" />
-                      </div>
-
-                      <span className="rounded-full bg-slate-100 border border-slate-200/90 px-3.5 py-1 text-xs font-black text-slate-800 tracking-widest shadow-xs">
-                        {p.number}
-                      </span>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 border text-[10px] font-black uppercase tracking-widest shadow-xs ${p.badgeBg}`}>
-                        <span className="h-1.5 w-1.5 rounded-full bg-brand-red animate-pulse" />
-                        <span>{p.badge}</span>
-                      </div>
-
-                      <h3 className="text-2xl sm:text-3xl font-black text-brand-ink tracking-tight leading-snug group-hover:text-brand-red transition-colors">
-                        {p.heading}
-                      </h3>
-
-                      <p className="text-sm sm:text-base font-semibold text-slate-600 leading-relaxed">
-                        {p.desc}
-                      </p>
-
-                      {isHero && p.highlights && (
-                        <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 border-t border-slate-100">
-                          {p.highlights.map((hl, hIdx) => (
-                            <div key={hIdx} className="flex items-center gap-2.5 text-xs font-bold text-slate-800">
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
-                              <span>{hl}</span>
-                            </div>
-                          ))}
+                    <div className="space-y-3 sm:space-y-5">
+                      <div className="flex items-center justify-between">
+                        <div className={`flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-2xl ${pillar.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-105`}>
+                          <IconComponent className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                         </div>
-                      )}
+                        <span className={`rounded-full border px-2 py-0.5 text-[8px] sm:text-[10px] font-black uppercase tracking-wider ${pillar.badgeBg}`}>
+                          {pillar.badge}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1 sm:space-y-2">
+                        <div className="text-[9px] sm:text-[11px] font-black uppercase tracking-widest text-slate-400">
+                          Advantage 0{idx + 1}
+                        </div>
+                        <h3 className="text-sm sm:text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-red transition-colors">
+                          {pillar.heading}
+                        </h3>
+                        <p className="text-[11px] sm:text-sm text-slate-600 font-normal leading-relaxed">
+                          {pillar.desc}
+                        </p>
+                      </div>
+
+                      <div className="space-y-1 sm:space-y-1.5 pt-1">
+                        {pillar.highlights.map((hl, hIdx) => (
+                          <div key={hIdx} className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-700">
+                            <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-500 shrink-0" />
+                            <span>{hl}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </ScrollReveal>
               );
             })}
           </div>
@@ -609,14 +575,14 @@ function PecpPage() {
       </section>
 
       {/* ------------------------------------------------------------- */}
-      {/* 4. UPCOMING BATCHES SECTION                                    */}
+      {/* 4. UPCOMING BATCH HERO BANNER                                   */}
       {/* ------------------------------------------------------------- */}
       <PecpBatchSection />
 
       {/* ------------------------------------------------------------- */}
       {/* 5. TARGET AUDIENCE - WHO IS IT FOR?                            */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-white border-b border-slate-200/80">
+      <section id="audiences" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white border-b border-slate-200/80">
         {/* Decorative Atmosphere Glows */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
@@ -628,91 +594,94 @@ function PecpPage() {
           <div className="absolute inset-0 bg-grid-pattern opacity-[0.03]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Section Heading */}
-          <ScrollReveal direction="up" className="mb-16 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-xs backdrop-blur-md">
-              <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-red">
+          <ScrollReveal direction="up" className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-brand-red">
                 Target Audience
               </span>
             </div>
 
-            <h2 className="display-font text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
+            <h2 className="display-font text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
               <span className="gradient-text">Who</span> Is It For?
             </h2>
           </ScrollReveal>
 
-          {/* 3 Audience Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            {targetAudiences.map((aud, idx) => (
-              <ScrollReveal
-                key={aud.title}
-                direction="up"
-                delay={idx * 100}
-                className="h-full"
-              >
-                <div className="group relative h-full flex flex-col justify-between overflow-hidden rounded-[2.25rem] border border-slate-200/90 bg-white shadow-xl transition-all duration-500 hover:-translate-y-2 hover:border-brand-red/40 hover:shadow-2xl">
-                  {/* Top Accent Gradient Border */}
-                  <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity z-20" />
+          {/* 3 Audience Cards — 2-Column Mobile Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-8 items-stretch">
+            {targetAudiences.map((aud, idx) => {
+              const isLastCard = idx === targetAudiences.length - 1;
+              return (
+                <ScrollReveal
+                  key={aud.title}
+                  direction="up"
+                  delay={idx * 100}
+                  className={`h-full ${isLastCard ? "col-span-2 md:col-span-1" : "col-span-1"}`}
+                >
+                  <div className="group relative h-full flex flex-col justify-between overflow-hidden rounded-xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white shadow-xs sm:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-brand-red/40">
+                    {/* Top Accent Gradient Border */}
+                    <div className="absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity z-20" />
 
-                  {/* Card Top: Visual Photographic Banner */}
-                  <div className="relative h-56 w-full overflow-hidden bg-slate-900">
-                    <img
-                      src={aud.image}
-                      alt={aud.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-108"
-                    />
+                    {/* Card Top: Visual Photographic Banner */}
+                    <div className="relative h-28 sm:h-56 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={aud.image}
+                        alt={aud.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      />
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/15" />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/15" />
 
-                    {/* Floating Top Tag */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <span className="rounded-full bg-slate-950/70 backdrop-blur-md border border-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-sm">
-                        {aud.tag}
-                      </span>
+                      {/* Floating Top Tag */}
+                      <div className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10">
+                        <span className="rounded-full bg-slate-900/90 border border-white/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[11px] font-black uppercase tracking-wider text-white shadow-xs truncate max-w-[100px] sm:max-w-none">
+                          {aud.tag}
+                        </span>
+                      </div>
+
+                      {/* Icon floating on the banner */}
+                      <div className="absolute bottom-2 left-2.5 sm:bottom-4 sm:left-6 z-10">
+                        <div className="flex h-7 w-7 sm:h-14 sm:w-14 items-center justify-center rounded-lg sm:rounded-2xl bg-brand-red shadow-xs sm:shadow-md shadow-brand-red/40 border border-white/20 transition-transform duration-300 group-hover:scale-105">
+                          <img
+                            src={aud.iconSvg}
+                            alt=""
+                            className="h-3.5 w-3.5 sm:h-7 sm:w-7 object-contain drop-shadow"
+                          />
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Icon floating on the banner */}
-                    <div className="absolute bottom-4 left-6 z-10">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-red shadow-xl shadow-brand-red/40 border border-white/20 transition-transform duration-500 group-hover:scale-110">
-                        <img
-                          src={aud.iconSvg}
-                          alt=""
-                          className="h-7 w-7 object-contain drop-shadow"
-                        />
+                    {/* Card Bottom: Text Content */}
+                    <div className="p-3 sm:p-8 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-6">
+                      <div className="space-y-1 sm:space-y-3">
+                        <h3 className="text-xs sm:text-2xl font-black text-brand-ink tracking-tight transition-colors duration-200 group-hover:text-brand-red leading-snug">
+                          {aud.title}
+                        </h3>
+                        <p className="text-[10px] sm:text-base text-slate-600 font-medium leading-snug sm:leading-relaxed line-clamp-3 sm:line-clamp-none">
+                          {aud.desc}
+                        </p>
+                      </div>
+
+                      {/* Bottom Action Link */}
+                      <div className="pt-2 sm:pt-4 border-t border-slate-100">
+                        <Link
+                          to={aud.link}
+                          className="inline-flex items-center gap-1 sm:gap-2 text-[10px] sm:text-sm font-black text-brand-red transition-all duration-200 group-hover:translate-x-1"
+                        >
+                          <span>Explore Pathway</span>
+                          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                        </Link>
                       </div>
                     </div>
                   </div>
-
-                  {/* Card Bottom: Text Content matching old site */}
-                  <div className="p-7 sm:p-8 flex-1 flex flex-col justify-between space-y-6">
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-black text-brand-ink tracking-tight transition-colors duration-300 group-hover:text-brand-red leading-snug">
-                        {aud.title}
-                      </h3>
-                      <p className="text-base text-slate-600 font-medium leading-relaxed">
-                        {aud.desc}
-                      </p>
-                    </div>
-
-                    {/* Bottom Action Link */}
-                    <div className="pt-4 border-t border-slate-100">
-                      <Link
-                        to={aud.link}
-                        className="inline-flex items-center gap-2 text-sm font-black text-brand-red transition-all duration-300 group-hover:translate-x-1"
-                      >
-                        <span>Explore Pathway</span>
-                        <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -720,51 +689,51 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 6. PROGRAM FRAMEWORK & BLUEPRINT                               */}
       {/* ------------------------------------------------------------- */}
-      <section className="relative py-24 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
-        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-16 text-center mx-auto max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-5 py-2 shadow-xs">
-              <span className="h-2.5 w-2.5 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-red">
+      <section id="curriculum" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-5 py-1 sm:py-2 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-brand-red">
                 Curriculum Blueprint
               </span>
             </div>
 
-            <h2 className="display-font text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
+            <h2 className="display-font text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight text-brand-ink leading-tight">
               Program <span className="gradient-text">Framework</span>
             </h2>
 
-            <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
               Built on academic rigor, industry execution, and global accreditation.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6 lg:gap-8">
             {programPillars.map((pillar, pIdx) => {
               const IconComponent = pillar.icon;
               return (
                 <div
                   key={pillar.title}
-                  className="group relative rounded-[2.25rem] border border-slate-200/90 bg-white p-7 shadow-lg transition-all duration-500 hover:shadow-2xl hover:border-brand-red/40 hover:-translate-y-2 flex flex-col justify-between"
+                  className="group relative rounded-xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-3 sm:p-7 shadow-xs sm:shadow-lg transition-all duration-300 hover:shadow-xl hover:border-brand-red/40 hover:-translate-y-1 flex flex-col justify-between"
                 >
-                  <div className="space-y-5">
-                    <div className="flex items-center justify-between">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-xs transition-transform duration-500 group-hover:scale-110">
-                        <IconComponent className="h-7 w-7 stroke-[2.2]" />
+                  <div className="space-y-2 sm:space-y-5">
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex h-8 w-8 sm:h-14 sm:w-14 items-center justify-center rounded-lg sm:rounded-2xl bg-brand-red/10 text-brand-red border border-brand-red/20 shadow-xs transition-transform duration-300 group-hover:scale-105 shrink-0">
+                        <IconComponent className="h-4 w-4 sm:h-7 sm:w-7 stroke-[2.2]" />
                       </div>
-                      <span className="rounded-full bg-slate-100 border border-slate-200/80 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                      <span className="rounded-full bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-slate-700 truncate max-w-[90px] sm:max-w-none">
                         {pillar.badge}
                       </span>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <div className="space-y-0.5 sm:space-y-2">
+                      <div className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         Module 0{pIdx + 1}
                       </div>
-                      <h3 className="text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-red transition-colors">
+                      <h3 className="text-xs sm:text-xl font-black text-brand-ink tracking-tight group-hover:text-brand-red transition-colors leading-snug">
                         {pillar.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-slate-600 font-normal leading-relaxed">
+                      <p className="text-[10px] sm:text-sm text-slate-600 font-normal leading-snug sm:leading-relaxed line-clamp-3 sm:line-clamp-none">
                         {pillar.desc}
                       </p>
                     </div>

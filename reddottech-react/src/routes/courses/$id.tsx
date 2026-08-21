@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { coursesData } from "@/data/courses";
 import {
   Clock,
-  Award,
   BookOpen,
   CheckCircle,
   ArrowLeft,
@@ -13,34 +11,40 @@ import {
 import { useState, useEffect } from "react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { fetchApi } from "@/lib/api";
+import { BrandSpinner } from "@/components/ui/BrandSpinner";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/courses/$id")({
-  head: ({ params }) => {
-    const course = coursesData.find((c) => String(c.id) === params.id || c.slug === params.id);
-    return {
-      meta: [
-        { title: `${course ? course.name : "Course Detail"} | Red Dot Technologies` },
-        { name: "description", content: course?.description || "Course details" },
-      ],
-    };
-  },
+  head: () => ({
+    meta: [
+      { title: "Course Details | Red Dot Technologies" },
+      { name: "description", content: "Professional IT & Business Certification Cohort" },
+    ],
+  }),
   component: CourseDetailPage,
 });
 
 function CourseDetailPage() {
   const { id } = Route.useParams();
-  const fallback = coursesData.find((c) => String(c.id) === id || c.slug === id) || coursesData[0];
-  const [course, setCourse] = useState<any>(fallback);
+  const [course, setCourse] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
     "overview" | "curriculum" | "instructor" | "requirements"
   >("overview");
 
   useEffect(() => {
-    fetchApi<any>(`/courses/${id}`).then((data) => {
-      if (data) {
-        setCourse(data);
-      }
-    });
+    fetchApi<any>(`/courses/${id}`)
+      .then((data) => {
+        if (data) {
+          setCourse(data);
+        }
+      })
+      .catch(() => {
+        setCourse(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [id]);
 
   const tabs = [
@@ -50,47 +54,71 @@ function CourseDetailPage() {
     { key: "requirements" as const, label: "Requirements" },
   ];
 
-  return (
-    <div className="pt-28 pb-16 bg-surface-elevated min-h-screen">
-      {/* Back button */}
-      <div className="mx-auto max-w-7xl px-6 pt-4 pb-2">
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center pt-28">
+        <BrandSpinner size="md" message="Loading course curriculum & details..." />
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center pt-28 px-4 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Course Not Found</h2>
+        <p className="text-slate-500 text-sm mb-6 max-w-md">
+          The requested course could not be located in our verified database registry.
+        </p>
         <Link
           to="/courses"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-brand-red transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-red text-white font-bold text-xs px-5 py-2.5 shadow-md hover:bg-red-700 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to All Courses
+          <span>Browse All Courses</span>
         </Link>
       </div>
+    );
+  }
 
-      <div className="mx-auto max-w-7xl px-6 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Course Title and Category Badges Header */}
+  return (
+    <div className="pt-20 pb-10 sm:pt-28 sm:pb-16 bg-surface-base">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* Breadcrumbs */}
+        <ScrollReveal>
+          <div className="mb-4 sm:mb-6 flex items-center gap-2 text-xs font-semibold text-slate-500">
+            <Link to="/courses" className="hover:text-brand-red transition-colors">
+              Courses
+            </Link>
+            <span>/</span>
+            <span className="text-slate-700 truncate max-w-[200px]">{course.name}</span>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10">
+          {/* Main content */}
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+            {/* Header & Badges */}
             <ScrollReveal>
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  {course.category && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-3.5 py-1 text-xs font-black text-brand-red">
-                      <Award className="h-3.5 w-3.5" />
-                      {course.category}
-                    </span>
-                  )}
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-extrabold text-brand-red">
+                    <BookOpen className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                    {course.category || "Professional Course"}
+                  </span>
                   {course.skillLevel && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-bold text-slate-700 capitalize">
-                      <Signal className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-slate-700 capitalize">
+                      <Signal className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600" />
                       {course.skillLevel}
                     </span>
                   )}
                   {course.certification && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-emerald-700">
                       USC Upstate Certified
                     </span>
                   )}
                 </div>
 
-                <h1 className="display-font text-2xl sm:text-4xl lg:text-[2.6rem] font-black text-brand-ink leading-[1.15] tracking-tight">
+                <h1 className="display-font text-xl sm:text-4xl lg:text-[2.6rem] font-black text-brand-ink leading-[1.15] tracking-tight">
                   {course.name}
                 </h1>
               </div>
@@ -98,7 +126,7 @@ function CourseDetailPage() {
 
             {/* Course Banner Showcase */}
             <ScrollReveal delay={40}>
-              <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200/90 aspect-video bg-slate-900">
+              <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-sm sm:shadow-lg border border-slate-200/90 aspect-video bg-slate-900">
                 <img
                   src={course.bannerImage || course.thumbnail}
                   alt={course.name}
@@ -111,22 +139,22 @@ function CourseDetailPage() {
 
             {/* Course meta bar */}
             <ScrollReveal delay={80}>
-              <div className="premium-card-static p-5 flex flex-wrap items-center gap-5 text-xs sm:text-sm font-medium text-slate-600">
+              <div className="premium-card-static p-3 sm:p-5 flex flex-wrap items-center gap-3 sm:gap-5 text-xs sm:text-sm font-medium text-slate-600">
                 {course.duration && (
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-brand-red" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red" />
                     <span>{course.duration}</span>
                   </div>
                 )}
                 {course.delivery && (
-                  <div className="flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-brand-red" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red" />
                     <span className="capitalize">{course.delivery} Delivery</span>
                   </div>
                 )}
                 {course.language && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-brand-red" />
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red" />
                     <span>{course.language}</span>
                   </div>
                 )}
@@ -135,13 +163,13 @@ function CourseDetailPage() {
 
             {/* Tabs */}
             <ScrollReveal delay={120}>
-              <div className="premium-card-static overflow-hidden">
+              <div className="premium-card-static overflow-hidden rounded-xl sm:rounded-2xl">
                 <div className="flex border-b border-slate-100 bg-slate-50/50 overflow-x-auto">
                   {tabs.map((tab) => (
                     <button
                       key={tab.key}
                       onClick={() => setActiveTab(tab.key)}
-                      className={`relative px-6 py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                      className={`relative px-4 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                         activeTab === tab.key
                           ? "text-brand-red"
                           : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
@@ -155,7 +183,7 @@ function CourseDetailPage() {
                   ))}
                 </div>
 
-                <div className="p-6 sm:p-8">
+                <div className="p-4 sm:p-8">
                   {activeTab === "overview" && (
                     <div className="space-y-4">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-brand-red">
@@ -169,7 +197,7 @@ function CourseDetailPage() {
                           return (
                             <div
                               className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1"
-                              dangerouslySetInnerHTML={{ __html: content }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
                             />
                           );
                         }
@@ -225,7 +253,7 @@ function CourseDetailPage() {
                             return (
                               <div
                                 className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_strong]:block [&_strong]:text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1"
-                                dangerouslySetInnerHTML={{ __html: curriculum }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeHtml(curriculum) }}
                               />
                             );
                           }
@@ -273,7 +301,7 @@ function CourseDetailPage() {
                           return (
                             <div
                               className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink"
-                              dangerouslySetInnerHTML={{ __html: detail }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(detail) }}
                             />
                           );
                         }
@@ -302,7 +330,7 @@ function CourseDetailPage() {
                           return (
                             <div
                               className="prose prose-sm max-w-none text-slate-600 leading-relaxed space-y-3 [&_p]:mb-3 [&_strong]:text-brand-ink [&_ul]:list-none [&_li]:mb-1.5 [&_a]:text-brand-ink [&_a]:font-bold [&_a]:no-underline"
-                              dangerouslySetInnerHTML={{ __html: reqs }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(reqs) }}
                             />
                           );
                         }

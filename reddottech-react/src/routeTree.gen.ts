@@ -15,7 +15,9 @@ import { Route as AiUnlockedRouteImport } from './routes/ai-unlocked'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FreeRouteImport } from './routes/free'
 import { Route as PecpRouteImport } from './routes/pecp'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAiUnlockedRouteImport } from './routes/admin/ai-unlocked'
 import { Route as AdminCertificatesRouteImport } from './routes/admin/certificates'
 import { Route as AdminContactsRouteImport } from './routes/admin/contacts'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
@@ -57,9 +59,19 @@ const PecpRoute = PecpRouteImport.update({
   path: '/pecp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAiUnlockedRoute = AdminAiUnlockedRouteImport.update({
+  id: '/admin/ai-unlocked',
+  path: '/admin/ai-unlocked',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminCertificatesRoute = AdminCertificatesRouteImport.update({
@@ -120,6 +132,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
   '/pecp': typeof PecpRoute
+  '/verify': typeof VerifyRoute
+  '/admin/ai-unlocked': typeof AdminAiUnlockedRoute
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -139,6 +153,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
   '/pecp': typeof PecpRoute
+  '/verify': typeof VerifyRoute
+  '/admin/ai-unlocked': typeof AdminAiUnlockedRoute
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -159,6 +175,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/free': typeof FreeRoute
   '/pecp': typeof PecpRoute
+  '/verify': typeof VerifyRoute
+  '/admin/ai-unlocked': typeof AdminAiUnlockedRoute
   '/admin/certificates': typeof AdminCertificatesRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -180,6 +198,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/free'
     | '/pecp'
+    | '/verify'
+    | '/admin/ai-unlocked'
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
@@ -199,6 +219,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/free'
     | '/pecp'
+    | '/verify'
+    | '/admin/ai-unlocked'
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
@@ -218,6 +240,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/free'
     | '/pecp'
+    | '/verify'
+    | '/admin/ai-unlocked'
     | '/admin/certificates'
     | '/admin/contacts'
     | '/admin/dashboard'
@@ -238,6 +262,8 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FreeRoute: typeof FreeRoute
   PecpRoute: typeof PecpRoute
+  VerifyRoute: typeof VerifyRoute
+  AdminAiUnlockedRoute: typeof AdminAiUnlockedRoute
   AdminCertificatesRoute: typeof AdminCertificatesRoute
   AdminContactsRoute: typeof AdminContactsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -295,11 +321,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PecpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/ai-unlocked': {
+      id: '/admin/ai-unlocked'
+      path: '/admin/ai-unlocked'
+      fullPath: '/admin/ai-unlocked'
+      preLoaderRoute: typeof AdminAiUnlockedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/certificates': {
@@ -382,6 +422,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FreeRoute: FreeRoute,
   PecpRoute: PecpRoute,
+  VerifyRoute: VerifyRoute,
+  AdminAiUnlockedRoute: AdminAiUnlockedRoute,
   AdminCertificatesRoute: AdminCertificatesRoute,
   AdminContactsRoute: AdminContactsRoute,
   AdminDashboardRoute: AdminDashboardRoute,

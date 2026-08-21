@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Award,
@@ -159,7 +158,7 @@ export function CoreValuesSection() {
   };
 
   return (
-    <section className="relative py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80">
+    <section id="core-values" className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80">
       {/* Background Texture & Ambient Radial Glows */}
       <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -175,31 +174,31 @@ export function CoreValuesSection() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="mb-12 sm:mb-16 text-center mx-auto max-w-3xl space-y-4">
+        <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
           <ScrollReveal direction="up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white px-4 py-1.5 shadow-xs">
-              <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-brand-red/20 bg-white px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+              <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
                 Our Guiding Principles
               </span>
             </div>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.1}>
-            <h2 className="display-font text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
+            <h2 className="display-font text-xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
               Our Core <span className="gradient-text">Values</span>
             </h2>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.2}>
-            <p className="text-base sm:text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xs sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
               Explore the 5 foundational pillars that guide our training programs, quality benchmarks, and learner community across Nepal.
             </p>
           </ScrollReveal>
         </div>
 
         {/* Top 5 Pillar Nav Ribbon */}
-        <div className="mb-8 flex items-center justify-between gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="mb-6 flex items-center justify-between gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
           {values.map((v, idx) => {
             const isActive = idx === activeIndex;
             const Icon = v.icon;
@@ -208,32 +207,32 @@ export function CoreValuesSection() {
               <button
                 key={v.id}
                 onClick={() => handleSelect(idx)}
-                className={`group flex-1 min-w-[140px] text-center rounded-2xl p-3.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-2 ${
+                className={`group flex-1 min-w-[105px] sm:min-w-[140px] text-center rounded-xl sm:rounded-2xl p-2.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-1.5 sm:gap-2 ${
                   isActive
-                    ? "bg-white border-2 border-brand-red/50 shadow-xl scale-[1.03]"
+                    ? "bg-white border-2 border-brand-red/50 shadow-md scale-[1.02]"
                     : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 shadow-xs"
                 }`}
               >
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl font-extrabold text-xs transition-all duration-300 ${
+                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl font-extrabold text-xs transition-all duration-300 ${
                     isActive
-                      ? `${v.themeBg} text-white shadow-md scale-105`
+                      ? `${v.themeBg} text-white shadow-xs scale-105`
                       : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
                   }`}
                 >
-                  <Icon className="h-5 w-5 stroke-[2.2]" />
+                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                 </div>
 
                 <div>
                   <span
-                    className={`text-[9px] font-extrabold uppercase tracking-widest block ${
+                    className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest block ${
                       isActive ? v.themeColor : "text-slate-400"
                     }`}
                   >
                     {v.number} • {v.badge}
                   </span>
                   <h4
-                    className={`text-xs sm:text-sm font-extrabold tracking-tight transition-colors ${
+                    className={`text-[11px] sm:text-sm font-extrabold tracking-tight transition-colors ${
                       isActive ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"
                     }`}
                   >
@@ -246,134 +245,128 @@ export function CoreValuesSection() {
         </div>
 
         {/* Main Stage Showcase Box */}
-        <div className="relative rounded-[2.25rem] border border-slate-200/90 bg-white p-6 sm:p-10 shadow-2xl overflow-hidden">
+        <div className="relative rounded-2xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl overflow-hidden">
           
           {/* Top Accent Bar */}
           <div
-            className={`absolute inset-x-0 top-0 h-2 bg-gradient-to-r ${current.accentGradient} transition-all duration-500`}
+            className={`absolute inset-x-0 top-0 h-1.5 sm:h-2 bg-gradient-to-r ${current.accentGradient} transition-all duration-500`}
           />
 
           {/* Watermark Index Number */}
-          <span className="pointer-events-none absolute right-8 top-6 text-7xl sm:text-9xl font-black text-slate-100/90 select-none">
+          <span className="pointer-events-none absolute right-4 top-3 sm:right-8 sm:top-6 text-5xl sm:text-9xl font-black text-slate-100/90 select-none">
             {current.number}
           </span>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10"
-            >
-              {/* Left Column: Visual Showcase Image Card (5 Cols) */}
-              <div className="lg:col-span-5 relative space-y-4">
-                <div className="relative group overflow-hidden rounded-2xl border border-slate-200/80 shadow-md aspect-4/3 sm:aspect-square bg-slate-100">
-                  <img
-                    src={current.image}
-                    alt={current.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                      {current.badge}
-                    </span>
-                    <span className="text-xs font-mono font-bold text-slate-300">
-                      Pillar {current.number} / 05
-                    </span>
-                  </div>
-                </div>
-
-                {/* Floating Quote Box */}
-                <div className="rounded-2xl bg-gradient-to-br from-slate-900 via-brand-ink to-slate-900 p-4 text-white shadow-xl flex items-start gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-red/20 border border-brand-red/30 text-brand-red">
-                    <Quote className="h-4 w-4 text-brand-red" />
-                  </div>
-                  <p className="text-xs font-semibold text-slate-200 italic leading-relaxed pt-0.5">
-                    "{current.quote}"
-                  </p>
+          <div
+            key={current.id}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-center relative z-10 animate-fade-in"
+          >
+            {/* Left Column: Visual Showcase Image Card (5 Cols) */}
+            <div className="lg:col-span-5 relative space-y-3 sm:space-y-4">
+              <div className="relative group overflow-hidden rounded-xl sm:rounded-2xl border border-slate-200/80 shadow-xs aspect-16/10 sm:aspect-square bg-slate-100">
+                <img
+                  src={current.image}
+                  alt={current.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between text-white">
+                  <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest bg-slate-900 px-2.5 py-0.5 rounded-full border border-white/20">
+                    {current.badge}
+                  </span>
+                  <span className="text-[10px] sm:text-xs font-mono font-bold text-slate-300">
+                    Pillar {current.number} / 05
+                  </span>
                 </div>
               </div>
 
-              {/* Right Column: Detailed Info & Deliverables Grid (7 Cols) */}
-              <div className="lg:col-span-7 space-y-6">
-                
-                {/* Header Row */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${current.glowBg} shadow-xs shrink-0`}>
-                      <CurrentIcon className={`h-6 w-6 ${current.themeColor} stroke-[2.2]`} />
-                    </div>
-                    <div>
-                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${current.badgeStyle}`}>
-                        {current.badge}
-                      </span>
-                      <h3 className="display-font text-2xl sm:text-3xl font-extrabold text-brand-ink tracking-tight mt-0.5">
-                        {current.title}
-                      </h3>
-                    </div>
-                  </div>
+              {/* Floating Quote Box */}
+              <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-900 via-brand-ink to-slate-900 p-3 sm:p-4 text-white shadow-md flex items-start gap-2.5 sm:gap-3">
+                <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-brand-red/20 border border-brand-red/30 text-brand-red">
+                  <Quote className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red" />
+                </div>
+                <p className="text-[11px] sm:text-xs font-semibold text-slate-200 italic leading-relaxed pt-0.5">
+                  "{current.quote}"
+                </p>
+              </div>
+            </div>
 
-                  <h4 className={`text-xs sm:text-sm font-extrabold tracking-wide ${current.themeColor} pt-1`}>
-                    {current.tagline}
-                  </h4>
-                  <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed">
-                    {current.desc}
-                  </p>
+            {/* Right Column: Detailed Info & Deliverables Grid (7 Cols) */}
+            <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+              
+              {/* Header Row */}
+              <div className="space-y-1.5 sm:space-y-2">
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <div className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border ${current.glowBg} shadow-xs shrink-0`}>
+                    <CurrentIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${current.themeColor} stroke-[2.2]`} />
+                  </div>
+                  <div>
+                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider ${current.badgeStyle}`}>
+                      {current.badge}
+                    </span>
+                    <h3 className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink tracking-tight mt-0.5">
+                      {current.title}
+                    </h3>
+                  </div>
                 </div>
 
-                {/* 3 Core Pillars Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {current.pillars.map((p, pIdx) => (
-                    <div
-                      key={pIdx}
-                      className="rounded-2xl bg-slate-50/90 border border-slate-200/70 p-3.5 space-y-1 transition-all hover:bg-white hover:border-slate-300 hover:shadow-md"
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className={`h-4 w-4 ${current.themeColor} shrink-0`} />
-                        <h5 className="text-xs font-extrabold text-brand-ink">{p.title}</h5>
-                      </div>
-                      <p className="text-[11px] text-slate-500 font-medium leading-normal pt-0.5">{p.desc}</p>
+                <h4 className={`text-xs sm:text-sm font-extrabold tracking-wide ${current.themeColor} pt-1`}>
+                  {current.tagline}
+                </h4>
+                <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed">
+                  {current.desc}
+                </p>
+              </div>
+
+              {/* 3 Core Pillars Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {current.pillars.map((p, pIdx) => (
+                  <div
+                    key={pIdx}
+                    className="rounded-2xl bg-slate-50/90 border border-slate-200/70 p-3.5 space-y-1 transition-all hover:bg-white hover:border-slate-300 hover:shadow-md"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className={`h-4 w-4 ${current.themeColor} shrink-0`} />
+                      <h5 className="text-xs font-extrabold text-brand-ink">{p.title}</h5>
                     </div>
-                  ))}
-                </div>
-
-                {/* Stage Controls & Navigation Footer */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handlePrev}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
-                      aria-label="Previous core value"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={handleNext}
-                      className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
-                      aria-label="Next core value"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
+                    <p className="text-[11px] text-slate-500 font-medium leading-normal pt-0.5">{p.desc}</p>
                   </div>
+                ))}
+              </div>
 
+              {/* Stage Controls & Navigation Footer */}
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrev}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
+                    aria-label="Previous core value"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={handleNext}
-                    className="inline-flex items-center gap-2 rounded-full bg-brand-ink px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-brand-red"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
+                    aria-label="Next core value"
                   >
-                    <span>Next Core Value</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
+                    <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
 
+                <button
+                  onClick={handleNext}
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-ink px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-brand-red"
+                >
+                  <span>Next Core Value</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
               </div>
 
-            </motion.div>
-          </AnimatePresence>
+            </div>
+
+          </div>
 
         </div>
 

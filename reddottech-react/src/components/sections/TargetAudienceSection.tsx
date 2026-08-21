@@ -2,11 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
-interface TargetAudienceSectionProps {
-  onDownloadSyllabus?: () => void;
-}
-
-export function TargetAudienceSection({ onDownloadSyllabus }: TargetAudienceSectionProps = {}) {
+export function TargetAudienceSection() {
   const targetAudiences = [
     {
       title: "Aspiring Graduates",
@@ -50,7 +46,7 @@ export function TargetAudienceSection({ onDownloadSyllabus }: TargetAudienceSect
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
         {/* Section Heading */}
         <ScrollReveal direction="up" className="mb-16 text-center mx-auto max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-xs backdrop-blur-md">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-4 py-1.5 shadow-xs">
             <span className="h-2 w-2 rounded-full bg-brand-red animate-pulse" />
             <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-red">
               Target Audience
@@ -90,7 +86,7 @@ export function TargetAudienceSection({ onDownloadSyllabus }: TargetAudienceSect
 
                   {/* Floating Top Tag */}
                   <div className="absolute top-4 right-4 z-10">
-                    <span className="rounded-full bg-slate-950/70 backdrop-blur-md border border-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-sm">
+                    <span className="rounded-full bg-slate-900 border border-white/20 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-white shadow-sm">
                       {aud.tag}
                     </span>
                   </div>

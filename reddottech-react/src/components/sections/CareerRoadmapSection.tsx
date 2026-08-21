@@ -1,11 +1,10 @@
-﻿import {
+import {
   GraduationCap,
   Zap,
   Award,
   Briefcase,
   CheckCircle2,
   ArrowRight,
-  Sparkles,
   Compass,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
@@ -92,8 +91,8 @@ export function CareerRoadmapSection() {
           </p>
         </div>
 
-        {/* 4 Connected Cards Grid */}
-        <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* 4 Connected Cards Grid — 2-Column Mobile Grid */}
+        <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
           {/* Top Connecting Line for Desktop */}
           <div className="hidden lg:block absolute left-12 right-12 top-16 h-0.5 bg-gradient-to-r from-brand-red/40 via-amber-400/40 to-blue-500/40 z-0" />
 
@@ -103,51 +102,51 @@ export function CareerRoadmapSection() {
             return (
               <div
                 key={step.number}
-                className="group relative flex flex-col justify-between rounded-3xl border border-slate-200/90 bg-white p-7 shadow-sm transition-all duration-500 hover:shadow-xl hover:border-brand-red/40 hover:-translate-y-1 z-10"
+                className="group relative flex flex-col justify-between rounded-xl sm:rounded-3xl border border-slate-200/90 bg-white p-3 sm:p-7 shadow-xs transition-all duration-300 hover:shadow-xl hover:border-brand-red/40 hover:-translate-y-1 z-10"
               >
                 {/* Top Accent Gradient Bar */}
                 <div
-                  className={`absolute inset-x-0 top-0 h-1.5 rounded-t-3xl bg-gradient-to-r ${step.gradient}`}
+                  className={`absolute inset-x-0 top-0 h-1 sm:h-1.5 rounded-t-xl sm:rounded-t-3xl bg-gradient-to-r ${step.gradient}`}
                 />
 
                 <div>
                   {/* Card Header: Icon + Step Badge */}
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-2.5 sm:mb-6 gap-1">
                     <div
-                      className={`flex h-14 w-14 items-center justify-center rounded-2xl border ${step.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-110`}
+                      className={`flex h-8 w-8 sm:h-14 sm:w-14 items-center justify-center rounded-lg sm:rounded-2xl border ${step.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-110 shrink-0`}
                     >
-                      <Icon className="h-7 w-7 stroke-[2]" />
+                      <Icon className="h-4 w-4 sm:h-7 sm:w-7 stroke-[2]" />
                     </div>
 
-                    <span className="rounded-full bg-slate-900 px-3 py-1 text-[11px] font-black tracking-wider text-white shadow-xs">
+                    <span className="rounded-full bg-slate-900 px-2 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[11px] font-black tracking-wider text-white shadow-xs shrink-0">
                       STEP {step.number}
                     </span>
                   </div>
 
                   {/* Phase Label */}
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand-red">
+                  <span className="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider text-brand-red block truncate">
                     {step.phase}
                   </span>
 
                   {/* Title */}
-                  <h3 className="mt-1.5 text-lg font-extrabold text-brand-ink tracking-tight transition-colors group-hover:text-brand-red">
+                  <h3 className="mt-0.5 sm:mt-1 text-xs sm:text-lg font-extrabold text-brand-ink tracking-tight transition-colors group-hover:text-brand-red leading-snug">
                     {step.title}
                   </h3>
 
                   {/* Short Description */}
-                  <p className="mt-2.5 text-xs text-slate-500 leading-relaxed font-medium">
+                  <p className="mt-1 sm:mt-2.5 text-[10px] sm:text-xs text-slate-500 leading-snug sm:leading-relaxed font-medium line-clamp-2 sm:line-clamp-none">
                     {step.shortDesc}
                   </p>
 
                   {/* Deliverables Checklist */}
-                  <div className="mt-6 pt-5 border-t border-slate-100 space-y-2">
-                    <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-2">
-                      Key Deliverables:
+                  <div className="mt-2.5 sm:mt-6 pt-2 sm:pt-5 border-t border-slate-100 space-y-1 sm:space-y-2">
+                    <p className="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
+                      Deliverables:
                     </p>
                     {step.highlights.map((item) => (
-                      <div key={item} className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-brand-red" />
-                        <span>{item}</span>
+                      <div key={item} className="flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs font-semibold text-slate-600">
+                        <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-brand-red" />
+                        <span className="truncate">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -158,13 +157,13 @@ export function CareerRoadmapSection() {
         </div>
 
         {/* Bottom CTA Banner */}
-        <div className="mt-14 rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
-              <Compass className="h-6 w-6" />
+        <div className="mt-10 sm:mt-14 rounded-2xl sm:rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-3.5 sm:gap-4 text-center sm:text-left">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-red/10 text-brand-red">
+              <Compass className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
             <div>
-              <h4 className="text-base sm:text-lg font-extrabold text-brand-ink">
+              <h4 className="text-sm sm:text-lg font-extrabold text-brand-ink">
                 Ready to begin Step 01 of your trajectory?
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
@@ -174,7 +173,7 @@ export function CareerRoadmapSection() {
           </div>
 
           <Magnetic>
-            <Link to="/contact" className="btn-primary shrink-0 px-6 py-3.5 text-xs">
+            <Link to="/contact" className="btn-primary shrink-0 px-5 sm:px-6 py-3 sm:py-3.5 text-xs w-full sm:w-auto text-center justify-center">
               <span>Schedule Free Advice</span>
               <ArrowRight className="h-4 w-4" />
             </Link>

@@ -1,4 +1,4 @@
-import { getToken } from "./auth";
+import { getToken, clearAuth, setAdminEmail } from "./auth";
 
 // Same-origin by default (served behind the Vite dev proxy in development and a
 // reverse proxy / API route in production). Override with VITE_API_BASE_URL.
@@ -25,6 +25,18 @@ export async function fetchApi<T>(endpoint: string, options?: FetchOptions): Pro
       headers,
     });
 
+    if (res.status === 401) {
+      clearAuth();
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname.startsWith("/admin") &&
+        window.location.pathname !== "/admin/login"
+      ) {
+        window.location.href = "/admin/login";
+      }
+      return null;
+    }
+
     if (!res.ok) {
       let message = `API Error: ${res.statusText} (${res.status})`;
       try {
@@ -45,7 +57,7 @@ export async function fetchApi<T>(endpoint: string, options?: FetchOptions): Pro
     if (method !== "GET" || options?.throwOnError) {
       throw err;
     }
-    console.warn(`[SQLite API Fallback] ${endpoint}:`, err);
+    console.warn(`[API Fallback] ${endpoint}:`, err);
     return null;
   }
 }
@@ -64,7 +76,11 @@ export async function logoutAdmin() {
 }
 
 export async function getMe() {
-  return await fetchApi<{ email: string; name?: string }>("/auth/me");
+  const result = await fetchApi<{ email: string; name?: string }>("/auth/me");
+  if (result && result.email) {
+    setAdminEmail(result.email);
+  }
+  return result;
 }
 
 export async function changeAdminPassword(currentPassword: string, newPassword: string) {
@@ -75,7 +91,24 @@ export async function changeAdminPassword(currentPassword: string, newPassword: 
   });
 }
 
-// Image File Upload Helper
+export async function changeAdminEmail(newEmail: string, currentPassword: string) {
+  const result = await fetchApi<{ email: string; message?: string }>("/auth/change-email", {
+    method: "POST",
+    body: JSON.stringify({ newEmail, currentPassword }),
+    throwOnError: true,
+  });
+  if (result && result.email) {
+    setAdminEmail(result.email);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("rdt_admin_email_updated", { detail: result.email })
+      );
+    }
+  }
+  return result;
+}
+
+// Image File Upload Helper (Admin)
 export async function uploadImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -97,6 +130,36 @@ export async function uploadImage(file: File): Promise<string> {
         }
       } catch (err) {
         // Fallback to direct client-side data URL
+        resolve(reader.result as string);
+      }
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+// Payment Receipt Upload Helper (Public Student Form)
+export async function uploadPaymentReceipt(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64Data = reader.result as string;
+        const res = await fetchApi<{ success: boolean; url: string }>("/upload-receipt", {
+          method: "POST",
+          body: JSON.stringify({
+            filename: file.name,
+            base64Data,
+          }),
+          throwOnError: true,
+        });
+        if (res?.url) {
+          resolve(res.url);
+        } else {
+          resolve(base64Data);
+        }
+      } catch {
+        // Local fallback to base64
         resolve(reader.result as string);
       }
     };
@@ -156,8 +219,18 @@ export async function getCertificates() {
   return data;
 }
 
-export async function claimCertificate(cert: { name: string; email: string; school?: string }) {
-  return await fetchApi("/certificates/claim", {
+export async function claimCertificate(cert: {
+  name: string;
+  email: string;
+  school?: string;
+  track?: string;
+  course_name?: string;
+  certificate_id?: string;
+  organization?: string;
+  role?: string;
+  department?: string;
+}): Promise<any> {
+  return await fetchApi<any>("/certificates/claim", {
     method: "POST",
     body: JSON.stringify(cert),
   });
@@ -166,6 +239,28 @@ export async function claimCertificate(cert: { name: string; email: string; scho
 export async function deleteCertificate(id: number | string) {
   return await fetchApi(`/certificates/${id}`, {
     method: "DELETE",
+  });
+}
+
+export async function verifyCertificate(query: string) {
+  return await fetchApi<{
+    id: number | string;
+    name: string;
+    email: string;
+    school?: string;
+    track?: string;
+    courseName?: string;
+    certificateId?: string;
+    organization?: string;
+    role?: string;
+    department?: string;
+    completedAt?: string;
+    issuedAt?: string;
+    issuer?: string;
+    status?: string;
+    verificationUrl?: string;
+  }>(`/certificates/verify/${encodeURIComponent(query.trim())}`, {
+    throwOnError: false,
   });
 }
 
@@ -215,14 +310,178 @@ export async function deleteSubscription(id: number | string) {
 }
 
 // 6. Settings API
+let cachedSettings: Record<string, string> | null = null;
+
+export function getCachedSettings(): Record<string, string> | null {
+  if (cachedSettings) return cachedSettings;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("rdt_db_settings");
+      if (raw) {
+        cachedSettings = JSON.parse(raw);
+        return cachedSettings;
+      }
+    } catch {}
+  }
+  return null;
+}
+
 export async function getSettings() {
-  const data = await fetchApi<Record<string, string>>("/settings");
-  return data;
+  try {
+    const data = await fetchApi<Record<string, string>>("/settings");
+    if (data && typeof data === "object") {
+      cachedSettings = data;
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("rdt_db_settings", JSON.stringify(data));
+        } catch {}
+      }
+      return data;
+    }
+  } catch (err) {
+    console.warn("[getSettings] Failed to fetch fresh settings:", err);
+  }
+  return getCachedSettings();
+}
+
+export async function getAdminSettings() {
+  const data = await fetchApi<Record<string, string>>("/settings/all");
+  if (data && typeof data === "object") {
+    cachedSettings = data;
+    return data;
+  }
+  return getSettings();
 }
 
 export async function updateSettings(settings: Record<string, string>) {
-  return await fetchApi("/settings", {
+  const result = await fetchApi("/settings", {
     method: "POST",
     body: JSON.stringify(settings),
+  });
+
+  if (typeof window !== "undefined") {
+    try {
+      const current = getCachedSettings() || {};
+      const updated = { ...current, ...settings };
+      cachedSettings = updated;
+      localStorage.setItem("rdt_db_settings", JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent("rdt_settings_updated", { detail: updated }));
+    } catch {}
+  }
+
+  return result;
+}
+
+export interface SystemInfoData {
+  nodeVersion: string;
+  platform: string;
+  uptimeSeconds: number;
+  memoryRssMb: number;
+  memoryHeapMb: number;
+  database: {
+    type: string;
+    databaseName: string;
+    host: string;
+    port: number;
+    status: string;
+    tables: {
+      courses: number;
+      certificates: number;
+      contacts: number;
+      subscriptions: number;
+      ai_leads: number;
+      settings: number;
+    };
+  };
+  uploads: {
+    fileCount: number;
+    sizeMb: number;
+  };
+}
+
+export async function getSystemInfo(): Promise<SystemInfoData | null> {
+  return await fetchApi<SystemInfoData>("/admin/system-info");
+}
+
+export async function downloadDatabaseBackup() {
+  const token = getToken();
+
+  const response = await fetch("/api/admin/export-db", {
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to download database backup.");
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `reddot-db-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+// 7. AI Leads & Verifications API
+export async function getAiLeads(): Promise<any[]> {
+  const data = await fetchApi<any[]>("/ai-leads");
+  if (Array.isArray(data)) return data;
+  try {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("rdt_ai_payment_leads") : null;
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [];
+}
+
+export async function createAiLead(lead: any) {
+  try {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem("rdt_ai_payment_leads");
+      const existing = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(
+        "rdt_ai_payment_leads",
+        JSON.stringify([lead, ...existing.filter((l: any) => l.id !== lead.id)])
+      );
+    }
+  } catch {}
+  return await fetchApi("/ai-leads", {
+    method: "POST",
+    body: JSON.stringify(lead),
+  });
+}
+
+export async function updateAiLead(id: string, updates: any) {
+  try {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem("rdt_ai_payment_leads");
+      const existing = raw ? JSON.parse(raw) : [];
+      const updated = existing.map((l: any) => (l.id === id ? { ...l, ...updates } : l));
+      localStorage.setItem("rdt_ai_payment_leads", JSON.stringify(updated));
+    }
+  } catch {}
+  return await fetchApi(`/ai-leads/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(updates),
+  });
+}
+
+export async function deleteAiLead(id: string) {
+  try {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem("rdt_ai_payment_leads");
+      const existing = raw ? JSON.parse(raw) : [];
+      localStorage.setItem(
+        "rdt_ai_payment_leads",
+        JSON.stringify(existing.filter((l: any) => l.id !== id))
+      );
+    }
+  } catch {}
+  return await fetchApi(`/ai-leads/${id}`, {
+    method: "DELETE",
   });
 }

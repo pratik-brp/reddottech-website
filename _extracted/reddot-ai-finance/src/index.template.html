@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI for Financial Professionals — Red Dot Technologies</title>
+<style>
+{{STYLES}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button class="menubtn" onclick="toggleSide()">☰</button>
+    <div class="brand">
+      <img class="logo" src="{{LOGO_DARK}}" alt="Red Dot Technologies">
+      <div class="pipe"></div>
+      <div class="ct">AI for Financial Professionals<small>CERTIFICATE PROGRAMME</small></div>
+    </div>
+  </div>
+  <div class="progwrap">
+    <div class="progbar"><div class="progfill" id="progfill"></div></div>
+    <span class="progtxt" id="progtxt">0%</span>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="side" id="side"><h4>Programme Contents</h4><div id="navlist"></div></aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+{{COURSE_DATA}}
+
+{{CONFIG}}
+
+{{APP_JS}}
+</script>
+</body>
+</html>

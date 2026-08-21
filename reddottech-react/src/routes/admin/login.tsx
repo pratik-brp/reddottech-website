@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Lock, Eye, EyeOff, AlertCircle, Loader2, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { adminLogin } from "@/lib/api";
 import { setToken } from "@/lib/auth";
@@ -51,24 +51,24 @@ function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f2f5] font-sans p-4 sm:p-6 relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0f2f5] font-sans p-3.5 sm:p-6 relative">
       {/* Subtle Background Pattern */}
       <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" aria-hidden="true" />
 
-      <div className="relative z-10 w-full max-w-[440px] space-y-6">
+      <div className="relative z-10 w-full max-w-[440px] space-y-4 sm:space-y-6">
         {/* Brand Logo Header */}
         <div className="text-center">
           <Link to="/" className="inline-block transition-transform hover:scale-105 duration-200">
             <img
               src="/logo.png"
               alt="Red Dot Technologies Pvt. Ltd."
-              className="h-14 sm:h-16 w-auto object-contain mx-auto drop-shadow-xs"
+              className="h-10 sm:h-16 w-auto object-contain mx-auto drop-shadow-xs"
             />
           </Link>
         </div>
 
         {/* Classic Clean Login Box */}
-        <div className="rounded-2xl bg-white border border-slate-200/90 p-8 sm:p-10 shadow-xl shadow-slate-200/60">
+        <div className="rounded-2xl bg-white border border-slate-200/90 p-5 sm:p-10 shadow-xl shadow-slate-200/60">
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error Banner */}
             {error && (

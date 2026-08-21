@@ -8,10 +8,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
 import SmoothScroll from "@/components/SmoothScroll";
 import { PauseOffscreenAnimations } from "@/components/PauseOffscreenAnimations";
 
@@ -136,6 +137,7 @@ function RootComponent() {
 
   const content = (
     <QueryClientProvider client={queryClient}>
+      <LoadingIndicator />
       <Toaster position="top-right" richColors />
       {!isAdminRoute && <Navbar />}
       <main className="min-h-screen">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode, type ElementType } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -6,7 +6,7 @@ interface ScrollRevealProps {
   direction?: "up" | "left" | "right" | "scale";
   delay?: number;
   threshold?: number;
-  as?: keyof HTMLElementTagNameMap;
+  as?: ElementType;
 }
 
 /**
@@ -20,10 +20,9 @@ export function ScrollReveal({
   direction = "up",
   delay = 0,
   threshold = 0.15,
-  as = "div",
+  as: Tag = "div",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLElement>(null);
-  const Tag = as as any;
 
   useEffect(() => {
     const el = ref.current;

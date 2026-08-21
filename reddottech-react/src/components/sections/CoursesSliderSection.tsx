@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef } from "react";
-import { coursesData } from "@/data/courses";
 import { CourseCard } from "@/components/CourseCard";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowLeft, ArrowRight as ArrowRightIcon } from "lucide-react";
@@ -22,15 +21,17 @@ export function CoursesSliderSection() {
 
   const [canPrev, setCanPrev] = useState(true);
   const [canNext, setCanNext] = useState(true);
-  const [courses, setCourses] = useState<Course[]>(coursesData);
+  const [courses, setCourses] = useState<Course[]>([]);
 
-  // Load courses from the backend, falling back to the static catalog offline.
+  // Load courses exclusively from SQL database via API
   useEffect(() => {
-    getCourses().then((data) => {
-      if (data && data.length > 0) {
-        setCourses(data as Course[]);
-      }
-    });
+    getCourses()
+      .then((data) => {
+        if (data) {
+          setCourses(data as Course[]);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -104,63 +105,65 @@ export function CoursesSliderSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Row */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6">
-          <div className="space-y-4 max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-mist px-4 py-1.5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-4 max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-mist px-3.5 py-1.5 shadow-xs">
               <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
-              <span className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
+              <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
                 Programs &amp; Cohorts
               </span>
             </span>
-            <h2 className="display-font text-3xl sm:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
+            <h2 className="display-font text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
               Upskill with Our <span className="gradient-text">Popular Courses</span>
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 font-medium">
+            <p className="text-xs sm:text-base text-slate-600 font-medium">
               Explore university-backed certifications co-designed with top U.S. faculty and
               industry leaders.
             </p>
           </div>
 
           {/* Controls & CTA */}
-          <div className="flex items-center gap-3 shrink-0">
-            <Magnetic>
-              <button
-                onClick={scrollPrev}
-                disabled={!canPrev}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-all hover:bg-brand-red hover:text-white hover:border-brand-red disabled:opacity-30 disabled:cursor-not-allowed"
-                aria-label="Previous course"
-              >
-                <ArrowLeft className="h-4 w-4 stroke-[2.5]" />
-              </button>
-            </Magnetic>
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3 shrink-0 pt-2 sm:pt-0">
+            <div className="flex items-center gap-2">
+              <Magnetic>
+                <button
+                  onClick={scrollPrev}
+                  disabled={!canPrev}
+                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-xs transition-all hover:bg-brand-red hover:text-white hover:border-brand-red disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Previous course"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[2.5]" />
+                </button>
+              </Magnetic>
+
+              <Magnetic>
+                <button
+                  onClick={scrollNext}
+                  disabled={!canNext}
+                  className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-xs transition-all hover:bg-brand-red hover:text-white hover:border-brand-red disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Next course"
+                >
+                  <ArrowRightIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[2.5]" />
+                </button>
+              </Magnetic>
+            </div>
 
             <Magnetic>
-              <button
-                onClick={scrollNext}
-                disabled={!canNext}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-all hover:bg-brand-red hover:text-white hover:border-brand-red disabled:opacity-30 disabled:cursor-not-allowed"
-                aria-label="Next course"
-              >
-                <ArrowRightIcon className="h-4 w-4 stroke-[2.5]" />
-              </button>
-            </Magnetic>
-
-            <Magnetic>
-              <Link to="/courses" className="btn-primary text-xs py-3.5 px-6 ml-2">
+              <Link to="/courses" className="btn-primary text-xs py-2.5 sm:py-3.5 px-4 sm:px-6">
                 <span>View All Courses</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Link>
             </Magnetic>
           </div>
         </div>
 
         {/* Course Cards Carousel */}
-        <div ref={emblaRef} className="overflow-hidden -mx-3">
+        <div ref={emblaRef} className="overflow-hidden -mx-2.5 sm:-mx-3">
           <div className="flex">
             {courses.map((course) => (
               <div
                 key={course.id}
-                className="flex-[0_0_100%] min-w-0 px-3 sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
+                className="flex-[0_0_88%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 px-2.5 sm:px-3"
               >
                 <CourseCard course={course} />
               </div>

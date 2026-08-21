@@ -15,6 +15,7 @@ import {
   RemoveFormatting,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface RichTextEditorProps {
   label?: string;
@@ -39,7 +40,7 @@ export function RichTextEditor({
   useEffect(() => {
     if (editorRef.current && !isCodeView) {
       if (editorRef.current.innerHTML !== value) {
-        editorRef.current.innerHTML = value || "";
+        editorRef.current.innerHTML = sanitizeHtml(value || "");
       }
     }
   }, [value, isCodeView]);

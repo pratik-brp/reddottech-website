@@ -1,20 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { PageHero } from "@/components/PageHero";
-import { ScrollReveal, RevealGroup } from "@/components/ScrollReveal";
 import { SectionHeader } from "@/components/SectionHeader";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { GradientBackground } from "@/components/GradientBackground";
 import {
-  BookOpen,
   Download,
-  Sparkles,
   Video,
   Calendar,
   ArrowRight,
-  CheckCircle2,
-  ShieldCheck,
-  Mail,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -247,7 +241,7 @@ Scope + Schedule + Cost (quality is the center of the triangle).
 
       {/* Free Downloadable Cheat Sheets */}
       <section className="section-padding bg-white relative">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-3.5 sm:px-6">
           <SectionHeader
             badge="Downloadable Guides"
             title={
@@ -258,33 +252,33 @@ Scope + Schedule + Cost (quality is the center of the triangle).
             subtitle="Printable PDF reference sheets co-written by senior instructors."
           />
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {cheatSheets.map((sheet, idx) => (
+          <div className="mt-6 sm:mt-12 grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-8">
+            {cheatSheets.map((sheet) => (
               <div
                 key={sheet.title}
-                className="premium-card p-8 space-y-5 relative overflow-hidden flex flex-col justify-between"
+                className="premium-card p-3.5 sm:p-8 space-y-2.5 sm:space-y-5 relative overflow-hidden flex flex-col justify-between"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="badge-brand">{sheet.category}</span>
-                    <span className="text-xs font-bold text-slate-400">{sheet.format}</span>
+                <div className="space-y-2 sm:space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
+                    <span className="badge-brand text-[9px] sm:text-xs">{sheet.category}</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{sheet.format}</span>
                   </div>
 
-                  <h3 className="text-xl font-extrabold text-brand-ink">{sheet.title}</h3>
-                  <p className="text-slate-600 text-xs leading-relaxed">{sheet.desc}</p>
+                  <h3 className="text-xs sm:text-xl font-extrabold text-brand-ink line-clamp-2">{sheet.title}</h3>
+                  <p className="text-slate-600 text-[11px] sm:text-xs leading-relaxed line-clamp-2 sm:line-clamp-none">{sheet.desc}</p>
 
-                  <div className="flex items-center gap-2 text-xs text-slate-400 font-semibold pt-2">
-                    <Download className="h-4 w-4 text-brand-red" />
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-400 font-semibold pt-1 sm:pt-2">
+                    <Download className="h-3.5 w-3.5 text-brand-red" />
                     <span>{sheet.downloads} Downloads</span>
                   </div>
                 </div>
 
-                <div className="pt-6">
+                <div className="pt-2 sm:pt-6">
                   <button
                     onClick={() => handleDownload(sheet.title)}
-                    className="btn-primary w-full justify-center"
+                    className="btn-primary w-full justify-center text-xs py-2 px-2.5 sm:py-2.5 sm:px-4"
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     <span>Download Free PDF</span>
                   </button>
                 </div>
@@ -297,7 +291,7 @@ Scope + Schedule + Cost (quality is the center of the triangle).
       {/* 0-Cost Video Masterclasses */}
       <GradientBackground variant="warm" orbs>
         <section className="section-padding">
-          <div className="mx-auto max-w-7xl px-6">
+          <div className="mx-auto max-w-7xl px-3.5 sm:px-6">
             <SectionHeader
               badge="Watch On-Demand"
               title={
@@ -308,31 +302,31 @@ Scope + Schedule + Cost (quality is the center of the triangle).
               subtitle="Watch full-length lectures delivered by international faculty."
             />
 
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="mt-6 sm:mt-12 grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-8">
               {freeMasterclasses.map((vid) => (
                 <div
                   key={vid.title}
-                  className="premium-card p-7 space-y-4 flex flex-col justify-between"
+                  className="premium-card p-3.5 sm:p-7 space-y-2.5 sm:space-y-4 flex flex-col justify-between"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-extrabold px-2.5 py-1 rounded bg-brand-red/10 text-brand-red uppercase tracking-wider">
+                  <div className="space-y-1.5 sm:space-y-3">
+                    <div className="flex flex-wrap items-center justify-between gap-1">
+                      <span className="text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded bg-brand-red/10 text-brand-red uppercase tracking-wider">
                         {vid.tag}
                       </span>
-                      <span className="text-xs text-slate-400 font-semibold">{vid.duration}</span>
+                      <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">{vid.duration}</span>
                     </div>
 
-                    <h4 className="text-lg font-bold text-brand-ink">{vid.title}</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed">{vid.desc}</p>
+                    <h4 className="text-xs sm:text-lg font-bold text-brand-ink line-clamp-2">{vid.title}</h4>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">{vid.desc}</p>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs text-slate-400 font-semibold">{vid.views}</span>
+                  <div className="pt-2 sm:pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5">
+                    <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">{vid.views}</span>
                     <button
                       onClick={() => toast.info(`Launching ${vid.title} player...`)}
-                      className="btn-secondary text-xs py-2 px-4"
+                      className="btn-secondary text-[11px] sm:text-xs py-1.5 px-2.5 sm:py-2 sm:px-4 justify-center"
                     >
-                      <Video className="h-3.5 w-3.5" />
+                      <Video className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       <span>Watch Free</span>
                     </button>
                   </div>
@@ -345,7 +339,7 @@ Scope + Schedule + Cost (quality is the center of the triangle).
 
       {/* Community Webinars & RSVP */}
       <section className="section-padding bg-slate-900 text-white relative">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-3.5 sm:px-6">
           <SectionHeader
             badge="Live Events"
             title={
@@ -357,13 +351,13 @@ Scope + Schedule + Cost (quality is the center of the triangle).
             dark
           />
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="mt-6 sm:mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 max-w-4xl mx-auto">
             {upcomingWebinars.map((web) => (
               <div
                 key={web.title}
-                className="rounded-2xl bg-white/[0.04] border border-white/10 p-8 space-y-5 flex flex-col justify-between"
+                className="rounded-2xl bg-white/[0.04] border border-white/10 p-4 sm:p-8 space-y-3 sm:space-y-5 flex flex-col justify-between"
               >
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
                       <Calendar className="h-4 w-4 text-brand-red" />
@@ -374,17 +368,17 @@ Scope + Schedule + Cost (quality is the center of the triangle).
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white">{web.title}</h3>
+                  <h3 className="text-base sm:text-xl font-bold text-white">{web.title}</h3>
                   <p className="text-xs text-slate-300 font-medium">Speaker: {web.speaker}</p>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-2 sm:pt-4">
                   <button
                     onClick={() => setShowRsvpModal(true)}
-                    className="btn-primary w-full justify-center"
+                    className="btn-primary w-full justify-center py-2.5 text-xs sm:text-sm"
                   >
                     <span>Reserve Free RSVP Pass</span>
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </button>
                 </div>
               </div>

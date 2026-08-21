@@ -19,6 +19,11 @@ export function getAdminEmail(): string | null {
   return window.localStorage.getItem(EMAIL_KEY);
 }
 
+export function setAdminEmail(email: string): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(EMAIL_KEY, email);
+}
+
 export function clearAuth(): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(TOKEN_KEY);
@@ -34,6 +39,10 @@ export function isAdminAuthed(): boolean {
  * visitor has no admin session token stored on the client.
  */
 export function requireAdminRoute() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
   if (!isAdminAuthed()) {
     throw redirect({ to: "/admin/login" });
   }

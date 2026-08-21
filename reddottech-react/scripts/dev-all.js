@@ -14,7 +14,7 @@ const tasks = [
   {
     name: "api",
     cmd: process.execPath,
-    args: ["--env-file-if-exists=.env", "server/server.js"],
+    args: ["--watch", "--env-file-if-exists=.env", "server/server.js"],
   },
   {
     name: "web",

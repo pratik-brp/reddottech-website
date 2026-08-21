@@ -9,7 +9,6 @@ import {
   Loader2,
   HelpCircle,
   ChevronDown,
-  Sparkles,
   Send,
   Globe,
   ExternalLink,
@@ -20,8 +19,7 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { SectionHeader } from "@/components/SectionHeader";
-import { submitContact } from "@/lib/api";
+import { submitContact, getSettings, getCachedSettings } from "@/lib/api";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -48,6 +46,23 @@ function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const faqContentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [settings, setSettings] = useState<Record<string, string>>(() => getCachedSettings() || {});
+
+  useEffect(() => {
+    getSettings().then((data) => {
+      if (data) setSettings(data);
+    });
+
+    const handleSettingsUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<Record<string, string>>;
+      if (customEvent.detail) {
+        setSettings(customEvent.detail);
+      }
+    };
+
+    window.addEventListener("rdt_settings_updated", handleSettingsUpdate);
+    return () => window.removeEventListener("rdt_settings_updated", handleSettingsUpdate);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -80,45 +95,52 @@ function ContactPage() {
         "Your message has been sent and saved to our database! Our admissions team will contact you within 24 hours.",
       );
       setForm({ fullName: "", email: "", phone: "", subject: "", message: "" });
-    } catch (err) {
+    } catch {
       toast.error("Failed to submit inquiry.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const officeAddress = settings.office_address || "Baluwatar-04, Kathmandu, Bagmati, Nepal";
+  const mapsUrl = settings.google_maps_url || "https://maps.app.goo.gl/KmrWV2r6kDgn7cFg6";
+  const primaryPhone = settings.contact_phone || "01 4535691";
+  const secondaryPhone = settings.contact_secondary_phone || "01 4516390";
+  const contactEmail = settings.contact_email || "info@reddottech.com.np";
+  const officeHours = settings.office_hours || "Mon – Fri: 9:00 AM – 5:00 PM";
+
   const contactCards = [
     {
       icon: MapPin,
       title: "Visit Our Office",
-      detail: "Baluwatar-04, Kathmandu",
+      detail: officeAddress,
       sub: "Bagmati, Nepal",
-      href: "https://www.google.com/maps/place/BRP+Group/@27.723054,85.3303128,17z",
+      href: mapsUrl,
       accent: "from-rose-500 to-red-600",
       bgGlow: "bg-rose-500/10",
     },
     {
       icon: Phone,
       title: "Call Us",
-      detail: "01 4535691",
-      sub: "01 4516390",
-      href: "tel:014535691",
+      detail: primaryPhone,
+      sub: secondaryPhone,
+      href: `tel:${primaryPhone.replace(/\s+/g, "")}`,
       accent: "from-blue-500 to-indigo-600",
       bgGlow: "bg-blue-500/10",
     },
     {
       icon: Mail,
       title: "Email Us",
-      detail: "info@reddottech.com.np",
+      detail: contactEmail,
       sub: "We reply within 24h",
-      href: "mailto:info@reddottech.com.np",
+      href: `mailto:${contactEmail}`,
       accent: "from-emerald-500 to-teal-600",
       bgGlow: "bg-emerald-500/10",
     },
     {
       icon: Clock,
       title: "Office Hours",
-      detail: "Sun – Fri: 9 AM – 5 PM",
+      detail: officeHours,
       sub: "Sat & Sun: Closed",
       accent: "from-amber-500 to-orange-600",
       bgGlow: "bg-amber-500/10",
@@ -157,9 +179,9 @@ function ContactPage() {
       />
 
       {/* ── Contact Info Cards Row ── */}
-      <section className="relative -mt-10 z-10 pb-8">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="relative -mt-6 sm:-mt-10 z-10 pb-6 sm:pb-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             {contactCards.map((item, idx) => {
               const Icon = item.icon;
               const isLink = !!item.href;
@@ -176,21 +198,21 @@ function ContactPage() {
                 <ScrollReveal key={idx} delay={idx * 80}>
                   <Tag
                     {...linkProps}
-                    className="group relative flex items-start gap-4 rounded-2xl bg-white border border-slate-200/80 p-5 shadow-lg hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer overflow-hidden"
+                    className="group relative flex flex-col sm:flex-row items-start gap-2.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 p-3.5 sm:p-5 shadow-xs sm:shadow-lg hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer overflow-hidden h-full"
                   >
                     {/* Subtle gradient glow on hover */}
                     <div className={`absolute inset-0 ${item.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                    <div className={`relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.accent} text-white shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="h-5 w-5" />
+                    <div className={`relative z-10 flex h-8 w-8 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br ${item.accent} text-white shadow-xs sm:shadow-md group-hover:scale-105 transition-transform duration-300`}>
+                      <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                     </div>
-                    <div className="relative z-10 min-w-0">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">{item.title}</p>
-                      <p className="text-sm font-extrabold text-brand-ink leading-snug">{item.detail}</p>
-                      <p className="text-xs text-slate-500 font-medium mt-0.5">{item.sub}</p>
+                    <div className="relative z-10 min-w-0 flex-1">
+                      <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">{item.title}</p>
+                      <p className="text-xs sm:text-sm font-extrabold text-brand-ink leading-snug break-words whitespace-normal">{item.detail}</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5 break-words whitespace-normal">{item.sub}</p>
                     </div>
                     {isLink && (
-                      <ExternalLink className="absolute top-4 right-4 h-3.5 w-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
+                      <ExternalLink className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
                     )}
                   </Tag>
                 </ScrollReveal>
@@ -202,30 +224,30 @@ function ContactPage() {
 
       {/* ── Contact Form Section ── */}
       <section className="section-padding bg-slate-50/70">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
             {/* Left – Why Reach Out + Trust Signals */}
             <ScrollReveal direction="left">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-white px-4 py-1.5 shadow-xs">
-                    <MessageCircle className="h-3.5 w-3.5 text-brand-red" />
-                    <span className="text-[11px] font-black uppercase tracking-widest text-brand-red">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="space-y-2 sm:space-y-4">
+                  <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-brand-red/20 bg-white px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
+                    <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-brand-red" />
+                    <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-brand-red">
                       Get in Touch
                     </span>
                   </div>
-                  <h2 className="display-font text-3xl sm:text-4xl font-black text-brand-ink leading-[1.1] tracking-tight">
+                  <h2 className="display-font text-2xl sm:text-4xl font-black text-brand-ink leading-[1.1] tracking-tight">
                     We'd Love to Hear{" "}
                     <span className="gradient-text">From You</span>
                   </h2>
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg">
+                  <p className="text-xs sm:text-base text-slate-600 leading-relaxed max-w-lg">
                     Whether you're exploring our certification programs, need help with enrollment,
                     or want to discuss corporate training solutions — our team is ready to help.
                   </p>
                 </div>
 
                 {/* Trust / Feature Highlights */}
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {[
                     {
                       icon: Clock,
@@ -245,13 +267,13 @@ function ContactPage() {
                   ].map((feat, i) => {
                     const FIcon = feat.icon;
                     return (
-                      <div key={i} className="flex items-start gap-4 group">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red/10 text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
-                          <FIcon className="h-4.5 w-4.5" />
+                      <div key={i} className="flex items-start gap-3 sm:gap-4 group">
+                        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-brand-red/10 text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
+                          <FIcon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                         </div>
                         <div>
-                          <h4 className="text-sm font-extrabold text-brand-ink">{feat.title}</h4>
-                          <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{feat.desc}</p>
+                          <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink">{feat.title}</h4>
+                          <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed mt-0.5">{feat.desc}</p>
                         </div>
                       </div>
                     );
@@ -262,17 +284,17 @@ function ContactPage() {
 
             {/* Right – The Form */}
             <ScrollReveal direction="right">
-              <div className="relative rounded-[2rem] bg-white border border-slate-200/80 shadow-xl overflow-hidden">
+              <div className="relative rounded-2xl sm:rounded-[2rem] bg-white border border-slate-200/80 shadow-xs sm:shadow-xl overflow-hidden">
                 {/* Top accent bar */}
                 <div className="h-1.5 bg-gradient-to-r from-brand-red via-red-400 to-amber-400" />
 
-                <div className="p-7 sm:p-9">
-                  <div className="space-y-1.5 mb-7">
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-brand-ink tracking-tight flex items-center gap-2.5">
-                      <Send className="h-5 w-5 text-brand-red" />
+                <div className="p-4 sm:p-9">
+                  <div className="space-y-1 sm:space-y-1.5 mb-4 sm:mb-7">
+                    <h3 className="text-lg sm:text-2xl font-extrabold text-brand-ink tracking-tight flex items-center gap-2 sm:gap-2.5">
+                      <Send className="h-4 w-4 sm:h-5 sm:w-5 text-brand-red" />
                       Send Us a Message
                     </h3>
-                    <p className="text-xs text-slate-500 font-medium">
+                    <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
                       Fill in the details below and we'll get back to you promptly.
                     </p>
                   </div>
@@ -507,7 +529,7 @@ function ContactPage() {
 
               {/* Floating Address Card */}
               <div className="absolute bottom-5 left-5 right-5 sm:right-auto sm:max-w-xs z-10">
-                <div className="rounded-xl bg-white/95 backdrop-blur-xl border border-slate-200/80 shadow-2xl p-4">
+                <div className="rounded-xl bg-white border border-slate-200 shadow-xl p-4">
                   <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-red text-white shadow-md">
                       <MapPin className="h-4.5 w-4.5" />
@@ -515,10 +537,10 @@ function ContactPage() {
                     <div className="min-w-0">
                       <p className="text-xs font-black text-brand-ink">Red Dot Technologies</p>
                       <p className="text-[11px] text-slate-500 font-medium mt-0.5">
-                        Baluwatar-04, Kathmandu, Nepal
+                        {officeAddress}
                       </p>
                       <a
-                        href="https://www.google.com/maps/place/BRP+Group/@27.723054,85.3303128,17z"
+                        href={mapsUrl}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-red hover:underline mt-1.5"

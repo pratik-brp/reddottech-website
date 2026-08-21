@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
-import { coursesData } from "@/data/courses";
 import {
   Plus,
   Trash2,
@@ -10,25 +9,17 @@ import {
   ExternalLink,
   X,
   Save,
-  CheckCircle2,
   Search,
   LayoutGrid,
   List,
-  Filter,
-  Layers,
-  BookOpen,
-  Sparkles,
-  DollarSign,
-  Calendar,
   Clock,
-  Award,
   Globe,
-  SlidersHorizontal,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { getCourses, deleteCourse, updateCourse } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
+import { BrandSpinner } from "@/components/ui/BrandSpinner";
 
 export const Route = createFileRoute("/admin/courses/")({
   beforeLoad: requireAdminRoute,
@@ -39,7 +30,8 @@ export const Route = createFileRoute("/admin/courses/")({
 });
 
 function AdminCoursesIndexPage() {
-  const [courses, setCourses] = useState<any[]>(coursesData);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [editingCourse, setEditingCourse] = useState<any | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,9 +42,16 @@ function AdminCoursesIndexPage() {
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
 
   const loadCourses = async () => {
-    const data = await getCourses();
-    if (data && data.length > 0) {
-      setCourses(data);
+    setIsLoading(true);
+    try {
+      const data = await getCourses();
+      if (data) {
+        setCourses(data);
+      }
+    } catch {
+      setCourses([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -96,7 +95,7 @@ function AdminCoursesIndexPage() {
       try {
         await deleteCourse(id);
         setCourses((prev) => prev.filter((c) => String(c.id) !== String(id)));
-        toast.success("Course deleted successfully from SQLite database.");
+        toast.success("Course deleted successfully from database.");
       } catch (err) {
         toast.error("Failed to delete course from database.");
       }
@@ -143,16 +142,17 @@ function AdminCoursesIndexPage() {
         status: editingCourse.status,
         thumbnail: editingCourse.thumbnail,
         bannerImage: editingCourse.bannerImage || editingCourse.banner_image,
+        instructorImage: editingCourse.instructorImage || editingCourse.instructor_image,
         description: editingCourse.description,
         requirements: editingCourse.requirements,
         curriculum: editingCourse.curriculum,
       });
 
-      toast.success(`Course "${editingCourse.name}" updated in SQLite database!`);
+      toast.success(`Course "${editingCourse.name}" updated successfully in database!`);
       setEditingCourse(null);
       loadCourses();
     } catch (err) {
-      toast.error("Failed to save changes to SQLite database.");
+      toast.error("Failed to save changes.");
     } finally {
       setIsSubmitting(false);
     }
@@ -161,14 +161,16 @@ function AdminCoursesIndexPage() {
   return (
     <AdminLayout
       title="Courses"
+      mobileTitle="Courses"
       subtitle="Manage course offerings, pricing, instructors, and curriculum content."
       actions={
         <Link
           to="/admin/courses/create"
-          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white font-bold text-xs px-4 py-2 shadow-xs transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white font-bold text-[11px] sm:text-xs px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer shrink-0"
         >
-          <Plus className="h-4 w-4" />
-          <span>Add Course</span>
+          <Plus className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Add Course</span>
+          <span className="inline sm:hidden">Add</span>
         </Link>
       }
     >
@@ -261,143 +263,15 @@ function AdminCoursesIndexPage() {
           </div>
         </div>
 
-        {/* 1. Table View */}
+        {/* 1. List / Row View (Left Toggle Icon) */}
         {viewMode === "table" && (
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-extrabold text-slate-500 uppercase tracking-wider">
-                    <th className="py-4 px-6">Course Module</th>
-                    <th className="py-4 px-6">Instructor</th>
-                    <th className="py-4 px-6">Format &amp; Mode</th>
-                    <th className="py-4 px-6">Tuition</th>
-                    <th className="py-4 px-6">Status</th>
-                    <th className="py-4 px-6 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
-                  {filteredCourses.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-12 text-center text-slate-400 font-medium">
-                        No courses found matching your search and filter criteria.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredCourses.map((course) => {
-                      const isPublished = (course.status || "published") === "published";
-                      return (
-                        <tr key={course.id} className="hover:bg-slate-50/70 transition-colors group">
-                          <td className="py-4 px-6">
-                            <div className="flex items-center gap-3.5">
-                              <img
-                                src={course.thumbnail}
-                                alt={course.name}
-                                className="h-12 w-16 rounded-xl object-cover bg-slate-100 border border-slate-200 shrink-0 shadow-2xs"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "/images/courses/course-ai.jpg";
-                                }}
-                              />
-                              <div className="min-w-0 max-w-xs sm:max-w-md">
-                                <h4 className="font-bold text-slate-900 truncate group-hover:text-brand-red transition-colors text-sm">
-                                  {course.name}
-                                </h4>
-                                <span className="inline-block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                  {course.category || "Professional Certification"}
-                                </span>
-                              </div>
-                            </div>
-                          </td>
-
-                          <td className="py-4 px-6 font-semibold text-slate-800">
-                            {course.instructor_name || course.instructorName || "Lead Instructor"}
-                            <span className="block text-[10px] text-slate-400 font-normal">
-                              {course.instructor_title || course.instructorTitle || "Faculty Lead"}
-                            </span>
-                          </td>
-
-                          <td className="py-4 px-6">
-                            <div className="space-y-1">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-700 capitalize">
-                                {course.delivery || "online"} • {course.duration || "6 weeks"}
-                              </span>
-                              <span className="block text-[10px] text-slate-400">
-                                {course.skill_level || course.skillLevel || "Beginner"} • {course.certification || "PECP"}
-                              </span>
-                            </div>
-                          </td>
-
-                          <td className="py-4 px-6">
-                            <span className="font-extrabold text-slate-900 text-sm">
-                              ${course.price || "250.00"}
-                            </span>
-                          </td>
-
-                          <td className="py-4 px-6">
-                            <button
-                              type="button"
-                              onClick={() => handleToggleStatus(course)}
-                              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold transition-all cursor-pointer ${
-                                isPublished
-                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-100"
-                                  : "bg-amber-50 text-amber-700 border border-amber-200/80 hover:bg-amber-100"
-                              }`}
-                              title="Click to toggle status"
-                            >
-                              <span
-                                className={`h-1.5 w-1.5 rounded-full ${
-                                  isPublished ? "bg-emerald-500" : "bg-amber-500"
-                                }`}
-                              />
-                              <span className="capitalize">{course.status || "published"}</span>
-                            </button>
-                          </td>
-
-                          <td className="py-4 px-6 text-right">
-                            <div className="inline-flex items-center gap-1.5">
-                              {course.slug && (
-                                <Link
-                                  to={`/courses/${course.slug}` as any}
-                                  target="_blank"
-                                  className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
-                                  title="View Public Course Page"
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                </Link>
-                              )}
-
-                              <button
-                                onClick={() => setEditingCourse(course)}
-                                className="rounded-xl bg-slate-900 hover:bg-brand-red text-white p-2 transition-colors cursor-pointer shadow-xs"
-                                title="Edit Course (17 Fields &amp; Media)"
-                              >
-                                <Edit className="h-3.5 w-3.5" />
-                              </button>
-
-                              <button
-                                onClick={() => handleDelete(course.id)}
-                                className="rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 transition-colors cursor-pointer"
-                                title="Delete Course"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* 2. Visual Cards Grid View */}
-        {viewMode === "grid" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCourses.length === 0 ? (
-              <div className="col-span-full py-16 bg-white rounded-3xl border border-slate-200 text-center text-slate-400 text-xs font-medium">
+          <div className="space-y-2.5 sm:space-y-3">
+            {isLoading ? (
+              <div className="py-16 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 text-center flex items-center justify-center">
+                <BrandSpinner size="sm" message="Loading course catalog..." />
+              </div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="py-14 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 text-center text-slate-400 text-xs font-medium">
                 No courses found matching your criteria.
               </div>
             ) : (
@@ -406,11 +280,124 @@ function AdminCoursesIndexPage() {
                 return (
                   <div
                     key={course.id}
-                    className="rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between group"
+                    className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group"
+                  >
+                    {/* Left: Thumbnail & Info */}
+                    <div className="flex items-center gap-3 min-w-0 flex-1 w-full sm:w-auto">
+                      <div className="relative h-14 w-20 sm:h-16 sm:w-24 rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                        <img
+                          src={course.thumbnail}
+                          alt={course.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/images/courses/course-ai.jpg";
+                          }}
+                        />
+                      </div>
+
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-brand-red bg-brand-red/5 px-2 py-0.5 rounded-full border border-brand-red/20 truncate max-w-[120px] sm:max-w-none">
+                            {course.category || "Professional"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleStatus(course)}
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[8px] sm:text-[9px] font-bold transition-all cursor-pointer ${
+                              isPublished
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-amber-50 text-amber-700 border border-amber-200"
+                            }`}
+                            title="Click to toggle status"
+                          >
+                            <span className={`h-1.5 w-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`} />
+                            <span className="capitalize">{course.status || "published"}</span>
+                          </button>
+                        </div>
+
+                        <h4 className="font-extrabold text-slate-900 text-xs sm:text-sm truncate group-hover:text-brand-red transition-colors">
+                          {course.name}
+                        </h4>
+
+                        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-slate-500">
+                          <span className="font-semibold text-slate-700 truncate max-w-[110px] sm:max-w-none">
+                            {course.instructor_name || course.instructorName || "Lead Faculty"}
+                          </span>
+                          <span>•</span>
+                          <span>{course.duration || "6 weeks"}</span>
+                          <span>•</span>
+                          <span className="capitalize">{course.delivery || "online"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right: Price & Actions */}
+                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
+                      <div className="text-left sm:text-right">
+                        <span className="text-xs sm:text-base font-extrabold text-slate-900">
+                          ${course.price || "250.00"}
+                        </span>
+                        <span className="block text-[8px] sm:text-[9px] text-slate-400 font-mono">tuition</span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {course.slug && (
+                          <Link
+                            to={`/courses/${course.slug}` as any}
+                            target="_blank"
+                            className="rounded-lg sm:rounded-xl border border-slate-200 p-1.5 sm:p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition-colors"
+                            title="View Public Course"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </Link>
+                        )}
+
+                        <button
+                          onClick={() => setEditingCourse(course)}
+                          className="inline-flex items-center gap-1 rounded-lg sm:rounded-xl bg-slate-900 hover:bg-brand-red text-white px-2.5 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                        >
+                          <Edit className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                          <span>Edit</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(course.id)}
+                          className="rounded-lg sm:rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 p-1.5 sm:p-2 transition-colors cursor-pointer"
+                          title="Delete Course"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+
+        {/* 2. Visual Bento Cards Grid View (Right Toggle Icon) */}
+        {viewMode === "grid" && (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
+            {isLoading ? (
+              <div className="col-span-full py-16 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 text-center flex items-center justify-center">
+                <BrandSpinner size="sm" message="Loading course cards..." />
+              </div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="col-span-full py-16 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 text-center text-slate-400 text-xs font-medium">
+                No courses found matching your criteria.
+              </div>
+            ) : (
+              filteredCourses.map((course) => {
+                const isPublished = (course.status || "published") === "published";
+                return (
+                  <div
+                    key={course.id}
+                    className="rounded-xl sm:rounded-3xl bg-white border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
                   >
                     <div>
                       {/* Card Thumbnail */}
-                      <div className="relative h-44 w-full bg-slate-100 overflow-hidden">
+                      <div className="relative h-24 sm:h-44 w-full bg-slate-100 overflow-hidden">
                         <img
                           src={course.thumbnail}
                           alt={course.name}
@@ -419,9 +406,9 @@ function AdminCoursesIndexPage() {
                             (e.target as HTMLImageElement).src = "/images/courses/course-ai.jpg";
                           }}
                         />
-                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                        <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 flex items-center gap-1">
                           <span
-                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-xs backdrop-blur-md ${
+                            className={`rounded-full px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 text-[8px] sm:text-[10px] font-bold shadow-xs backdrop-blur-md ${
                               isPublished
                                 ? "bg-emerald-500/90 text-white"
                                 : "bg-amber-500/90 text-white"
@@ -429,66 +416,63 @@ function AdminCoursesIndexPage() {
                           >
                             {course.status || "published"}
                           </span>
-                          <span className="rounded-full bg-slate-900/80 text-white px-2.5 py-0.5 text-[10px] font-bold backdrop-blur-md">
+                          <span className="rounded-full bg-slate-900/80 text-white px-1.5 py-0.5 sm:px-2.5 sm:py-0.5 text-[8px] sm:text-[10px] font-bold backdrop-blur-md truncate max-w-[80px] sm:max-w-none">
                             {course.category || "Professional"}
                           </span>
                         </div>
-                        <span className="absolute bottom-3 right-3 rounded-xl bg-white/95 text-slate-900 px-3 py-1 text-xs font-extrabold shadow-md backdrop-blur-md">
+                        <span className="absolute bottom-1.5 right-1.5 sm:bottom-3 sm:right-3 rounded-md sm:rounded-xl bg-white/95 text-slate-900 px-1.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-extrabold shadow-xs sm:shadow-md backdrop-blur-md">
                           ${course.price || "250.00"}
                         </span>
                       </div>
 
                       {/* Card Body */}
-                      <div className="p-5 space-y-3">
-                        <h4 className="font-extrabold text-slate-900 text-sm sm:text-base line-clamp-2 group-hover:text-brand-red transition-colors">
+                      <div className="p-2.5 sm:p-5 space-y-1.5 sm:space-y-3">
+                        <h4 className="font-extrabold text-slate-900 text-xs sm:text-base line-clamp-2 group-hover:text-brand-red transition-colors leading-snug">
                           {course.name}
                         </h4>
 
-                        <p className="text-xs text-slate-500 font-medium">
-                          Instructor:{" "}
-                          <strong className="text-slate-800 font-semibold">
-                            {course.instructor_name || course.instructorName || "Faculty Lead"}
-                          </strong>
+                        <p className="text-[10px] sm:text-xs text-slate-500 font-medium truncate">
+                          {course.instructor_name || course.instructorName || "Faculty Lead"}
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-slate-500">
-                          <span className="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-lg">
-                            <Clock className="h-3 w-3" /> {course.duration || "6 weeks"}
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 pt-0.5 text-[9px] sm:text-[11px] text-slate-500">
+                          <span className="inline-flex items-center gap-0.5 bg-slate-100 px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {course.duration || "6w"}
                           </span>
-                          <span className="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded-lg capitalize">
-                            <Globe className="h-3 w-3" /> {course.delivery || "online"}
+                          <span className="inline-flex items-center gap-0.5 bg-slate-100 px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] capitalize">
+                            <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {course.delivery || "online"}
                           </span>
                         </div>
                       </div>
                     </div>
 
                     {/* Card Actions Footer */}
-                    <div className="p-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                    <div className="p-2 sm:p-4 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <button
                           onClick={() => setEditingCourse(course)}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                          className="inline-flex items-center gap-1 rounded-lg sm:rounded-xl bg-slate-900 hover:bg-brand-red text-white px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-bold transition-colors cursor-pointer shadow-xs"
                         >
-                          <Edit className="h-3 w-3" />
+                          <Edit className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                           <span>Edit</span>
                         </button>
                         {course.slug && (
                           <Link
                             to={`/courses/${course.slug}` as any}
                             target="_blank"
-                            className="rounded-xl border border-slate-200 p-1.5 text-slate-400 hover:text-slate-800 hover:bg-white transition-colors"
+                            className="rounded-lg sm:rounded-xl border border-slate-200 p-1 sm:p-1.5 text-slate-400 hover:text-slate-800 hover:bg-white transition-colors"
                           >
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <ExternalLink className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                           </Link>
                         )}
                       </div>
 
                       <button
                         onClick={() => handleDelete(course.id)}
-                        className="rounded-xl p-1.5 text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
+                        className="rounded-lg sm:rounded-xl p-1 sm:p-1.5 text-rose-500 hover:bg-rose-50 transition-colors cursor-pointer"
                         title="Delete Course"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       </button>
                     </div>
                   </div>
@@ -800,20 +784,26 @@ function AdminCoursesIndexPage() {
                 </div>
               </div>
 
-              {/* 3. Media & Thumbnails - Manual File Upload & Preview */}
+              {/* 3. Media & Thumbnails - Direct Device Upload & Database Save */}
               <div className="space-y-4 pt-2 border-t border-slate-100">
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-600 flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-slate-400" />
-                  Media &amp; Visuals (Upload from Device or Edit URL)
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-brand-red" />
+                    Media &amp; Visual Assets (Direct Upload &amp; Database Storage)
+                  </h4>
+                  <span className="text-[11px] text-slate-400 font-medium">
+                    Uploads save automatically to MySQL
+                  </span>
+                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                   <ImageUploadField
                     label="Course Thumbnail Image"
                     value={editingCourse.thumbnail || ""}
                     onChange={(url) => setEditingCourse({ ...editingCourse, thumbnail: url })}
-                    placeholder="/images/courses/course-ai.jpg"
+                    placeholder="https://... or /uploads/thumbnail.jpg"
                     aspectRatio="16/9"
+                    description="Displays on course cards, listings & catalog"
                   />
 
                   <ImageUploadField
@@ -826,8 +816,24 @@ function AdminCoursesIndexPage() {
                         banner_image: url,
                       })
                     }
-                    placeholder="/images/hero/banner.jpg"
+                    placeholder="https://... or /uploads/banner.jpg"
                     aspectRatio="banner"
+                    description="Hero panoramic header on course details page"
+                  />
+
+                  <ImageUploadField
+                    label="Instructor Avatar Photo"
+                    value={editingCourse.instructorImage || editingCourse.instructor_image || ""}
+                    onChange={(url) =>
+                      setEditingCourse({
+                        ...editingCourse,
+                        instructorImage: url,
+                        instructor_image: url,
+                      })
+                    }
+                    placeholder="https://... or /uploads/instructor.jpg"
+                    aspectRatio="square"
+                    description="Lead faculty portrait headshot"
                   />
                 </div>
               </div>
