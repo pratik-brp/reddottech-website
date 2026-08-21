@@ -30,7 +30,7 @@ export const Route = createFileRoute("/admin/certificates")({
   component: AdminCertificatesPage,
 });
 
-export type CertTrackKey = "healthcare" | "finance" | "foundations" | "pecp";
+export type CertTrackKey = "healthcare" | "finance" | "finance-advanced" | "foundations" | "pecp";
 
 export interface CertTrackConfig {
   key: CertTrackKey;
@@ -87,6 +87,31 @@ export const CERT_TRACK_CONFIGS: Record<CertTrackKey, CertTrackConfig> = {
     ],
     descriptionTemplate: (_name, _school) =>
       `has successfully completed all eight modules and assessments of AI for Financial Professionals, an applied programme covering artificial intelligence in credit risk, financial crime, banking operations, AI risk management and governance aligned to the regulatory expectations of Nepal's financial sector.`,
+  },
+  "finance-advanced": {
+    key: "finance-advanced",
+    title: "Advanced AI for Finance Professionals",
+    subtitle: "Executive Certificate Programme · Advanced Level 2",
+    moduleCount: 12,
+    badge: "Level 2 Track",
+    accentColor: "text-purple-700 bg-purple-50 border-purple-200",
+    borderAccent: "#B8892B",
+    modules: [
+      "From Practitioner to Architect: The Advanced Landscape",
+      "The AI Capability Stack for Financial Institutions",
+      "Advanced Model Risk Management & Validation",
+      "Explainability in Regulated Environments (XAI)",
+      "Foundation Models & the Modern AI Stack",
+      "Agentic AI & Multi-Agent Systems in Finance",
+      "Advanced Credit Risk, Capital & Stress Testing",
+      "Financial Crime at Network Scale",
+      "Target Operating Model & Enterprise Governance",
+      "Systemic Risk, Macroprudential Policy & the Regulatory Frontier",
+      "The Economics of AI: Value Realisation & Portfolio Management",
+      "Leading Transformation in a Nepali Institution & Capstone Strategy",
+    ],
+    descriptionTemplate: (_name, _school) =>
+      `has successfully completed all twelve advanced modules and assessments of Advanced AI for Finance Professionals, demonstrating mastery in enterprise AI capability architectures, advanced model risk validation, explainability frameworks, agentic workflow governance, and target operating models for financial institutions.`,
   },
   foundations: {
     key: "foundations",

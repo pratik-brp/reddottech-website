@@ -46,6 +46,7 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { foundationsLessons } from "@/data/ai-foundations-data";
 import { healthcareLessons } from "@/data/ai-healthcare-data";
 import { financeLessons } from "@/data/ai-finance-data";
+import { financeAdvancedLessons } from "@/data/ai-finance-advanced-data";
 import type { Lesson } from "@/data/ai-healthcare-data";
 import {
   TRACK_CONFIGS,
@@ -55,12 +56,13 @@ import {
   DIAGRAM_CAPTIONS,
   HEALTHCARE_SOURCES,
   FINANCE_SOURCES,
+  FINANCE_ADVANCED_SOURCES,
   type TrackConfig,
 } from "@/lib/ai-course-utils";
 import { printOfficialCertificate } from "@/lib/certificate-print";
 
 interface AiUnlockedSearch {
-  track?: "foundations" | "healthcare" | "finance";
+  track?: "foundations" | "healthcare" | "finance" | "finance-advanced";
   lesson?: string;
   view?: string;
 }
@@ -68,7 +70,7 @@ interface AiUnlockedSearch {
 export const Route = createFileRoute("/ai-unlocked")({
   validateSearch: (search: Record<string, unknown>): AiUnlockedSearch => {
     return {
-      track: (search.track as "foundations" | "healthcare" | "finance") || undefined,
+      track: (search.track as "foundations" | "healthcare" | "finance" | "finance-advanced") || undefined,
       lesson: (search.lesson as string) || undefined,
       view: (search.view as string) || undefined,
     };
@@ -116,7 +118,7 @@ function AiUnlockedPage() {
   const navigateRouter = useNavigate({ from: "/ai-unlocked" });
 
   // Single source of truth from router search params
-  const currentTrackId: "foundations" | "healthcare" | "finance" | null = search.track || null;
+  const currentTrackId: "foundations" | "healthcare" | "finance" | "finance-advanced" | null = search.track || null;
 
   const [mobileSideOpen, setMobileSideOpen] = useState(false);
 
@@ -128,6 +130,7 @@ function AiUnlockedPage() {
   const currentLessons: Lesson[] = useMemo(() => {
     if (currentTrackId === "healthcare") return healthcareLessons;
     if (currentTrackId === "finance") return financeLessons;
+    if (currentTrackId === "finance-advanced") return financeAdvancedLessons;
     if (currentTrackId === "foundations") return foundationsLessons;
     return [];
   }, [currentTrackId]);
@@ -159,15 +162,19 @@ function AiUnlockedPage() {
 
   const [trackStates, setTrackStates] = useState<TrackStateMap>(() => {
     const loaded: TrackStateMap = {};
+    const trackKeys = ["foundations", "healthcare", "finance", "finance-advanced"];
     if (typeof window === "undefined") {
-      ["foundations", "healthcare", "finance"].forEach((tid) => {
+      trackKeys.forEach((tid) => {
         const cfg = TRACK_CONFIGS[tid];
-        loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
+        if (cfg) {
+          loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
+        }
       });
       return loaded;
     }
-    ["foundations", "healthcare", "finance"].forEach((tid) => {
+    trackKeys.forEach((tid) => {
       const cfg = TRACK_CONFIGS[tid];
+      if (!cfg) return;
       const raw = localStorage.getItem(cfg.storageKey);
       if (raw) {
         try {
@@ -246,7 +253,10 @@ function AiUnlockedPage() {
     return rawActiveView;
   }, [rawActiveView, activeTrackConfig, isTrackUnlocked]);
 
-  const openCourse = (track: "foundations" | "healthcare" | "finance", initialView: string = "home") => {
+  const openCourse = (
+    track: "foundations" | "healthcare" | "finance" | "finance-advanced",
+    initialView: string = "home"
+  ) => {
     const isSpecial = initialView === "home" || initialView === "sources" || initialView === "pay" || initialView === "cert";
     navigateRouter({
       search: {
@@ -727,22 +737,22 @@ function AiUnlockedPage() {
               className="inline-flex items-center gap-2 rounded-xl bg-brand-red hover:bg-red-700 text-white font-extrabold text-xs sm:text-sm px-5 sm:px-7 py-2.5 sm:py-3 shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               <LayoutGrid className="h-4 w-4" />
-              <span>Explore 3 Applied Tracks</span>
+              <span>Explore 4 Applied Tracks</span>
               <ArrowRight className="h-4 w-4" />
             </a>
           }
         >
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto pt-2 sm:pt-4 w-full">
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
-              <div className="text-lg sm:text-2xl font-black text-brand-ink">3</div>
+              <div className="text-lg sm:text-2xl font-black text-brand-ink">4</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">Specialized Tracks</div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
-              <div className="text-lg sm:text-2xl font-black text-brand-ink">22</div>
+              <div className="text-lg sm:text-2xl font-black text-brand-ink">34</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">In-Depth Modules</div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
-              <div className="text-lg sm:text-2xl font-black text-brand-ink">100+</div>
+              <div className="text-lg sm:text-2xl font-black text-brand-ink">150+</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">Quiz Questions</div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
@@ -762,12 +772,12 @@ function AiUnlockedPage() {
               Select Your Learning Track
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto">
-              Choose from foundational general literacy, clinical diagnostics for healthcare, or regulated financial AI for banking professionals.
+              Choose from foundational general literacy, clinical healthcare AI, foundational banking AI (Level 1), or enterprise financial architecture (Level 2).
             </p>
           </div>
 
-          {/* 3 Course Cards Modern Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch max-w-6xl mx-auto">
+          {/* 4 Course Cards Responsive Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch max-w-5xl mx-auto">
             {/* Card 1: Foundations */}
             <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 hover:border-slate-400 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
               <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
@@ -851,7 +861,7 @@ function AiUnlockedPage() {
               </div>
             </div>
 
-            {/* Card 2: Healthcare (Featured) */}
+            {/* Card 2: Healthcare */}
             <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-emerald-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
               <div className="bg-emerald-600 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
                 ⭐ Highly Recommended for Clinicians
@@ -942,14 +952,14 @@ function AiUnlockedPage() {
               </div>
             </div>
 
-            {/* Card 3: Finance */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 hover:border-blue-400 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group md:col-span-2 lg:col-span-1 max-w-lg md:mx-auto lg:max-w-none w-full">
+            {/* Card 3: Finance Level 1 */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 hover:border-blue-400 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
               <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
                 {/* Header Badge */}
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <Building2 className="h-3 w-3 text-blue-700" />
-                    Banking &amp; FinTech Track
+                    Level 1 · Banking &amp; FinTech
                   </span>
                   <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" /> 7+ Hours
@@ -1023,7 +1033,98 @@ function AiUnlockedPage() {
                   onClick={() => openCourse("finance", "home")}
                   className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Explore Finance Track</span>
+                  <span>Explore Finance Track (Level 1)</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Card 4: Advanced Finance Level 2 */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-purple-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
+              <div className="bg-purple-700 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+                🏆 Advanced Level 2 · Architecture &amp; Leadership
+              </div>
+
+              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
+                {/* Header Badge */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-purple-50 text-purple-800 border border-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-purple-700" />
+                    Level 2 · Executive &amp; Architecture
+                  </span>
+                  <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+                    <Clock className="h-3.5 w-3.5" /> 10.5+ Hours
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-purple-950 text-white flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform">
+                    <Sparkles className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-purple-400" />
+                  </div>
+                  <h3 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">
+                    Advanced AI for Finance Professionals
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
+                    Advanced follow-on covering capability stacks, MRM validation, deep XAI, multi-agent systems, systemic risk, and target operating models.
+                  </p>
+                </div>
+
+                {/* Highlights */}
+                <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
+                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between">
+                    <span>12 Advanced Modules</span>
+                    <span className="text-purple-700 font-bold">Module 1 Free Preview</span>
+                  </div>
+                  <ul className="space-y-1 text-xs text-slate-700 font-medium">
+                    <li className="flex items-center gap-2">
+                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
+                        1
+                      </span>
+                      <span className="truncate">From Practitioner to Enterprise Architect</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
+                        2
+                      </span>
+                      <span className="truncate">The AI Capability Stack for Financial Institutions</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
+                        3
+                      </span>
+                      <span className="truncate">Advanced Model Risk Management &amp; Validation</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
+                        4
+                      </span>
+                      <span className="truncate">Explainability in Regulated Environments (XAI)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
+                        5
+                      </span>
+                      <span className="truncate">Agentic AI, Multi-Agent Systems &amp; Macro Risk</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="p-3.5 sm:p-5 bg-purple-50/60 border-t border-purple-100 flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 2,499</span>{" "}
+                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">NPR 3,999</span>
+                  </div>
+                  <span className="font-bold text-purple-700 bg-white border border-purple-200 px-2 py-0.5 rounded-full text-[10px]">
+                    Module 1 Free
+                  </span>
+                </div>
+                <button
+                  onClick={() => openCourse("finance-advanced", "home")}
+                  className="w-full rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Explore Advanced Finance Track (Level 2)</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -1184,7 +1285,7 @@ function AiUnlockedPage() {
       </div>
 
       {/* ── Main Course Layout: Left Syllabus Sidebar + Right Content Area ── */}
-      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 pt-1 pb-16">
+      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 pt-1 pb-16 w-full min-w-0 overflow-hidden">
         {/* Backdrop on mobile when drawer is open */}
         {mobileSideOpen && (
           <div
@@ -1193,7 +1294,7 @@ function AiUnlockedPage() {
           />
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start w-full min-w-0">
           {/* ── Left Sidebar (Mobile Drawer / Desktop Sticky Sidebar) ── */}
           <aside
             className={[
@@ -1463,7 +1564,7 @@ function AiUnlockedPage() {
           {/* ── Right Content Area ── */}
           <main
             className={[
-              "lg:col-span-3 transition-opacity duration-150 space-y-4 sm:space-y-5",
+              "lg:col-span-3 transition-opacity duration-150 space-y-4 sm:space-y-5 w-full min-w-0 overflow-hidden",
               contentVisible ? "opacity-100" : "opacity-0",
             ].join(" ")}
           >
@@ -1471,16 +1572,18 @@ function AiUnlockedPage() {
                 1. OVERVIEW / HOME VIEW
             ══════════════════════════════════════════════════════════ */}
             {activeView === "home" && (
-              <div className="space-y-4 sm:space-y-5 animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
+              <div className="space-y-4 sm:space-y-5 animate-fade-in-up w-full min-w-0" style={{ animationDuration: "0.3s" }}>
                 {/* Hero card */}
                 <div
                   className={[
-                    "relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 text-slate-900 border shadow-2xs flex flex-col justify-center",
+                    "relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-7 text-slate-900 border shadow-2xs flex flex-col justify-center w-full min-w-0",
                     currentTrackId === "healthcare"
                       ? "bg-gradient-to-br from-emerald-50/90 via-white to-white border-emerald-200"
-                      : currentTrackId === "finance"
-                        ? "bg-gradient-to-br from-blue-50/90 via-white to-white border-blue-200"
-                        : "bg-gradient-to-br from-red-50/70 via-white to-white border-red-200",
+                      : currentTrackId === "finance-advanced"
+                        ? "bg-gradient-to-br from-purple-50/90 via-white to-white border-purple-200"
+                        : currentTrackId === "finance"
+                          ? "bg-gradient-to-br from-blue-50/90 via-white to-white border-blue-200"
+                          : "bg-gradient-to-br from-red-50/70 via-white to-white border-red-200",
                   ].join(" ")}
                 >
                   {/* Ambient spotlight */}
@@ -1490,41 +1593,45 @@ function AiUnlockedPage() {
                       background:
                         currentTrackId === "healthcare"
                           ? "radial-gradient(circle, #10b981 0%, transparent 70%)"
-                          : currentTrackId === "finance"
-                            ? "radial-gradient(circle, #3b82f6 0%, transparent 70%)"
-                            : "radial-gradient(circle, var(--brand-red, #C8102E) 0%, transparent 70%)",
+                          : currentTrackId === "finance-advanced"
+                            ? "radial-gradient(circle, #8b5cf6 0%, transparent 70%)"
+                            : currentTrackId === "finance"
+                              ? "radial-gradient(circle, #3b82f6 0%, transparent 70%)"
+                              : "radial-gradient(circle, var(--brand-red, #C8102E) 0%, transparent 70%)",
                     }}
                   />
 
-                  <div className="relative z-10 space-y-3 sm:space-y-4">
+                  <div className="relative z-10 space-y-3 sm:space-y-4 min-w-0 w-full">
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-800 shadow-2xs">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-800 shadow-2xs shrink-0">
                         <span
                           className={`h-1.5 w-1.5 rounded-full animate-pulse ${
                             currentTrackId === "healthcare"
                               ? "bg-emerald-500"
-                              : currentTrackId === "finance"
-                                ? "bg-blue-500"
-                                : "bg-brand-red"
+                              : currentTrackId === "finance-advanced"
+                                ? "bg-purple-500"
+                                : currentTrackId === "finance"
+                                  ? "bg-blue-500"
+                                  : "bg-brand-red"
                           }`}
                         />
                         {activeTrackConfig.badge}
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-700 shadow-2xs">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-700 shadow-2xs shrink-0">
                         <Zap className="h-3 w-3 text-amber-500" />
                         {activeTrackConfig.durationLabel}
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-700 shadow-2xs">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-700 shadow-2xs shrink-0">
                         <Award className="h-3 w-3 text-amber-500" />
                         Verified Credential
                       </span>
                     </div>
 
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight tracking-tight text-slate-900">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-black leading-tight tracking-tight text-slate-900 break-words">
                       {activeTrackConfig.name}
                     </h1>
 
-                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl font-medium">
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl font-medium break-words">
                       {activeTrackConfig.description}
                     </p>
 
@@ -1567,87 +1674,129 @@ function AiUnlockedPage() {
                   </div>
                 </div>
 
-                {/* 3 Pillar Features Responsive Cards (3-column Grid on Mobile & Desktop) */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-3.5">
+                {/* 3 Pillar Features Responsive Cards (Stacked on Mobile, 3-column Grid on Desktop) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3.5 w-full min-w-0">
                   {currentTrackId === "healthcare" ? (
                     <>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
                           <Stethoscope className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Built for Clinical Practice
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Applied directly to diagnosis, radiology, triage, clinical workflows, and patient safety in Nepal.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
                           <Brain className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Real-World Deployments
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Case studies in TB X-ray screening, diabetic retinopathy, ambient scribes, and neonatal cry analysis.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
                           <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Governance &amp; 10-20-70 Rule
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Evaluate clinical AI safety, dataset shift, and submit defensible proposals to hospital committees.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : currentTrackId === "finance-advanced" ? (
+                    <>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center font-bold shrink-0">
+                          <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Capability Architecture Stack
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Architect 4-layer institutional capability across engagement, AI decisioning, core data, and operating model.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0">
+                          <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Advanced MRM &amp; Deep XAI
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Risk tiering, independent validation rigor, and context-aware explainability for supervisors and audit.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                          <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Agents &amp; Systemic Risk
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Multi-agent governance boundaries, BIS model herding analysis, and target operating model transformation.
                           </p>
                         </div>
                       </div>
                     </>
                   ) : currentTrackId === "finance" ? (
                     <>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
                           <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Board &amp; Supervisory Ready
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Grounded in Nepal Rastra Bank AI Guidelines, placing ultimate accountability on management and boards.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0">
                           <Brain className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Credit Scoring &amp; Fraud AML
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Supervised credit ML vs scorecards, mule account network detection, precision vs recall trade-offs.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
                           <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Generative Banking &amp; RAG
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Deterministic core + LLM interface architecture, policy RAG search, and avoiding model hallucination.
                           </p>
                         </div>
@@ -1655,41 +1804,41 @@ function AiUnlockedPage() {
                     </>
                   ) : (
                     <>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0">
                           <Brain className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Neural Foundations
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Understand how models learn from weights, parameters, tokens, and inference without confusing jargon.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
                           <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Advanced Prompting
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Master role steering, few-shot conditioning, multimodal image/audio prompting, and context management.
                           </p>
                         </div>
                       </div>
-                      <div className="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2">
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
                         <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
                           <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </div>
-                        <div className="space-y-0.5 sm:space-y-1">
-                          <h3 className="font-black text-[11px] sm:text-xs md:text-sm text-slate-900 leading-tight">
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
                             Free Verified Credential
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] md:text-xs text-slate-600 leading-tight sm:leading-relaxed font-medium">
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
                             Pass 5 short mastery quizzes to earn a shareable, verified Red Dot Technologies digital certificate.
                           </p>
                         </div>
@@ -1699,22 +1848,22 @@ function AiUnlockedPage() {
                 </div>
 
                 {/* Course Curriculum List */}
-                <div className="space-y-3">
+                <div className="space-y-3 w-full min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
-                    <div>
-                      <h2 className="text-sm sm:text-base font-black text-slate-900">
+                    <div className="min-w-0">
+                      <h2 className="text-sm sm:text-base font-black text-slate-900 truncate">
                         {activeTrackConfig.name} Curriculum
                       </h2>
-                      <p className="text-[11px] sm:text-xs text-slate-500 font-medium">
+                      <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
                         {currentLessons.length} structured modules designed for real-world mastery
                       </p>
                     </div>
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs">
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs shrink-0">
                       {currentLessons.length} Modules • {currentLessons.reduce((acc, l) => acc + l.quiz.length, 0)} Questions
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2.5">
+                  <div className="grid grid-cols-1 gap-2.5 w-full min-w-0">
                     {currentLessons.map((lesson, idx) => {
                       const isLocked = isLessonLocked(lesson.id);
                       const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
@@ -1722,65 +1871,65 @@ function AiUnlockedPage() {
                       return (
                         <div
                           key={lesson.id}
-                          className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3 hover:border-slate-300 transition-all"
+                          className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-slate-300 transition-all w-full min-w-0 overflow-hidden"
                         >
-                          <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
-                            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-700 text-xs shrink-0 border border-slate-200">
+                          <div className="flex items-start gap-2.5 sm:gap-3 min-w-0 w-full flex-1">
+                            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-700 text-xs shrink-0 border border-slate-200 mt-0.5 sm:mt-0">
                               {idx + 1}
                             </div>
-                            <div className="space-y-0.5 min-w-0">
+                            <div className="space-y-1 min-w-0 flex-1 overflow-hidden">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-brand-red">
+                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-brand-red shrink-0">
                                   {lesson.tag}
                                 </span>
                                 <span className="text-slate-300">•</span>
-                                <span className="text-[10px] sm:text-[11px] text-slate-500 flex items-center gap-1 font-medium">
+                                <span className="text-[10px] sm:text-[11px] text-slate-500 flex items-center gap-1 font-medium shrink-0">
                                   <Clock className="h-3 w-3" />
                                   {lesson.time}
                                 </span>
                                 {isDone ? (
-                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-black">
+                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-black shrink-0">
                                     <Check className="h-2.5 w-2.5" /> Done
                                   </span>
                                 ) : isLocked ? (
-                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.2 text-[9px] font-bold">
+                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.2 text-[9px] font-bold shrink-0">
                                     <Lock className="h-2.5 w-2.5" /> Locked
                                   </span>
                                 ) : !activeTrackConfig.isPaid ? null : (
-                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-bold">
+                                  <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-bold shrink-0">
                                     Free Preview
                                   </span>
                                 )}
                               </div>
-                              <h3 className="font-black text-slate-900 text-xs sm:text-sm leading-snug truncate">
+                              <h3 className="font-black text-slate-900 text-xs sm:text-sm leading-snug break-words">
                                 {lesson.title}
                               </h3>
-                              <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium line-clamp-2">
+                              <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium line-clamp-2 break-words">
                                 {lesson.summary}
                               </p>
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-1.5 w-full sm:w-auto justify-end shrink-0 pt-0.5 sm:pt-0">
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 sm:border-none">
                             {isLocked ? (
                               <button
                                 onClick={() => navigateView("pay")}
-                                className="flex-1 sm:flex-none rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3 py-1.5 transition-colors cursor-pointer text-center flex items-center justify-center gap-1"
+                                className="w-full sm:w-auto rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3.5 py-2 transition-colors cursor-pointer text-center flex items-center justify-center gap-1.5"
                               >
-                                <Lock className="h-3 w-3" />
+                                <Lock className="h-3.5 w-3.5" />
                                 <span>Unlock Module</span>
                               </button>
                             ) : (
                               <>
                                 <button
                                   onClick={() => navigateView(lesson.id)}
-                                  className="flex-1 sm:flex-none rounded-lg bg-slate-900 hover:bg-brand-red text-white font-extrabold text-xs px-3 py-1.5 transition-colors cursor-pointer text-center"
+                                  className="flex-1 sm:flex-none rounded-lg bg-slate-900 hover:bg-brand-red text-white font-extrabold text-xs px-3.5 py-2 transition-colors cursor-pointer text-center"
                                 >
                                   Read Module
                                 </button>
                                 <button
                                   onClick={() => navigateView(`q_${lesson.id}`)}
-                                  className="flex-1 sm:flex-none rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs px-2.5 py-1.5 transition-colors cursor-pointer text-center"
+                                  className="flex-1 sm:flex-none rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs px-3 py-2 transition-colors cursor-pointer text-center"
                                 >
                                   Quiz ({lesson.quiz.length}Q)
                                 </button>
@@ -2197,7 +2346,9 @@ function AiUnlockedPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                  {(currentTrackId === "finance"
+                  {(currentTrackId === "finance-advanced"
+                    ? FINANCE_ADVANCED_SOURCES
+                    : currentTrackId === "finance"
                     ? FINANCE_SOURCES
                     : HEALTHCARE_SOURCES
                   ).map((source, sIdx) => (
@@ -2456,28 +2607,31 @@ function AiUnlockedPage() {
                         </form>
                       )}
 
-                      <div className="pt-2 text-center text-[10.5px] sm:text-[11px] text-slate-500 font-medium border-t border-slate-100">
-                        Questions?{" "}
-                        <a
-                          href="mailto:info@reddottech.com.np"
-                          className="font-bold text-slate-800 hover:text-brand-red hover:underline"
-                        >
-                          info@reddottech.com.np
-                        </a>{" "}
-                        ·{" "}
-                        <a
-                          href="tel:014535691"
-                          className="font-bold text-slate-800 hover:text-brand-red"
-                        >
-                          01 4535691
-                        </a>{" "}
-                        /{" "}
-                        <a
-                          href="tel:014516390"
-                          className="font-bold text-slate-800 hover:text-brand-red"
-                        >
-                          4516390
-                        </a>
+                      <div className="pt-2 text-center text-[10.5px] sm:text-[11px] text-slate-500 font-medium border-t border-slate-100 flex flex-col items-center gap-0.5">
+                        <div>
+                          Questions?{" "}
+                          <a
+                            href="mailto:info@reddottech.com.np"
+                            className="font-bold text-slate-800 hover:text-brand-red hover:underline"
+                          >
+                            info@reddottech.com.np
+                          </a>
+                        </div>
+                        <div className="whitespace-nowrap">
+                          <a
+                            href="tel:014535691"
+                            className="font-bold text-slate-800 hover:text-brand-red"
+                          >
+                            01 4535691
+                          </a>{" "}
+                          /{" "}
+                          <a
+                            href="tel:014516390"
+                            className="font-bold text-slate-800 hover:text-brand-red"
+                          >
+                            4516390
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>

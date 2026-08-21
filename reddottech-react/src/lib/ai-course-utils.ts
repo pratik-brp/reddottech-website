@@ -7,7 +7,7 @@
    ============================================================= */
 
 export interface TrackConfig {
-  id: "foundations" | "healthcare" | "finance";
+  id: "foundations" | "healthcare" | "finance" | "finance-advanced";
   name: string;
   shortName: string;
   badge: string;
@@ -158,6 +158,53 @@ export const TRACK_CONFIGS: Record<string, TrackConfig> = {
       badgeBg: "bg-blue-500/10 text-blue-400 border-blue-500/20",
       badgeText: "text-blue-500",
       accentColor: "#d97706",
+    },
+  },
+  "finance-advanced": {
+    id: "finance-advanced",
+    name: "Advanced AI for Finance Professionals",
+    shortName: "Advanced AI for Finance",
+    badge: "Advanced Level 2 Track",
+    tagline: "Architecting, Governing & Leading Enterprise Financial AI",
+    description:
+      "An advanced follow-on programme for senior bankers, risk managers, enterprise architects, and finance executives moving from practitioner to institutional AI leader — covering foundation model capability stacks, advanced model risk validation, deep explainability, agentic systems, systemic risk, and target operating models.",
+    modulesCount: 12,
+    durationLabel: "10.5+ hours (12 Modules)",
+    level: "Advanced · Level 2",
+    isPaid: true,
+    price: {
+      amount: "2,499",
+      was: "3,999",
+      currency: "NPR",
+      intro: true,
+    },
+    salt: "RDT-AIFA-2026",
+    freePreviewIds: ["a1"],
+    storageKey: "aiFinAdv_v1",
+    certCodePrefix: "RDT-AIFA",
+    certTitle: "Advanced AI for Finance Professionals",
+    certSubtitle: "Executive Certificate Programme · Advanced Level 2",
+    certDesc:
+      "has successfully completed all twelve advanced modules and assessments of Advanced AI for Finance Professionals, demonstrating mastery in enterprise AI capability architectures, advanced model risk validation, explainability frameworks, agentic workflow governance, and target operating models for financial institutions.",
+    modules: [
+      "From Practitioner to Architect: The Advanced Landscape",
+      "The AI Capability Stack for Financial Institutions",
+      "Advanced Model Risk Management & Validation",
+      "Explainability in Regulated Environments (XAI)",
+      "Foundation Models & the Modern AI Stack",
+      "Agentic AI & Multi-Agent Systems in Finance",
+      "Advanced Credit Risk, Capital & Stress Testing",
+      "Financial Crime at Network Scale",
+      "Target Operating Model & Enterprise Governance",
+      "Systemic Risk, Macroprudential Policy & the Regulatory Frontier",
+      "The Economics of AI: Value Realisation & Portfolio Management",
+      "Leading Transformation in a Nepali Institution & Capstone Strategy",
+    ],
+    theme: {
+      primaryColor: "#7c3aed",
+      badgeBg: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      badgeText: "text-purple-500",
+      accentColor: "#B8892B",
     },
   },
 };
@@ -936,14 +983,354 @@ export function renderSvgDiagram(diagramId: string): string {
         ly = cy + Math.sin(a) * (r + 26);
       g += `<text x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" fill="${isV ? "#FF9BA6" : "#CFDCEF"}" font-size="10.5" text-anchor="middle" font-weight="${isV ? "bold" : "normal"}">${s}</text>`;
     });
-    g += `<circle r="6" fill="#F0DCB4"><animateMotion dur="9s" repeatCount="indefinite" path="M${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - 0.1} ${cy - r}"/></circle>`;
     g += `<text x="${cx}" y="${cy - 4}" fill="#F0DCB4" font-size="10.5" text-anchor="middle" font-weight="bold">MODEL</text><text x="${cx}" y="${cy + 11}" fill="#F0DCB4" font-size="10.5" text-anchor="middle" font-weight="bold">LIFECYCLE</text>`;
     g += `<text x="${cx}" y="258" fill="#A8C0E4" font-size="10" text-anchor="middle">Independent validation is the pillar supervisors examine most closely.</text>`;
     return `<svg viewBox="0 0 690 270" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
   }
 
+  // ── 4. FINANCE ADVANCED (LEVEL 2) DIAGRAMS (a1 to a12) ──
+  if (diagramId === "a1") {
+    let g = "";
+    const x0 = 40,
+      w = 600,
+      y = 54,
+      h = 44;
+    g += `<rect x="${x0}" y="${y}" width="${w}" height="${h}" rx="5" fill="#2E6FB0" fill-opacity="0.85"/>`;
+    g += `<text x="${x0 + w / 2}" y="${y + 28}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">81% ADOPTING AI</text>`;
+    const w2 = (w * 14) / 81;
+    g += `<rect x="${x0}" y="${y + 68}" width="${w2}" height="${h}" rx="5" fill="#C8102E"/>`;
+    g += `<text x="${x0 + w2 / 2}" y="${y + 96}" fill="#fff" font-size="13" text-anchor="middle" font-weight="bold">14%</text>`;
+    g += `<text x="${x0 + w2 + 16}" y="${y + 92}" fill="#FF9BA6" font-size="12" font-weight="bold">see AI as transformational to strategy</text>`;
+    g += `<path d="M${x0 + w2} ${y + 44} L${x0 + w2} ${y + 68}" stroke="#FF6B7A" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    g += `<path d="M${x0 + w} ${y + 44} L${x0 + w2 + 2} ${y + 68}" stroke="#FF6B7A" stroke-opacity="0.5" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    g += `<text x="345" y="28" fill="#F0DCB4" font-size="12" text-anchor="middle" font-weight="bold">THE EXECUTION GAP — CAMBRIDGE CCAF 2026</text>`;
+    g += `<text x="345" y="186" fill="#A8C0E4" font-size="10.5" text-anchor="middle">Adoption without structural change. Closing this gap is what this programme is about.</text>`;
+    return `<svg viewBox="0 0 690 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a2") {
+    const layers = [
+      ["ENGAGEMENT", "Personalisation · omnichannel · embedded finance", "#C8102E"],
+      ["AI-POWERED DECISIONING", "Decision inventory · feature store · serving · logging", "#2E6FB0"],
+      ["CORE TECHNOLOGY & DATA", "Identifiers · APIs · compute · environments", "#B8892B"],
+      ["PLATFORM OPERATING MODEL", "Persistent ownership · funding · standards · decision rights", "#1E7A52"],
+    ];
+    let g = "";
+    const w = 560,
+      h = 40,
+      x0 = 65;
+    layers.forEach((l, i) => {
+      const y = 36 + i * (h + 10);
+      g += `<rect x="${x0}" y="${y}" width="${w}" height="${h}" rx="5" fill="${l[2]}" fill-opacity="0.2" stroke="${l[2]}"/>`;
+      g += `<rect x="${x0}" y="${y}" width="5" height="${h}" fill="${l[2]}"/>`;
+      g += `<text x="${x0 + 18}" y="${y + 18}" fill="#fff" font-size="11.5" font-weight="bold">${l[0]}</text>`;
+      g += `<text x="${x0 + 18}" y="${y + 33}" fill="#CFDCEF" font-size="9.5">${l[1]}</text>`;
+    });
+    g += `<text x="345" y="22" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">THE AI CAPABILITY STACK</text>`;
+    g += `<text x="345" y="240" fill="#FF9BA6" font-size="10.5" text-anchor="middle" font-weight="bold">The institution performs at the level of its weakest layer.</text>`;
+    return `<svg viewBox="0 0 690 252" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a3") {
+    const t = [
+      ["TIER 1", "Determines customer outcomes or regulatory numbers", "Full independent validation · annual revalidation · continuous monitoring", "#C8102E"],
+      ["TIER 2", "Materially informs decisions with human review", "Independent review · periodic revalidation · regular monitoring", "#B8892B"],
+      ["TIER 3", "Internal productivity, no direct consequence", "Lighter review · documented owner · spot checks", "#2E6FB0"],
+    ];
+    let g = "";
+    const w = 612,
+      h = 52,
+      x0 = 39;
+    t.forEach((r, i) => {
+      const y = 34 + i * (h + 10);
+      g += `<rect x="${x0}" y="${y}" width="${w}" height="${h}" rx="5" fill="#22386A" stroke="${r[3]}"/>`;
+      g += `<rect x="${x0}" y="${y}" width="76" height="${h}" rx="5" fill="${r[3]}"/>`;
+      g += `<text x="${x0 + 38}" y="${y + 31}" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">${r[0]}</text>`;
+      g += `<text x="${x0 + 90}" y="${y + 22}" fill="#fff" font-size="10.5" font-weight="bold">${r[1]}</text>`;
+      g += `<text x="${x0 + 90}" y="${y + 38}" fill="#A8C0E4" font-size="9.5">${r[2]}</text>`;
+    });
+    g += `<text x="345" y="22" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">RISK TIERING DRIVES PROPORTIONATE CONTROL</text>`;
+    return `<svg viewBox="0 0 690 226" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a4") {
+    const s = [
+      ["Customer", "Plain language · few factors · counterfactual", "#C8102E"],
+      ["Front line", "Enough to converse and to challenge", "#2E6FB0"],
+      ["Validator", "Global behaviour · dependencies · stability", "#B8892B"],
+      ["Supervisor", "Transparency · fairness · accountability evidence", "#1E7A52"],
+    ];
+    let g = "";
+    const w = 152,
+      h = 88;
+    s.forEach((v, i) => {
+      const x = 22 + i * (w + 13);
+      g += `<rect x="${x}" y="42" width="${w}" height="${h}" rx="6" fill="${v[2]}" fill-opacity="0.18" stroke="${v[2]}"/>`;
+      g += `<rect x="${x}" y="42" width="${w}" height="5" fill="${v[2]}"/>`;
+      g += `<text x="${x + w / 2}" y="${72}" fill="#fff" font-size="12.5" text-anchor="middle" font-weight="bold">${v[0]}</text>`;
+      const words = v[1].split(" · ");
+      words.forEach((wd, j) => {
+        g += `<text x="${x + w / 2}" y="${92 + j * 15}" fill="#CFDCEF" font-size="9" text-anchor="middle">${wd}</text>`;
+      });
+    });
+    g += `<text x="345" y="26" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">CONTEXT-AWARE EXPLANATION DESIGN</text>`;
+    g += `<text x="345" y="152" fill="#FF9BA6" font-size="10" text-anchor="middle">An explanation is adequate only if the recipient can act on it or challenge it.</text>`;
+    return `<svg viewBox="0 0 690 166" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a5") {
+    let g = "";
+    const col = (x: number, title: string, items: string[], c: string) => {
+      let s = `<rect x="${x}" y="36" width="290" height="152" rx="7" fill="${c}" fill-opacity="0.14" stroke="${c}"/><text x="${x + 145}" y="58" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">${title}</text>`;
+      items.forEach((it, i) => {
+        s += `<rect x="${x + 16}" y="${70 + i * 26}" width="258" height="20" rx="3" fill="#12274d" stroke="#3A5680"/><text x="${x + 26}" y="${84 + i * 26}" fill="#CFDCEF" font-size="9.5">${it}</text>`;
+      });
+      return s;
+    };
+    g += col(30, "PREDICTIVE AI STACK", ["Data warehouse", "Feature store", "Training pipelines / MLOps", "Model serving & monitoring"], "#2E6FB0");
+    g += col(370, "GENERATIVE AI STACK", ["Foundation & embedding models", "Vector store & retrieval", "Prompt / agent orchestration", "Guardrails & evaluation harness"], "#C8102E");
+    g += `<text x="345" y="24" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">LARGELY SEPARATE STACKS</text>`;
+    g += `<text x="345" y="208" fill="#A8C0E4" font-size="10" text-anchor="middle">Shared component: the data lake / document store. A weak warehouse does not block document-centric use cases.</text>`;
+    return `<svg viewBox="0 0 690 220" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a6") {
+    const lv = [
+      ["L0", "Suggest", "human acts"],
+      ["L1", "Draft & stage", "human releases"],
+      ["L2", "Act within limits", "escalates outside"],
+      ["L3", "Act, review exceptions", "post-hoc sampling"],
+      ["L4", "Fully autonomous", "reversible only"],
+    ];
+    let g = "";
+    const w = 118,
+      x0 = 28;
+    lv.forEach((l, i) => {
+      const x = x0 + i * (w + 12),
+        hgt = 44 + i * 14,
+        y = 150 - hgt;
+      const c = i <= 1 ? "#1E7A52" : i === 2 ? "#B8892B" : "#C8102E";
+      g += `<rect x="${x}" y="${y}" width="${w}" height="${hgt}" rx="5" fill="${c}" fill-opacity="0.28" stroke="${c}"/>`;
+      g += `<text x="${x + w / 2}" y="${y + 20}" fill="#fff" font-size="13" text-anchor="middle" font-weight="bold">${l[0]}</text>`;
+      g += `<text x="${x + w / 2}" y="${166}" fill="#CFDCEF" font-size="10" text-anchor="middle">${l[1]}</text>`;
+      g += `<text x="${x + w / 2}" y="${180}" fill="#A8C0E4" font-size="8.5" text-anchor="middle">${l[2]}</text>`;
+    });
+    g += `<text x="345" y="22" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">LEVELS OF AGENT AUTONOMY</text>`;
+    g += `<text x="345" y="202" fill="#FF9BA6" font-size="10" text-anchor="middle">For customer funds, credit or financial crime: Level 1–2 with hard limits is the defensible position.</text>`;
+    return `<svg viewBox="0 0 690 214" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a7") {
+    const p = [
+      ["PD", "Probability of default", "data-rich · ML contributes most", "#C8102E"],
+      ["LGD", "Loss given default", "only defaults contribute · scarce", "#B8892B"],
+      ["EAD", "Exposure at default", "drawdown behaviour · complex", "#2E6FB0"],
+    ];
+    let g = "";
+    const w = 196,
+      x0 = 36;
+    p.forEach((v, i) => {
+      const x = x0 + i * (w + 14);
+      g += `<rect x="${x}" y="42" width="${w}" height="80" rx="7" fill="#22386A" stroke="${v[3]}"/>`;
+      g += `<circle cx="${x + 34}" cy="${74}" r="21" fill="${v[3]}"/><text x="${x + 34}" y="${80}" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">${v[0]}</text>`;
+      g += `<text x="${x + 64}" y="${70}" fill="#fff" font-size="10.5" font-weight="bold">${v[1]}</text>`;
+      g += `<text x="${x + 64}" y="${88}" fill="#A8C0E4" font-size="9">${v[2]}</text>`;
+    });
+    g += `<rect x="36" y="134" width="618" height="34" rx="5" fill="#C8102E" fill-opacity="0.16" stroke="#FF6B7A"/>`;
+    g += `<text x="345" y="155" fill="#FF9BA6" font-size="10.5" text-anchor="middle" font-weight="bold">ECL is audited — calibration and explainability are non-negotiable</text>`;
+    g += `<text x="345" y="26" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">THE CREDIT PARAMETER SET</text>`;
+    return `<svg viewBox="0 0 690 182" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a8") {
+    const L = [
+      "Deterministic rules — regulatory thresholds",
+      "Entity resolution — the foundation",
+      "Supervised models — known typologies",
+      "Unsupervised detection — novel behaviour",
+      "Network analytics — structure across entities",
+      "Investigator workbench — enriched cases",
+    ];
+    let g = "";
+    const w = 520,
+      x0 = 85;
+    L.forEach((t, i) => {
+      const y = 32 + i * 27;
+      const c = i === 1 ? "#C8102E" : "#2E6FB0";
+      g += `<rect x="${x0}" y="${y}" width="${w}" height="22" rx="4" fill="${c}" fill-opacity="${i === 1 ? 0.34 : 0.18}" stroke="${c}"/>`;
+      g += `<text x="${x0 + 14}" y="${y + 15}" fill="#fff" font-size="10">${t}</text>`;
+    });
+    g += `<text x="345" y="20" fill="#F0DCB4" font-size="11" text-anchor="middle" font-weight="bold">LAYERED FINANCIAL CRIME ARCHITECTURE</text>`;
+    g += `<text x="345" y="212" fill="#FF9BA6" font-size="10" text-anchor="middle">Entity resolution delivers more detection uplift per rupee than any new model.</text>`;
+    return `<svg viewBox="0 0 690 224" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a9") {
+    const l = [
+      ["FIRST LINE", "Business & development", "Owns model, use, performance, outcomes", "#2E6FB0"],
+      ["SECOND LINE", "Risk & compliance", "Framework, tiering, independent validation", "#C8102E"],
+      ["THIRD LINE", "Internal audit", "Assures the framework operates as documented", "#B8892B"],
+    ];
+    let g = "";
+    const w = 196,
+      x0 = 36;
+    l.forEach((v, i) => {
+      const x = x0 + i * (w + 14);
+      g += `<rect x="${x}" y="40" width="${w}" height="96" rx="7" fill="${v[3]}" fill-opacity="0.17" stroke="${v[3]}"/>`;
+      g += `<rect x="${x}" y="40" width="${w}" height="5" fill="${v[3]}"/>`;
+      g += `<text x="${x + w / 2}" y="68}" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">${v[0]}</text>`;
+      g += `<text x="${x + w / 2}" y="90" fill="#CFDCEF" font-size="10" text-anchor="middle">${v[1]}</text>`;
+      g += `<text x="${x + w / 2}" y="112" fill="#A8C0E4" font-size="8.5" text-anchor="middle">${v[2].slice(0, 30)}</text>`;
+      g += `<text x="${x + w / 2}" y="125" fill="#A8C0E4" font-size="8.5" text-anchor="middle">${v[2].slice(30)}</text>`;
+    });
+    g += `<text x="345" y="24" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">THREE LINES OF DEFENCE, APPLIED TO AI</text>`;
+    g += `<text x="345" y="158" fill="#FF9BA6" font-size="10" text-anchor="middle">The binding constraint is second-line technical capability.</text>`;
+    return `<svg viewBox="0 0 690 170" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a10") {
+    let g = "";
+    const cx = 345;
+    for (let i = 0; i < 7; i++) {
+      const x = 70 + i * 84;
+      g += `<rect x="${x}" y="46" width="58" height="34" rx="4" fill="#22386A" stroke="#3A5680"/>`;
+      g += `<text x="${x + 29}" y="67" fill="#CFDCEF" font-size="9" text-anchor="middle">Bank ${i + 1}</text>`;
+      g += `<path d="M${x + 29} 82 L${cx} 118" stroke="#FF6B7A" stroke-opacity="0.45" stroke-width="1.2"/>`;
+    }
+    g += `<rect x="${cx - 96}" y="118" width="192" height="34" rx="5" fill="#C8102E"/>`;
+    g += `<text x="${cx}" y="140" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">SIMILAR MODELS · SAME DATA</text>`;
+    g += `<path d="M${cx} 154 v18" stroke="#FF6B7A" stroke-width="1.8" marker-end="url(#ah10)"/>`;
+    g += `<rect x="${cx - 150}" y="176" width="300" height="30" rx="5" fill="#B8892B" fill-opacity="0.22" stroke="#F0DCB4"/>`;
+    g += `<text x="${cx}" y="196" fill="#F0DCB4" font-size="10.5" text-anchor="middle" font-weight="bold">CORRELATED ACTION → AMPLIFIED MOVEMENT</text>`;
+    g += `<text x="345" y="28" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">MODEL HERDING AS A STABILITY RISK — BIS</text>`;
+    g += `<defs><marker id="ah10" markerWidth="9" markerHeight="9" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#FF6B7A"/></marker></defs>`;
+    return `<svg viewBox="0 0 690 218" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a11") {
+    const lv = [
+      ["ACTIVITY", "models deployed · users", "worthless as evidence", "#5A6779"],
+      ["OPERATIONAL", "cycle time · cost per file", "directly attributable", "#2E6FB0"],
+      ["BUSINESS", "approval at constant risk", "control for confounds", "#B8892B"],
+      ["FINANCIAL", "revenue · cost · efficiency ratio", "the only level a board accepts", "#1E7A52"],
+    ];
+    let g = "";
+    const w = 148,
+      x0 = 32;
+    lv.forEach((v, i) => {
+      const x = x0 + i * (w + 14);
+      g += `<rect x="${x}" y="44" width="${w}" height="86" rx="6" fill="${v[3]}" fill-opacity="0.2" stroke="${v[3]}"/>`;
+      g += `<text x="${x + w / 2}" y="70" fill="#fff" font-size="11.5" text-anchor="middle" font-weight="bold">${v[0]}</text>`;
+      g += `<text x="${x + w / 2}" y="92" fill="#CFDCEF" font-size="8.5" text-anchor="middle">${v[1]}</text>`;
+      g += `<text x="${x + w / 2}" y="114" fill="#A8C0E4" font-size="8.5" text-anchor="middle">${v[2]}</text>`;
+      if (i < 3)
+        g += `<path d="M${x + w + 2} 87 h10" stroke="#7FA0D0" stroke-width="1.5" marker-end="url(#ah11)"/>`;
+    });
+    g += `<text x="345" y="28" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">FOUR LEVELS OF VALUE MEASUREMENT</text>`;
+    g += `<text x="345" y="152" fill="#FF9BA6" font-size="10" text-anchor="middle">Define one metric at each level — and the mechanism linking them.</text>`;
+    g += `<defs><marker id="ah11" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L7 4 L0 8 z" fill="#7FA0D0"/></marker></defs>`;
+    return `<svg viewBox="0 0 690 164" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
+  if (diagramId === "a12") {
+    const h = [
+      ["HORIZON 1", "0–12 months", "Foundations & credible wins", "#2E6FB0"],
+      ["HORIZON 2", "12–30 months", "Decisioning & scale", "#B8892B"],
+      ["HORIZON 3", "30 months +", "Business model", "#C8102E"],
+    ];
+    let g = "";
+    const w = 200,
+      x0 = 36;
+    h.forEach((v, i) => {
+      const x = x0 + i * (w + 11),
+        ht = 64 + i * 18,
+        y = 150 - ht;
+      g += `<rect x="${x}" y="${y}" width="${w}" height="${ht}" rx="6" fill="${v[3]}" fill-opacity="0.22" stroke="${v[3]}"/>`;
+      g += `<text x="${x + w / 2}" y="${y + 24}" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">${v[0]}</text>`;
+      g += `<text x="${x + w / 2}" y="${y + 42}" fill="#F0DCB4" font-size="9.5" text-anchor="middle">${v[1]}</text>`;
+      g += `<text x="${x + w / 2}" y="166" fill="#CFDCEF" font-size="10" text-anchor="middle">${v[2]}</text>`;
+    });
+    g += `<text x="345" y="24" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">THREE HORIZONS OF INSTITUTIONAL TRANSFORMATION</text>`;
+    return `<svg viewBox="0 0 690 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
+  }
+
   return "";
 }
+
+export const FINANCE_ADVANCED_SOURCES: SourceItem[] = [
+  {
+    org: "Cambridge Centre for Alternative Finance",
+    title: "The 2026 Global AI in Financial Services Report: Adoption, impact and risks",
+    summary:
+      "University of Cambridge Judge Business School, in partnership with the BIS, IMF, World Economic Forum, IDB, CGAP and the Arab Monetary Fund. Survey of 628 organisations across 151 jurisdictions. Source of adoption benchmarks, the execution gap, agentic adoption data, vendor concentration, profitability and value-measurement findings.",
+  },
+  {
+    org: "Bank for International Settlements",
+    title: "Intelligent financial system: how AI is transforming finance (BIS Working Paper No. 1194)",
+    summary:
+      "Aldasoro, Gambacorta, Korinek, Shreeti and Stein, June 2024. Source of the financial stability analysis — model herding, uniformity and network connectedness — the real-economy scenarios, and principles for upgrading financial regulation.",
+  },
+  {
+    org: "McKinsey & Company",
+    title: "Building the AI Bank of the Future / AI-bank of the future: Can banks meet the AI challenge?",
+    summary:
+      "Source of the four-layer AI capability stack — engagement, AI-powered decisioning, core technology and data, and platform operating model — and the estimate of up to USD 1 trillion in annual value for global banking.",
+  },
+  {
+    org: "World Economic Forum & Accenture",
+    title: "Artificial Intelligence in Financial Services (January 2025)",
+    summary:
+      "Insights from over 100 financial services executives. Source of automation and augmentation potential estimates, AI investment trajectory, and the shift of executive attention from efficiency toward revenue growth.",
+  },
+  {
+    org: "Applied Artificial Intelligence (Taylor & Francis)",
+    title: "Explainable Artificial Intelligence in the Banking Sector: A Systematic Literature Review",
+    summary:
+      "Tuge & Msweli, 2026. PRISMA 2020 review of 78 peer-reviewed studies and industry reports (2021–2025). Source of the XAI implementation gap, the accuracy–interpretability trade-off, the 'explaining the explanation' problem, and the organisational barriers to adoption.",
+  },
+  {
+    org: "Boston Consulting Group",
+    title: "Banking on Generative AI / Generative AI in Banking: Six Myths You Need to Ignore",
+    summary:
+      "Source of the foundation model and LLM distinction, the separate generative technology stack, production-grade retrieval requirements, and the deployment archetypes for regulated customer-facing use.",
+  },
+  {
+    org: "PwC Strategy&",
+    title: "The Future of Banking: How AI is Reshaping the Industry",
+    summary:
+      "Source of the efficiency ratio as a forward-looking indicator of AI maturity, and the estimate of up to a 15-percentage-point efficiency ratio improvement from full AI adoption.",
+  },
+  {
+    org: "Deloitte",
+    title: "Artificial Intelligence: Transforming the Future of Banking",
+    summary:
+      "Source of executive adoption sentiment, personalisation and customer trust findings, and organisational enablers for successful AI implementation.",
+  },
+  {
+    org: "Ernst & Young",
+    title: "AI Bank White Paper: Reconstructing the Financial Paradigm through Intelligent Agents",
+    summary:
+      "Source of global AI governance benchmarks, the maturity assessment approach, AI talent composition findings, and model reuse and scalability evidence.",
+  },
+  {
+    org: "University of Oxford",
+    title: "AI Preparedness in Established Financial Services Firms",
+    summary:
+      "Oxford Future of Finance and Technology Initiative, Saïd Business School. Source of the paradox of caution, findings on efficiency business cases, the integration cost observation, and recommended adoption practices.",
+  },
+  {
+    org: "SAS",
+    title: "From Algorithms to Impact: Banking's AI Future",
+    summary:
+      "Source of practitioner perspectives from Millennium BCP, Banorte, Old National Bank and Intesa Sanpaolo on leadership, scenario modelling and governance.",
+  },
+  {
+    org: "Nepal Rastra Bank",
+    title: "Artificial Intelligence Guidelines and related circulars",
+    summary:
+      "The governing regulatory framework for licensed institutions in Nepal — board accountability, risk classification, explainability, fairness, privacy aligned to the Privacy Act (2075), consent and ongoing monitoring. Always work from the current published text and confirm with your compliance function.",
+  },
+];
 
 export const DIAGRAM_CAPTIONS: Record<string, string> = {
   // Foundations
@@ -962,7 +1349,7 @@ export const DIAGRAM_CAPTIONS: Record<string, string> = {
   h7: "The RISE framework for equitable AI adoption in health systems.",
   h8: "The clinical AI governance cycle, from assessment through monitoring to withdrawal.",
   h9: "BCG's 10-20-70 rule: implementation succeeds or fails on people and process.",
-  // Finance
+  // Finance Level 1
   m1: "AI, machine learning, deep learning and generative AI — nested, not interchangeable.",
   m2: "Most projects fail here: joining fragmented systems, then splitting data honestly.",
   m3: "AI applies across the credit lifecycle — monitoring often delivers the fastest value.",
@@ -971,4 +1358,17 @@ export const DIAGRAM_CAPTIONS: Record<string, string> = {
   m6: "The AI risk taxonomy for a supervised financial institution.",
   m7: "Four value levers — name the one your proposal pulls.",
   m8: "The model lifecycle, from definition through monitoring to retirement.",
+  // Finance Advanced Level 2
+  a1: "The execution gap: 81% of financial firms are adopting AI, but only 14% consider it transformational to strategy.",
+  a2: "The AI capability stack: engagement, AI-powered decisioning, core technology & data, and platform operating model.",
+  a3: "Risk tiering drives proportionate governance, validation rigour, and supervisory monitoring.",
+  a4: "Context-aware explainability: tailoring explanations for customers, frontline teams, validators, and supervisors.",
+  a5: "Predictive vs generative AI stacks: separate pipelines sharing data infrastructure.",
+  a6: "Levels of agent autonomy: from suggestion (L0) to full autonomy (L4) with hard governance boundaries.",
+  a7: "The credit parameter set (PD, LGD, EAD): calibration and explainability for expected credit loss.",
+  a8: "Layered financial crime architecture: entity resolution, ML typologies, and network graph analytics.",
+  a9: "Three lines of defence applied to enterprise AI: business ownership, second-line validation, and audit.",
+  a10: "Model herding as a systemic stability risk: correlated model actions amplifying market movements.",
+  a11: "Four levels of value measurement: activity, operational efficiency, business outcomes, and financial impact.",
+  a12: "Three-horizon transformation roadmap: foundations (H1), decisioning scale (H2), and business model evolution (H3).",
 };

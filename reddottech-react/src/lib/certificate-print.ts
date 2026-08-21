@@ -20,6 +20,8 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
     TRACK_CONFIGS[trackKey] ||
     (trackKey.includes("health")
       ? TRACK_CONFIGS.healthcare
+      : trackKey.includes("adv") || trackKey.includes("fa") || trackKey.includes("level 2") || trackKey.includes("level-2")
+      ? TRACK_CONFIGS["finance-advanced"]
       : trackKey.includes("finan") || trackKey.includes("bank")
       ? TRACK_CONFIGS.finance
       : TRACK_CONFIGS.foundations);

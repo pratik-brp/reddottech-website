@@ -791,7 +791,14 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
       return res.status(400).json({ success: false, valid: false, error: "Track and access code are required." });
     }
 
-    const salt = cleanTrack === "healthcare" ? "RDT-AIHP-2026" : cleanTrack === "finance" ? "RDT-AIFP-2026" : "";
+    const salt =
+      cleanTrack === "healthcare"
+        ? "RDT-AIHP-2026"
+        : cleanTrack === "finance-advanced"
+        ? "RDT-AIFA-2026"
+        : cleanTrack === "finance"
+        ? "RDT-AIFP-2026"
+        : "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
       return res.status(400).json({ success: false, valid: false, error: "Invalid access code format or checksum mismatch." });
     }
@@ -837,7 +844,14 @@ app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
       return res.json({ success: true, active: false, message: "Missing code or track parameter." });
     }
 
-    const salt = cleanTrack === "healthcare" ? "RDT-AIHP-2026" : cleanTrack === "finance" ? "RDT-AIFP-2026" : "";
+    const salt =
+      cleanTrack === "healthcare"
+        ? "RDT-AIHP-2026"
+        : cleanTrack === "finance-advanced"
+        ? "RDT-AIFA-2026"
+        : cleanTrack === "finance"
+        ? "RDT-AIFP-2026"
+        : "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
       return res.json({ success: true, active: false, message: "Invalid code format." });
     }

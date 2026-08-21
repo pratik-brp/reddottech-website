@@ -80,6 +80,9 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
     return () => window.removeEventListener("rdt_admin_email_updated", handleEmailUpdated);
   }, []);
 
+  // ── Toggle this to true whenever you want to unhide Settings in the admin sidebar ──
+  const SHOW_SETTINGS_NAV = false;
+
   const adminNav = [
     {
       name: "Dashboard",
@@ -117,12 +120,16 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
       icon: KeyRound,
       count: null,
     },
-    {
-      name: "Settings",
-      href: "/admin/settings",
-      icon: Settings,
-      count: null,
-    },
+    ...(SHOW_SETTINGS_NAV
+      ? [
+          {
+            name: "Settings",
+            href: "/admin/settings",
+            icon: Settings,
+            count: null,
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = async () => {
@@ -309,14 +316,16 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
                       <p className="font-bold text-slate-800 truncate">{adminEmail}</p>
                     </div>
 
-                    <Link
-                      to="/admin/settings"
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center gap-2 rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-100 transition-colors"
-                    >
-                      <Settings className="h-3.5 w-3.5 text-slate-400" />
-                      <span>Account Settings</span>
-                    </Link>
+                    {SHOW_SETTINGS_NAV && (
+                      <Link
+                        to="/admin/settings"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2 rounded-xl px-3 py-2 text-slate-700 hover:bg-slate-100 transition-colors"
+                      >
+                        <Settings className="h-3.5 w-3.5 text-slate-400" />
+                        <span>Account Settings</span>
+                      </Link>
+                    )}
 
                     <button
                       onClick={() => {

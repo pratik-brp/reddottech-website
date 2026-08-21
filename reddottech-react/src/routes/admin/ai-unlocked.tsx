@@ -46,7 +46,7 @@ export interface AiPaymentLead {
   name: string;
   email: string;
   org: string;
-  track: "healthcare" | "finance";
+  track: "healthcare" | "finance" | "finance-advanced";
   txn: string;
   date: string;
   status: "pending" | "verified" | "rejected";
@@ -68,6 +68,8 @@ export async function sendAccessCodeEmailViaFormSubmit(
   const trackName =
     lead.track === "healthcare"
       ? "AI for Healthcare Professionals (Clinical Track)"
+      : lead.track === "finance-advanced"
+      ? "Advanced AI for Finance Professionals (Level 2 Architecture Track)"
       : "AI for Financial Professionals (Banking Track)";
   const activationUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
 
@@ -140,7 +142,7 @@ function AdminAiUnlockedPage() {
   }, []);
 
   // ── Code Generator State ──
-  const [genTrack, setGenTrack] = useState<"healthcare" | "finance">("healthcare");
+  const [genTrack, setGenTrack] = useState<"healthcare" | "finance" | "finance-advanced">("healthcare");
   const [generatedCode, setGeneratedCode] = useState(() =>
     generateAccessCode(TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026")
   );
@@ -163,13 +165,13 @@ function AdminAiUnlockedPage() {
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newOrg, setNewOrg] = useState("");
-  const [newTrack, setNewTrack] = useState<"healthcare" | "finance">("healthcare");
+  const [newTrack, setNewTrack] = useState<"healthcare" | "finance" | "finance-advanced">("healthcare");
   const [newTxn, setNewTxn] = useState("");
   const [autoEmailManual, setAutoEmailManual] = useState(true);
 
   // ── Filters ──
   const [searchQuery, setSearchQuery] = useState("");
-  const [trackFilter, setTrackFilter] = useState<"all" | "healthcare" | "finance">("all");
+  const [trackFilter, setTrackFilter] = useState<"all" | "healthcare" | "finance" | "finance-advanced">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "verified">("all");
 
   const filteredLeads = useMemo(() => {
@@ -189,10 +191,12 @@ function AdminAiUnlockedPage() {
   }, [leads, trackFilter, statusFilter, searchQuery]);
 
   // ── Actions ──
-  const handleGenerateCode = (track: "healthcare" | "finance") => {
+  const handleGenerateCode = (track: "healthcare" | "finance" | "finance-advanced") => {
     const salt =
       track === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
+        : track === "finance-advanced"
+        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
         : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
     setGeneratedCode(generateAccessCode(salt));
     setCodeCopied(false);
@@ -217,12 +221,21 @@ function AdminAiUnlockedPage() {
     const salt =
       lead.track === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
+        : lead.track === "finance-advanced"
+        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
         : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const newCode = lead.accessCode || generateAccessCode(salt);
 
+    const trackName =
+      lead.track === "healthcare"
+        ? "AI for Healthcare Professionals"
+        : lead.track === "finance-advanced"
+        ? "Advanced AI for Finance Professionals (Level 2)"
+        : "AI for Financial Professionals";
+
     const courseUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
-    const messageTemplate = `Dear ${lead.name},\n\nYour payment for ${lead.track === "healthcare" ? "AI for Healthcare Professionals" : "AI for Financial Professionals"} (Txn Ref: ${lead.txn || "Confirmed"}) has been verified!\n\nYour Access Code: ${newCode}\n\nTo activate your course, visit:\n${courseUrl}\nand enter your code under Step 3 (Instant Access Code Unlock).\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.\nKathmandu, Nepal`;
+    const messageTemplate = `Dear ${lead.name},\n\nYour payment for ${trackName} (Txn Ref: ${lead.txn || "Confirmed"}) has been verified!\n\nYour Access Code: ${newCode}\n\nTo activate your course, visit:\n${courseUrl}\nand enter your code under Step 3 (Instant Access Code Unlock).\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.\nKathmandu, Nepal`;
     navigator.clipboard.writeText(messageTemplate);
 
     setSendingEmailMap((prev) => ({ ...prev, [lead.id]: true }));
@@ -318,6 +331,10 @@ function AdminAiUnlockedPage() {
       clean,
       TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026"
     );
+    const isFinAdv = validateAccessCode(
+      clean,
+      TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
+    );
 
     const matchingLead = leads.find(
       (l) => l.accessCode?.trim().toUpperCase() === clean && l.status === "verified"
@@ -341,6 +358,15 @@ function AdminAiUnlockedPage() {
         studentEmail: matchingLead?.email,
         isEnrolled: !!matchingLead,
       });
+    } else if (isFinAdv) {
+      setValidationResult({
+        tested: true,
+        valid: true,
+        track: "Advanced AI for Finance Professionals (Level 2)",
+        studentName: matchingLead?.name,
+        studentEmail: matchingLead?.email,
+        isEnrolled: !!matchingLead,
+      });
     } else {
       setValidationResult({ tested: true, valid: false });
     }
@@ -356,6 +382,8 @@ function AdminAiUnlockedPage() {
     const salt =
       newTrack === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
+        : newTrack === "finance-advanced"
+        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
         : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const generated = generateAccessCode(salt);
@@ -477,7 +505,7 @@ function AdminAiUnlockedPage() {
           {/* Box 1: Token Generator (7 Cols) */}
           <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs space-y-4 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2 pb-3 border-b border-slate-100 justify-between">
                 <div className="flex items-center gap-2">
                   <KeyRound className="h-4 w-4 text-slate-700" />
                   <h3 className="font-semibold text-sm text-slate-900">
@@ -485,30 +513,34 @@ function AdminAiUnlockedPage() {
                   </h3>
                 </div>
                 <span className="text-[11px] text-slate-400 font-mono">
-                  {genTrack === "healthcare" ? "Salt: AIHP" : "Salt: AIFP"}
+                  {genTrack === "healthcare"
+                    ? "Salt: AIHP"
+                    : genTrack === "finance-advanced"
+                    ? "Salt: AIFA (L2)"
+                    : "Salt: AIFP (L1)"}
                 </span>
               </div>
 
               <div className="mt-4 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                   <label className="text-xs font-medium text-slate-600">
                     Target Track
                   </label>
                   {/* Segmented Control */}
-                  <div className="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-xs">
+                  <div className="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-[11px]">
                     <button
                       type="button"
                       onClick={() => {
                         setGenTrack("healthcare");
                         handleGenerateCode("healthcare");
                       }}
-                      className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
                         genTrack === "healthcare"
                           ? "bg-white text-slate-900 shadow-2xs"
                           : "text-slate-500 hover:text-slate-800"
                       }`}
                     >
-                      Healthcare (AIHP)
+                      Healthcare
                     </button>
                     <button
                       type="button"
@@ -516,13 +548,27 @@ function AdminAiUnlockedPage() {
                         setGenTrack("finance");
                         handleGenerateCode("finance");
                       }}
-                      className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
                         genTrack === "finance"
                           ? "bg-white text-slate-900 shadow-2xs"
                           : "text-slate-500 hover:text-slate-800"
                       }`}
                     >
-                      Finance (AIFP)
+                      Finance L1
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGenTrack("finance-advanced");
+                        handleGenerateCode("finance-advanced");
+                      }}
+                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                        genTrack === "finance-advanced"
+                          ? "bg-purple-600 text-white shadow-2xs"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
+                    >
+                      Adv Finance L2
                     </button>
                   </div>
                 </div>
@@ -588,9 +634,13 @@ function AdminAiUnlockedPage() {
               <button
                 type="button"
                 onClick={() => {
-                  const msg = `Dear Learner,\n\nYour payment for ${
-                    genTrack === "healthcare" ? "AI for Healthcare" : "AI for Finance"
-                  } has been verified.\n\nYour Access Code: ${generatedCode}\n\nUnlock here: https://reddottech.com.np/ai-unlocked?track=${genTrack}&view=pay\n\nBest regards,\nRed Dot Technologies`;
+                  const trackLabel =
+                    genTrack === "healthcare"
+                      ? "AI for Healthcare"
+                      : genTrack === "finance-advanced"
+                      ? "Advanced AI for Finance (Level 2)"
+                      : "AI for Finance";
+                  const msg = `Dear Learner,\n\nYour payment for ${trackLabel} has been verified.\n\nYour Access Code: ${generatedCode}\n\nUnlock here: https://reddottech.com.np/ai-unlocked?track=${genTrack}&view=pay\n\nBest regards,\nRed Dot Technologies`;
                   navigator.clipboard.writeText(msg);
                   toast.success("Ready dispatch message copied");
                 }}
@@ -717,8 +767,9 @@ function AdminAiUnlockedPage() {
                   className="rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none cursor-pointer"
                 >
                   <option value="all">All Tracks</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="finance">Finance</option>
+                  <option value="healthcare">Healthcare (AIHP)</option>
+                  <option value="finance">Finance L1 (AIFP)</option>
+                  <option value="finance-advanced">Adv Finance L2 (AIFA)</option>
                 </select>
 
                 <select
@@ -800,9 +851,13 @@ function AdminAiUnlockedPage() {
                             <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200/80 px-2 py-0.5 text-[11px] font-medium">
                               Healthcare
                             </span>
+                          ) : lead.track === "finance-advanced" ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-purple-50 text-purple-800 border border-purple-200/80 px-2 py-0.5 text-[11px] font-medium">
+                              Adv Finance L2
+                            </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 text-blue-800 border border-blue-200/80 px-2 py-0.5 text-[11px] font-medium">
-                              Finance
+                              Finance L1
                             </span>
                           )}
                         </td>
@@ -1149,7 +1204,8 @@ function AdminAiUnlockedPage() {
                   className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
                 >
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
-                  <option value="finance">AI for Financial Professionals (8 Modules)</option>
+                  <option value="finance">AI for Financial Professionals — Level 1 (8 Modules)</option>
+                  <option value="finance-advanced">Advanced AI for Finance Professionals — Level 2 (12 Modules)</option>
                 </select>
               </div>
 

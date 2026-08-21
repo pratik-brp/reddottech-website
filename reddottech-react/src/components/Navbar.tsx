@@ -289,12 +289,21 @@ const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
           },
           {
             title: "AI for Finance & Banking",
-            desc: "8 Modules: AML, Fraud Detection, Risk & Algorithmic FinTech.",
+            desc: "8 Modules (Level 1): AML, Fraud, Risk & FinTech Operations.",
             href: "/ai-unlocked?track=finance",
-            badge: "FINANCE",
+            badge: "LEVEL 1",
             badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
             iconBg: "bg-blue-50 text-blue-600 border-blue-200/60",
             icon: Building2,
+          },
+          {
+            title: "Advanced AI for Finance",
+            desc: "12 Modules (Level 2): Architecture, XAI, Agents & Operating Models.",
+            href: "/ai-unlocked?track=finance-advanced",
+            badge: "LEVEL 2",
+            badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
+            iconBg: "bg-purple-50 text-purple-600 border-purple-200/60",
+            icon: Sparkles,
           },
         ],
       },
@@ -306,7 +315,7 @@ const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
       href: "/ai-unlocked",
       ctaText: "Launch AI Learning Hub",
       gradient: "from-[#064E3B] via-[#0F1E3D] to-[#0A2540]",
-      highlights: ["3 Domain Curricula", "22+ Interactive Modules", "Instant Verified Certificate"],
+      highlights: ["4 Domain Curricula", "34 In-Depth Modules", "Instant Verified Certificate"],
     },
     bottomBar: {
       text: "Already completed your course modules?",
@@ -524,14 +533,14 @@ export const Navbar = memo(function Navbar() {
           <Link
             to="/"
             onMouseEnter={() => handleMouseEnter("about" as any)}
-            className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 ${
+            className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 ${
               currentPath === "/"
                 ? "bg-brand-ink text-white shadow-md"
                 : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
             }`}
           >
             {currentPath === "/" && (
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm animate-glow-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
             )}
             <span>Home</span>
           </Link>
@@ -543,14 +552,14 @@ export const Navbar = memo(function Navbar() {
           >
             <Link
               to="/about"
-              className={`relative flex items-center rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
+              className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
                 isNavActive("/about") || activeMegaMenu === "about"
                   ? "bg-brand-ink text-white shadow-md"
                   : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
               }`}
             >
               {isNavActive("/about") && (
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm animate-glow-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
               )}
               <span>About Us</span>
             </Link>
@@ -563,14 +572,14 @@ export const Navbar = memo(function Navbar() {
           >
             <Link
               to="/pecp"
-              className={`relative flex items-center rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
+              className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
                 isNavActive("/pecp") || activeMegaMenu === "pecp"
                   ? "bg-brand-ink text-white shadow-md"
                   : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
               }`}
             >
               {isNavActive("/pecp") && (
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm animate-glow-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
               )}
               <span>PECP</span>
             </Link>
@@ -583,14 +592,14 @@ export const Navbar = memo(function Navbar() {
           >
             <Link
               to="/courses"
-              className={`relative flex items-center rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
+              className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
                 isNavActive("/courses") || activeMegaMenu === "courses"
                   ? "bg-brand-ink text-white shadow-md"
                   : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
               }`}
             >
               {isNavActive("/courses") && (
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm animate-glow-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
               )}
               <span>Courses</span>
             </Link>
@@ -599,14 +608,14 @@ export const Navbar = memo(function Navbar() {
           {/* Contact Us Link */}
           <Link
             to="/contact"
-            className={`relative flex items-center rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 ${
+            className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 ${
               currentPath === "/contact"
                 ? "bg-brand-ink text-white shadow-md"
                 : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
             }`}
           >
             {currentPath === "/contact" && (
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm animate-glow-pulse" />
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
             )}
             <span>Contact Us</span>
           </Link>
