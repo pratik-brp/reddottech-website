@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const stagingDir = path.join(rootDir, ".cpanel-staging");
+const tarOutput = path.join(rootDir, "cpanel-deploy.tar.gz");
 const zipOutput = path.join(rootDir, "cpanel-deploy.zip");
 
 console.log("=================================================");
@@ -33,7 +34,7 @@ function copyRecursive(src, dest) {
   }
 }
 
-const deployItems = ["dist", "server", "public", "package.json", "package-lock.json", ".env.example"];
+const deployItems = ["dist", "server", "public", ".env.example"];
 for (const item of deployItems) {
   const src = path.join(rootDir, item);
   const dest = path.join(stagingDir, item);
@@ -42,31 +43,78 @@ for (const item of deployItems) {
   }
 }
 
-console.log("\n[3/4] Creating cpanel-deploy.zip archive...");
-if (fs.existsSync(zipOutput)) {
-  fs.unlinkSync(zipOutput);
-}
+// Generate clean production package.json containing all production runtime dependencies (react, tanstack, express, etc.)
+const mainPkg = JSON.parse(fs.readFileSync(path.join(rootDir, "package.json"), "utf8"));
+const prodPackageJson = {
+  name: mainPkg.name || "reddottech",
+  version: mainPkg.version || "1.0.0",
+  private: true,
+  type: "module",
+  scripts: {
+    start: "node server/prod-entry.js",
+  },
+  dependencies: mainPkg.dependencies,
+};
+fs.writeFileSync(
+  path.join(stagingDir, "package.json"),
+  JSON.stringify(prodPackageJson, null, 2),
+  "utf8"
+);
 
+// Ensure .htaccess exists so CloudLinux Node.js selector (cl_selector.py) never throws FileNotFoundError
+fs.writeFileSync(path.join(stagingDir, ".htaccess"), "", "utf8");
+
+console.log("\n[3/4] Creating deployment archives...");
+
+// 1. Create cpanel-deploy.tar.gz (Recommended: avoids Sanesecurity Foxhole JS_Zip antivirus false positives)
+let hasTarGz = false;
 try {
-  const psCommand = `Get-ChildItem -Path .cpanel-staging\\* | Compress-Archive -DestinationPath cpanel-deploy.zip -Force`;
-  execSync(`powershell.exe -NoProfile -Command "${psCommand}"`, {
+  if (fs.existsSync(tarOutput)) {
+    fs.unlinkSync(tarOutput);
+  }
+  execSync(`tar -czf "${tarOutput}" -C "${stagingDir}" .`, {
     cwd: rootDir,
     stdio: "inherit",
   });
-
-  // Clean staging
-  fs.rmSync(stagingDir, { recursive: true, force: true });
-
-  const stats = fs.statSync(zipOutput);
-  const sizeMb = (stats.size / (1024 * 1024)).toFixed(2);
-
-  console.log("\n[4/4] SUCCESS!");
-  console.log(`=================================================`);
-  console.log(` Package Created : ${zipOutput}`);
-  console.log(` File Size       : ${sizeMb} MB`);
-  console.log(` Ready to Upload : Upload 'cpanel-deploy.zip' to cPanel!`);
-  console.log(`=================================================`);
+  hasTarGz = true;
 } catch (err) {
-  console.error("Packaging error:", err);
-  process.exit(1);
+  console.warn("tar.gz creation warning:", err.message);
 }
+
+// 2. Create cpanel-deploy.zip as well (using tar zip support)
+let hasZip = false;
+try {
+  if (fs.existsSync(zipOutput)) {
+    fs.unlinkSync(zipOutput);
+  }
+  execSync(`tar -acf "${zipOutput}" -C "${stagingDir}" .`, {
+    cwd: rootDir,
+    stdio: "inherit",
+  });
+  hasZip = true;
+} catch (err) {
+  console.warn("zip creation warning:", err.message);
+}
+
+// Clean staging
+if (fs.existsSync(stagingDir)) {
+  fs.rmSync(stagingDir, { recursive: true, force: true });
+}
+
+console.log("\n[4/4] PACKAGING COMPLETED!");
+console.log("=================================================");
+if (hasTarGz) {
+  const tarStats = fs.statSync(tarOutput);
+  const tarMb = (tarStats.size / (1024 * 1024)).toFixed(2);
+  console.log(` ⭐ RECOMMENDED ARCHIVE: cpanel-deploy.tar.gz (${tarMb} MB)`);
+  console.log(`    Location: ${tarOutput}`);
+  console.log(`    👉 Use this for cPanel File Manager upload to bypass Foxhole.JS_Zip antivirus false positives!`);
+}
+if (hasZip) {
+  const zipStats = fs.statSync(zipOutput);
+  const zipMb = (zipStats.size / (1024 * 1024)).toFixed(2);
+  console.log(` 📦 ZIP ARCHIVE         : cpanel-deploy.zip (${zipMb} MB)`);
+  console.log(`    Location: ${zipOutput}`);
+}
+console.log("=================================================");
+

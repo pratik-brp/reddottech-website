@@ -8,12 +8,6 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart({
       server: { entry: "server" },
-      router: {
-        // Supported at runtime (router-composed-plugin reads it); the installed
-        // start-plugin-core types lag the router-plugin API.
-        // @ts-expect-error - verified to emit per-route chunks in production build.
-        autoCodeSplitting: true,
-      },
     }),
     react(),
   ],
@@ -37,33 +31,5 @@ export default defineConfig({
   build: {
     target: "esnext",
     cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("lucide-react")) {
-              return "vendor-lucide";
-            }
-            if (id.includes("gsap") || id.includes("framer-motion") || id.includes("lenis")) {
-              return "vendor-motion";
-            }
-            if (
-              id.includes("@radix-ui") ||
-              id.includes("embla-carousel") ||
-              id.includes("cmdk") ||
-              id.includes("vaul")
-            ) {
-              return "vendor-ui";
-            }
-            if (id.includes("recharts")) {
-              return "vendor-charts";
-            }
-            if (id.includes("@tanstack")) {
-              return "vendor-tanstack";
-            }
-          }
-        },
-      },
-    },
   },
 });

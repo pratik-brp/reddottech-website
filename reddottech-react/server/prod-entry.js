@@ -9,9 +9,15 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5000;
 const clientDir = path.join(dirname, "../dist/client");
 
-// Production SSR handler built by `vite build` (dist/server/server.js).
-const ssrModule = await import(pathToFileURL(path.join(dirname, "../dist/server/server.js")));
-const ssrHandler = ssrModule.default;
+// Production SSR handler built by `vite build` (dist/server/server.js) — loaded lazily to support LiteSpeed / lsnode require()
+let ssrHandlerPromise = null;
+function getSsrHandler() {
+  if (!ssrHandlerPromise) {
+    ssrHandlerPromise = import(pathToFileURL(path.join(dirname, "../dist/server/server.js")).href)
+      .then((mod) => mod.default || mod);
+  }
+  return ssrHandlerPromise;
+}
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -107,6 +113,7 @@ async function handleSsr(req, res) {
     ...(isBodyless ? {} : { body: await readBody(req) }),
   });
 
+  const ssrHandler = await getSsrHandler();
   const response = await ssrHandler.fetch(request, {}, {});
 
   res.statusCode = response.status;
