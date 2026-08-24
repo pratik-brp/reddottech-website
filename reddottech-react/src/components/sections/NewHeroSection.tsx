@@ -11,7 +11,8 @@ export function NewHeroSection() {
 
   useGSAP(
     () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const isMobile = window.innerWidth < 768;
+      if (isMobile || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.set(".hero-reveal-item, .hero-float-card, .hero-orb, .hero-illust-main", {
           opacity: 1,
           y: 0,
@@ -19,16 +20,17 @@ export function NewHeroSection() {
         });
         return;
       }
-      gsap.set(".hero-reveal-item", { opacity: 0, y: 25 });
-      gsap.set(".hero-float-card", { opacity: 0, scale: 0.9 });
-      gsap.set(".hero-orb", { opacity: 0, scale: 0.8 });
-      gsap.set(".hero-illust-main", { opacity: 0, scale: 0.95 });
 
-      const tl = gsap.timeline({ delay: 0.1 });
-      tl.to(".hero-orb", { opacity: 1, scale: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" })
+      gsap.set(".hero-reveal-item", { opacity: 0, y: 20 });
+      gsap.set(".hero-float-card", { opacity: 0, scale: 0.92 });
+      gsap.set(".hero-orb", { opacity: 0, scale: 0.85 });
+      gsap.set(".hero-illust-main", { opacity: 0, scale: 0.96 });
+
+      const tl = gsap.timeline({ delay: 0.05 });
+      tl.to(".hero-orb", { opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: "power2.out" })
         .to(
           ".hero-reveal-item",
-          { opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power2.out" },
+          { opacity: 1, y: 0, duration: 0.6, stagger: 0.06, ease: "power2.out" },
           "<",
         )
         .to(
@@ -36,15 +38,15 @@ export function NewHeroSection() {
           {
             opacity: 1,
             scale: 1,
-            duration: 0.8,
+            duration: 0.6,
             ease: "power2.out",
           },
           "<",
         )
         .to(
           ".hero-float-card",
-          { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" },
-          "-=0.3",
+          { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+          "-=0.2",
         );
     },
     { scope: container },
@@ -58,28 +60,29 @@ export function NewHeroSection() {
       style={{ background: "var(--gradient-hero)" }}
     >
       {/* Animated gradient orbs */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div
-          className="hero-orb animate-orb absolute -left-[8%] top-[10%] h-[36vw] max-h-[460px] w-[36vw] max-w-[460px] rounded-full opacity-40"
+          className="hero-orb animate-orb absolute -left-[8%] top-[10%] h-[36vw] max-h-[460px] w-[36vw] max-w-[460px] rounded-full opacity-40 will-change-transform"
           style={{
             background:
               "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 30%, transparent) 0%, transparent 70%)",
           }}
         />
         <div
-          className="hero-orb animate-orb absolute -right-[10%] top-[6%] h-[32vw] max-h-[420px] w-[32vw] max-w-[420px] rounded-full opacity-30 [animation-delay:3s]"
+          className="hero-orb animate-orb absolute -right-[10%] top-[6%] h-[32vw] max-h-[420px] w-[32vw] max-w-[420px] rounded-full opacity-30 [animation-delay:3s] will-change-transform"
           style={{
             background: "radial-gradient(circle, oklch(0.82 0.05 240 / 0.6) 0%, transparent 70%)",
           }}
         />
         <div
-          className="hero-orb animate-orb absolute bottom-[4%] left-[28%] h-[26vw] max-h-[340px] w-[26vw] max-w-[340px] rounded-full opacity-25 [animation-delay:6s]"
+          className="hero-orb animate-orb absolute bottom-[4%] left-[28%] h-[26vw] max-h-[340px] w-[26vw] max-w-[340px] rounded-full opacity-25 [animation-delay:6s] hidden sm:block will-change-transform"
           style={{
             background:
               "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 24%, transparent) 0%, transparent 70%)",
           }}
         />
       </div>
+
 
       <div className="relative z-10 my-auto mx-auto grid w-full max-w-7xl items-center gap-8 sm:gap-10 px-4 sm:px-6 pt-20 pb-12 sm:pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pt-28 lg:pb-16">
         {/* Left content */}

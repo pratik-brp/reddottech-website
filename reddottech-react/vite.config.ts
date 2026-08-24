@@ -31,5 +31,16 @@ export default defineConfig({
   build: {
     target: "esnext",
     cssCodeSplit: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("src/data/ai-")) {
+            return "ai-course-curriculum";
+          }
+        },
+      },
+    },
   },
+
 });

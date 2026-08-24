@@ -474,6 +474,41 @@ export const Navbar = memo(function Navbar() {
     }
   };
 
+  const handleHomeClick = (e: React.MouseEvent) => {
+    setActiveMegaMenu(null);
+    setMobileOpen(false);
+
+
+    const scrollToHero = () => {
+      const lenis = (window as any).__lenis;
+      const heroEl = document.getElementById("hero");
+      if (lenis && typeof lenis.scrollTo === "function") {
+        if (heroEl) {
+          lenis.scrollTo(heroEl, { offset: 0, duration: 1 });
+        } else {
+          lenis.scrollTo(0, { duration: 1 });
+        }
+      } else {
+        if (heroEl) {
+          heroEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+    };
+
+    if (currentPath === "/") {
+      e.preventDefault();
+      scrollToHero();
+    } else {
+      navigate({ to: "/" })
+        .then(() => {
+          setTimeout(scrollToHero, 80);
+        })
+        .catch(() => {});
+    }
+  };
+
   return (
     <header
       ref={navContainerRef}
@@ -492,26 +527,7 @@ export const Navbar = memo(function Navbar() {
         {/* Left: Brand Logo */}
         <Link
           to="/"
-          onClick={(e) => {
-            e.preventDefault();
-            const goToHero = () => {
-              const el = document.getElementById("hero");
-              if (el) {
-                el.scrollIntoView({ behavior: "smooth", block: "start" });
-              } else {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }
-            };
-            if (currentPath !== "/") {
-              navigate({ to: "/" })
-                .then(() => {
-                  requestAnimationFrame(goToHero);
-                })
-                .catch(() => {});
-            } else {
-              goToHero();
-            }
-          }}
+          onClick={handleHomeClick}
           className="shrink-0 flex items-center transition-all duration-300 hover:opacity-85 active:scale-95"
           aria-label="Red Dot Technologies — Home"
         >
@@ -532,8 +548,9 @@ export const Navbar = memo(function Navbar() {
           {/* Home Link */}
           <Link
             to="/"
-            onMouseEnter={() => handleMouseEnter("about" as any)}
-            className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 ${
+            onClick={handleHomeClick}
+            onMouseEnter={() => setActiveMegaMenu(null)}
+            className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
               currentPath === "/"
                 ? "bg-brand-ink text-white shadow-md"
                 : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
@@ -544,6 +561,7 @@ export const Navbar = memo(function Navbar() {
             )}
             <span>Home</span>
           </Link>
+
 
           {/* About Us Dropdown Trigger */}
           <div
@@ -828,9 +846,13 @@ export const Navbar = memo(function Navbar() {
         >
           {/* Header Row inside Drawer */}
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              onClick={handleHomeClick}
+              className="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform"
+            >
               <img src="/logo.png" alt="Red Dot Logo" className="h-7 w-auto object-contain" />
-            </div>
+            </Link>
             <button
               onClick={() => setMobileOpen(false)}
               className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-brand-red hover:text-white transition-all active:scale-90"
@@ -845,7 +867,8 @@ export const Navbar = memo(function Navbar() {
             {/* 1. Home */}
             <Link
               to="/"
-              className={`flex items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-extrabold transition-all duration-200 ${
+              onClick={handleHomeClick}
+              className={`flex items-center justify-between rounded-2xl px-4 py-2.5 text-sm font-extrabold transition-all duration-200 cursor-pointer ${
                 currentPath === "/"
                   ? "bg-brand-ink text-white shadow-md"
                   : "text-slate-700 hover:bg-slate-50 hover:text-brand-ink"
@@ -863,6 +886,7 @@ export const Navbar = memo(function Navbar() {
               </div>
               <ChevronRight className="h-4 w-4 text-slate-300" />
             </Link>
+
 
             {/* 2. About Us Accordion */}
             <div className="rounded-2xl border border-slate-100 overflow-hidden bg-slate-50/40">

@@ -1,9 +1,4 @@
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import { useEffect, useRef } from "react";
 
 interface AnimatedCounterProps {
   value: number;
@@ -21,32 +16,69 @@ export function AnimatedCounter({
   className = "",
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
+  const animatedRef = useRef(false);
 
-  useGSAP(
-    () => {
-      const el = ref.current;
-      if (!el) return;
-      const obj = { v: 0 };
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        el.textContent = `${prefix}${value.toFixed(decimals)}${suffix}`;
-        return;
-      }
-      gsap.to(obj, {
-        v: value,
-        duration: 2,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 88%",
-          once: true,
-        },
-        onUpdate: () => {
-          el.textContent = `${prefix}${obj.v.toFixed(decimals)}${suffix}`;
-        },
-      });
-    },
-    { dependencies: [value, decimals] },
-  );
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      el.textContent = `${prefix}${value.toFixed(decimals)}${suffix}`;
+      return;
+    }
+
+    const startAnimation = () => {
+      if (animatedRef.current) return;
+      animatedRef.current = true;
+
+      const duration = 1600; // ms
+      const startTime = performance.now();
+
+      const update = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Easing: easeOutCubic
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const currentVal = value * ease;
+
+        if (el) {
+          el.textContent = `${prefix}${currentVal.toFixed(decimals)}${suffix}`;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else if (el) {
+          el.textContent = `${prefix}${value.toFixed(decimals)}${suffix}`;
+        }
+      };
+
+      requestAnimationFrame(update);
+    };
+
+    if (typeof IntersectionObserver === "undefined") {
+      startAnimation();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          startAnimation();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "50px" },
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [value, decimals, prefix, suffix]);
 
   return (
     <span ref={ref} className={className}>
@@ -54,3 +86,4 @@ export function AnimatedCounter({
     </span>
   );
 }
+

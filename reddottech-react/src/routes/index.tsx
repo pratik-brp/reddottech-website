@@ -10,7 +10,6 @@ import { WhyChooseUsSection } from "@/components/sections/WhyChooseUsSection";
 import { CoursesSliderSection } from "@/components/sections/CoursesSliderSection";
 import { CareerRoadmapSection } from "@/components/sections/CareerRoadmapSection";
 import { CtaSection } from "@/components/sections/CtaSection";
-import { ScrollAnimate } from "@/components/ScrollAnimate";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,27 +39,14 @@ function Index() {
       <MarqueeStrip />
       <PecpBatchSection />
       <StatsSection />
-      <ScrollAnimate>
-        <HomeAboutSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <LearningMatrixSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <FeaturesSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <CoursesSliderSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <WhyChooseUsSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <CareerRoadmapSection />
-      </ScrollAnimate>
-      <ScrollAnimate>
-        <CtaSection />
-      </ScrollAnimate>
+      <HomeAboutSection />
+      <LearningMatrixSection />
+      <FeaturesSection />
+      <CoursesSliderSection />
+      <WhyChooseUsSection />
+      <CareerRoadmapSection />
+      <CtaSection />
     </div>
   );
 }
+
