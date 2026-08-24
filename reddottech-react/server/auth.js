@@ -54,9 +54,13 @@ async function getUserForToken(token) {
 }
 
 function extractToken(req) {
-  const header = req.headers.authorization || "";
-  return header.startsWith("Bearer ") ? header.slice(7) : null;
+  const header = req.headers?.authorization || "";
+  if (header.startsWith("Bearer ")) return header.slice(7);
+  if (req.query && req.query.token) return String(req.query.token);
+  if (req.cookies && req.cookies.admin_token) return String(req.cookies.admin_token);
+  return null;
 }
+
 
 export async function requireAuth(req, res, next) {
   try {
@@ -113,9 +117,12 @@ export const authHandlers = {
       );
 
       if (!user) {
+        // Run dummy scrypt computation to match execution time of existing user and prevent timing attacks
+        await verifyPassword(password, "0123456789abcdef0123456789abcdef", "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
         recordFailedAttempt(key);
         return res.status(401).json({ success: false, error: "Invalid email or password." });
       }
+
 
       const passwordMatch = await verifyPassword(password, user.password_salt, user.password_hash);
       if (!passwordMatch) {
@@ -276,4 +283,5 @@ export const authHandlers = {
   },
 };
 
-export { hashPassword, createSession };
+export { hashPassword, createSession, getUserForToken, extractToken };
+

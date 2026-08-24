@@ -184,7 +184,7 @@ function AiUnlockedPage() {
             loaded[tid] = { done: {}, answers: {}, unlocked: false };
             try {
               localStorage.setItem(cfg.storageKey, JSON.stringify(loaded[tid]));
-            } catch {}
+            } catch { }
           } else {
             loaded[tid] = parsed;
           }
@@ -215,7 +215,7 @@ function AiUnlockedPage() {
       if (cfg && typeof window !== "undefined") {
         try {
           localStorage.setItem(cfg.storageKey, JSON.stringify(updated));
-        } catch {}
+        } catch { }
       }
       return next;
     });
@@ -223,10 +223,10 @@ function AiUnlockedPage() {
 
   const currentTrackState = currentTrackId
     ? trackStates[currentTrackId] || {
-        done: {},
-        answers: {},
-        unlocked: !activeTrackConfig?.isPaid,
-      }
+      done: {},
+      answers: {},
+      unlocked: !activeTrackConfig?.isPaid,
+    }
     : { done: {}, answers: {}, unlocked: false };
 
   const isTrackUnlocked = !activeTrackConfig?.isPaid || !!currentTrackState.unlocked;
@@ -479,16 +479,16 @@ function AiUnlockedPage() {
           accessCode: cleanCode,
           ...(res.lead
             ? {
-                lead: {
-                  name: res.lead.name || prev.lead?.name || "",
-                  email: res.lead.email || prev.lead?.email || "",
-                  org: res.lead.org || prev.lead?.org || "",
-                  role: prev.lead?.role || "",
-                  dept: prev.lead?.dept || "",
-                  date: new Date().toISOString(),
-                  captured: false,
-                },
-              }
+              lead: {
+                name: res.lead.name || prev.lead?.name || "",
+                email: res.lead.email || prev.lead?.email || "",
+                org: res.lead.org || prev.lead?.org || "",
+                role: prev.lead?.role || "",
+                dept: prev.lead?.dept || "",
+                date: new Date().toISOString(),
+                captured: false,
+              },
+            }
             : {}),
         }));
         toast.success(`✓ Full Access Unlocked for ${activeTrackConfig.name}!`);
@@ -541,7 +541,7 @@ function AiUnlockedPage() {
       };
 
       // Save directly to MySQL database
-      createAiLead(newEntry).catch(() => {});
+      createAiLead(newEntry).catch(() => { });
 
       // Synchronize to localStorage backup
       if (typeof window !== "undefined") {
@@ -553,11 +553,11 @@ function AiUnlockedPage() {
             "rdt_ai_payment_leads",
             JSON.stringify([newEntry, ...existingLeads])
           );
-        } catch {}
+        } catch { }
       }
 
-      // Notify Red Dot admin team via FormSubmit
-      fetch("https://formsubmit.co/ajax/info@reddottech.com.np", {
+      // Notify Red Dot admin team via FormSubmit (testing: pratik@ubventuresllc.com)
+      fetch("https://formsubmit.co/ajax/pratik@ubventuresllc.com", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
@@ -574,7 +574,7 @@ function AiUnlockedPage() {
           Admin_Verification_Url: "https://reddottech.com.np/admin/ai-unlocked",
         }),
         signal: AbortSignal.timeout(4000),
-      }).catch(() => {});
+      }).catch(() => { });
     } catch {
       // Fallback continues gracefully
     }
@@ -1605,15 +1605,14 @@ function AiUnlockedPage() {
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-800 shadow-2xs shrink-0">
                         <span
-                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${
-                            currentTrackId === "healthcare"
-                              ? "bg-emerald-500"
-                              : currentTrackId === "finance-advanced"
-                                ? "bg-purple-500"
-                                : currentTrackId === "finance"
-                                  ? "bg-blue-500"
-                                  : "bg-brand-red"
-                          }`}
+                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${currentTrackId === "healthcare"
+                            ? "bg-emerald-500"
+                            : currentTrackId === "finance-advanced"
+                              ? "bg-purple-500"
+                              : currentTrackId === "finance"
+                                ? "bg-blue-500"
+                                : "bg-brand-red"
+                            }`}
                         />
                         {activeTrackConfig.badge}
                       </span>
@@ -2254,13 +2253,12 @@ function AiUnlockedPage() {
                                       className={`w-full text-left p-2.5 sm:p-3 rounded-lg sm:rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2.5 cursor-pointer ${btnStyle}`}
                                     >
                                       <span
-                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
-                                          isAnswered && oIdx === qItem.a
-                                            ? "bg-emerald-500 text-white"
-                                            : isThisSelected && !isCorrect
-                                              ? "bg-red-500 text-white"
-                                              : "bg-slate-100 text-slate-600"
-                                        }`}
+                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${isAnswered && oIdx === qItem.a
+                                          ? "bg-emerald-500 text-white"
+                                          : isThisSelected && !isCorrect
+                                            ? "bg-red-500 text-white"
+                                            : "bg-slate-100 text-slate-600"
+                                          }`}
                                       >
                                         {LETTERS[oIdx]}
                                       </span>
@@ -2275,11 +2273,10 @@ function AiUnlockedPage() {
 
                               {isAnswered && (
                                 <div
-                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${
-                                    isCorrect
-                                      ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
-                                      : "bg-red-50 border border-red-200 text-red-900"
-                                  }`}
+                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${isCorrect
+                                    ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
+                                    : "bg-red-50 border border-red-200 text-red-900"
+                                    }`}
                                 >
                                   <span className="font-bold text-xs leading-none">
                                     {isCorrect ? "✓" : "✗"}
@@ -2349,8 +2346,8 @@ function AiUnlockedPage() {
                   {(currentTrackId === "finance-advanced"
                     ? FINANCE_ADVANCED_SOURCES
                     : currentTrackId === "finance"
-                    ? FINANCE_SOURCES
-                    : HEALTHCARE_SOURCES
+                      ? FINANCE_SOURCES
+                      : HEALTHCARE_SOURCES
                   ).map((source, sIdx) => (
                     <div
                       key={sIdx}
@@ -2736,11 +2733,10 @@ function AiUnlockedPage() {
                       {currentLessons.map((l) => (
                         <div
                           key={l.id}
-                          className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                            currentTrackState.done?.[l.id]
-                              ? "bg-emerald-500"
-                              : "bg-slate-200"
-                          }`}
+                          className={`h-2.5 w-2.5 rounded-full transition-colors ${currentTrackState.done?.[l.id]
+                            ? "bg-emerald-500"
+                            : "bg-slate-200"
+                            }`}
                         />
                       ))}
                     </div>

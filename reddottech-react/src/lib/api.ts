@@ -111,6 +111,10 @@ export async function changeAdminEmail(newEmail: string, currentPassword: string
 // Image File Upload Helper (Admin)
 export async function uploadImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (file.size > 5 * 1024 * 1024) {
+      return reject(new Error("Image exceeds 5MB maximum file size limit."));
+    }
+
     const reader = new FileReader();
     reader.onload = async () => {
       try {
@@ -126,11 +130,10 @@ export async function uploadImage(file: File): Promise<string> {
         if (res?.url) {
           resolve(res.url);
         } else {
-          resolve(base64Data);
+          reject(new Error("Upload server failed to return asset URL."));
         }
       } catch (err) {
-        // Fallback to direct client-side data URL
-        resolve(reader.result as string);
+        reject(err instanceof Error ? err : new Error("Failed to upload image file."));
       }
     };
     reader.onerror = (err) => reject(err);
@@ -141,6 +144,10 @@ export async function uploadImage(file: File): Promise<string> {
 // Payment Receipt Upload Helper (Public Student Form)
 export async function uploadPaymentReceipt(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (file.size > 2.5 * 1024 * 1024) {
+      return reject(new Error("Receipt screenshot exceeds 2.5MB maximum file size limit."));
+    }
+
     const reader = new FileReader();
     reader.onload = async () => {
       try {
@@ -156,17 +163,17 @@ export async function uploadPaymentReceipt(file: File): Promise<string> {
         if (res?.url) {
           resolve(res.url);
         } else {
-          resolve(base64Data);
+          reject(new Error("Upload failed. Please ensure file is a valid JPG, PNG, WebP, or PDF."));
         }
-      } catch {
-        // Local fallback to base64
-        resolve(reader.result as string);
+      } catch (err) {
+        reject(err instanceof Error ? err : new Error("Failed to upload payment receipt."));
       }
     };
     reader.onerror = (err) => reject(err);
     reader.readAsDataURL(file);
   });
 }
+
 
 // 1. Dashboard Stats
 export async function getDashboardStats() {
@@ -431,12 +438,9 @@ export async function downloadDatabaseBackup() {
 export async function getAiLeads(): Promise<any[]> {
   const data = await fetchApi<any[]>("/ai-leads");
   if (Array.isArray(data)) return data;
-  try {
-    const raw = typeof window !== "undefined" ? localStorage.getItem("rdt_ai_payment_leads") : null;
-    if (raw) return JSON.parse(raw);
-  } catch {}
   return [];
 }
+
 
 export async function createAiLead(lead: any) {
   try {

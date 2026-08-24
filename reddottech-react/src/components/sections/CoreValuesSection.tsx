@@ -128,7 +128,8 @@ export function CoreValuesSection() {
       number: "05",
       title: "Community",
       badge: "Network & Alumni",
-      tagline: "A Thriving Ecosystem of 12,000+ Certified Leaders & Mentors",
+      tagline: "A Thriving Ecosystem of 1,000+ Certified Leaders & Mentors",
+
       desc: "When you join Red Dot, you gain a lifelong professional network of engineers, managers, and corporate leaders across Nepal and abroad.",
       icon: Users,
       image: "/images/about/core-community.png",
@@ -138,7 +139,7 @@ export function CoreValuesSection() {
       badgeStyle: "bg-purple-50 text-purple-700 border-purple-200/80",
       glowBg: "bg-purple-500/10 border-purple-500/20",
       pillars: [
-        { title: "12K+ Alumni Network", desc: "Connect with certified professionals across tech and business." },
+        { title: "1k+ Alumni Network", desc: "Connect with certified professionals across tech and business." },
         { title: "Peer Masterclasses", desc: "Guest lectures, alumni roundtables, and networking events." },
         { title: "Lifelong Access", desc: "Permanent access to course updates and alumni privileges." },
       ],
@@ -172,7 +173,7 @@ export function CoreValuesSection() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
           <ScrollReveal direction="up">
@@ -207,34 +208,30 @@ export function CoreValuesSection() {
               <button
                 key={v.id}
                 onClick={() => handleSelect(idx)}
-                className={`group flex-1 min-w-[105px] sm:min-w-[140px] text-center rounded-xl sm:rounded-2xl p-2.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-1.5 sm:gap-2 ${
-                  isActive
+                className={`group flex-1 min-w-[105px] sm:min-w-[140px] text-center rounded-xl sm:rounded-2xl p-2.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-1.5 sm:gap-2 ${isActive
                     ? "bg-white border-2 border-brand-red/50 shadow-md scale-[1.02]"
                     : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 shadow-xs"
-                }`}
+                  }`}
               >
                 <div
-                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl font-extrabold text-xs transition-all duration-300 ${
-                    isActive
+                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl font-extrabold text-xs transition-all duration-300 ${isActive
                       ? `${v.themeBg} text-white shadow-xs scale-105`
                       : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                 </div>
 
                 <div>
                   <span
-                    className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest block ${
-                      isActive ? v.themeColor : "text-slate-400"
-                    }`}
+                    className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest block ${isActive ? v.themeColor : "text-slate-400"
+                      }`}
                   >
                     {v.number} • {v.badge}
                   </span>
                   <h4
-                    className={`text-[11px] sm:text-sm font-extrabold tracking-tight transition-colors ${
-                      isActive ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"
-                    }`}
+                    className={`text-[11px] sm:text-sm font-extrabold tracking-tight transition-colors ${isActive ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"
+                      }`}
                   >
                     {v.title}
                   </h4>
@@ -246,7 +243,7 @@ export function CoreValuesSection() {
 
         {/* Main Stage Showcase Box */}
         <div className="relative rounded-2xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl overflow-hidden">
-          
+
           {/* Top Accent Bar */}
           <div
             className={`absolute inset-x-0 top-0 h-1.5 sm:h-2 bg-gradient-to-r ${current.accentGradient} transition-all duration-500`}
@@ -295,7 +292,7 @@ export function CoreValuesSection() {
 
             {/* Right Column: Detailed Info & Deliverables Grid (7 Cols) */}
             <div className="lg:col-span-7 space-y-4 sm:space-y-6">
-              
+
               {/* Header Row */}
               <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex items-center gap-2.5 sm:gap-3">

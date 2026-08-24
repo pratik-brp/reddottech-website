@@ -26,11 +26,12 @@ const trustPillars = [
   },
   {
     icon: Globe2,
-    title: "12,000+ Upskilled Professionals",
+    title: "1,000+ Upskilled Professionals",
     badge: "ALUMNI NETWORK",
     text: "A thriving community of Nepalese professionals upskilling toward high-impact, globally competitive careers.",
     highlight: "High Completion Rate",
   },
+
 ];
 
 const alumniReviews = [
@@ -154,7 +155,8 @@ export function TestimonialsSection() {
                   <Star key={i} className="h-3.5 w-3.5 sm:h-4 sm:w-4 fill-amber-400 stroke-none" />
                 ))}
               </div>
-              <span>4.9 / 5.0 from 12,000+ Learners</span>
+              <span>4.9 / 5.0 from 1,000+ Learners</span>
+
             </div>
           </div>
 

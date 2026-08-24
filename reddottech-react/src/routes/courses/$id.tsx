@@ -15,37 +15,70 @@ import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { sanitizeHtml } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/courses/$id")({
-  head: () => ({
-    meta: [
-      { title: "Course Details | Red Dot Technologies" },
-      { name: "description", content: "Professional IT & Business Certification Cohort" },
-    ],
-  }),
+  loader: async ({ params }) => {
+    try {
+      const course = await fetchApi<any>(`/courses/${params.id}`);
+      return { course: course || null };
+    } catch {
+      return { course: null };
+    }
+  },
+  head: ({ loaderData }) => {
+    const course = loaderData?.course;
+    const title = course?.name
+      ? `${course.name} | Red Dot Technologies`
+      : "Course Details | Red Dot Technologies";
+    const desc =
+      course?.description ||
+      course?.longDescription ||
+      "Professional IT & Business Certification Cohort delivered by Red Dot Technologies.";
+    const banner = course?.bannerImage || course?.thumbnail || "/og-image.png";
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc.slice(0, 160) },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc.slice(0, 200) },
+        { property: "og:image", content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc.slice(0, 200) },
+        { name: "twitter:image", content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}` },
+      ],
+    };
+  },
   component: CourseDetailPage,
 });
 
 function CourseDetailPage() {
   const { id } = Route.useParams();
-  const [course, setCourse] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+  const loaderData = Route.useLoaderData();
+  const [course, setCourse] = useState<any | null>(loaderData?.course || null);
+  const [loading, setLoading] = useState(!loaderData?.course);
   const [activeTab, setActiveTab] = useState<
     "overview" | "curriculum" | "instructor" | "requirements"
   >("overview");
 
   useEffect(() => {
-    fetchApi<any>(`/courses/${id}`)
-      .then((data) => {
-        if (data) {
-          setCourse(data);
-        }
-      })
-      .catch(() => {
-        setCourse(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    if (!course) {
+      fetchApi<any>(`/courses/${id}`)
+        .then((data) => {
+          if (data) {
+            setCourse(data);
+          }
+        })
+        .catch(() => {
+          setCourse(null);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
   }, [id]);
+
 
   const tabs = [
     { key: "overview" as const, label: "Overview" },

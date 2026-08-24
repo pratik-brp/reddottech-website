@@ -4,16 +4,24 @@ import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { initDb, query, get, run, dbConfig } from "./db.js";
-import { requireAuth, authHandlers } from "./auth.js";
+import { requireAuth, authHandlers, getUserForToken, extractToken } from "./auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.resolve(__dirname, "../public/uploads");
+const receiptsDir = path.resolve(__dirname, "../storage/receipts");
+
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+if (!fs.existsSync(receiptsDir)) {
+  fs.mkdirSync(receiptsDir, { recursive: true });
+}
 
 const app = express();
+// Enable trust proxy for correct IP rate-limiting behind cPanel / LiteSpeed reverse proxies (TC-12)
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 5000;
 
 // Restrict CORS to known origins
@@ -49,6 +57,7 @@ app.use((req, res, next) => {
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   next();
 });
 
@@ -66,7 +75,7 @@ app.use("/uploads", express.static(uploadsDir));
 const rateLimitMap = new Map();
 function createRateLimiter({ windowMs = 60 * 1000, max = 20, message = "Too many requests. Please try again later." } = {}) {
   return (req, res, next) => {
-    const ip = req.ip || req.headers["x-forwarded-for"] || req.socket.remoteAddress || "unknown";
+    const ip = req.ip || req.headers["x-forwarded-for"]?.split(",")[0]?.trim() || req.socket.remoteAddress || "unknown";
     const key = `${req.baseUrl || ""}${req.path}:${ip}`;
     const now = Date.now();
     const entry = rateLimitMap.get(key) || { count: 0, resetTime: now + windowMs };
@@ -94,6 +103,70 @@ function createRateLimiter({ windowMs = 60 * 1000, max = 20, message = "Too many
 
 const formLimiter = createRateLimiter({ windowMs: 60 * 1000, max: 15, message: "Too many submissions. Please wait a moment." });
 const authLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 15, message: "Too many login attempts. Please try again in 15 minutes." });
+
+// Helper to mask emails for public endpoints (TC-10)
+function maskEmail(email) {
+  if (!email || typeof email !== "string") return "";
+  const parts = email.split("@");
+  if (parts.length !== 2) return email.slice(0, 2) + "***";
+  const [user, domain] = parts;
+  const maskedUser = user.length <= 2 ? user[0] + "***" : user[0] + "***" + user[user.length - 1];
+  const domainParts = domain.split(".");
+  const maskedDomain = domainParts
+    .map((part, i) =>
+      i === domainParts.length - 1
+        ? part
+        : part.length <= 2
+        ? part[0] + "***"
+        : part[0] + "***" + part[part.length - 1]
+    )
+    .join(".");
+  return `${maskedUser}@${maskedDomain}`;
+}
+
+// Helper for magic byte validation (TC-05)
+function validateImageMagicBytes(buffer, mime) {
+  if (!buffer || buffer.length < 4) return false;
+  if (mime === "image/jpeg" || mime === "image/jpg") {
+    return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  }
+  if (mime === "image/png") {
+    return buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
+  }
+  if (mime === "image/webp") {
+    return (
+      buffer.length >= 12 &&
+      buffer.subarray(0, 4).toString("ascii") === "RIFF" &&
+      buffer.subarray(8, 12).toString("ascii") === "WEBP"
+    );
+  }
+  if (mime === "application/pdf") {
+    return buffer.subarray(0, 4).toString("ascii") === "%PDF";
+  }
+  return false;
+}
+
+// Helper for generating collision-free course slugs (TC-08)
+async function generateUniqueCourseSlug(name, existingId = null) {
+  let baseSlug = String(name || "course")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  if (!baseSlug) baseSlug = "course";
+
+  let slug = baseSlug;
+  let counter = 1;
+  while (true) {
+    const existing = await get(
+      "SELECT id FROM courses WHERE slug = ?" + (existingId ? " AND id <> ?" : ""),
+      existingId ? [slug, existingId] : [slug]
+    );
+    if (!existing) return slug;
+    counter += 1;
+    slug = `${baseSlug}-${counter}`;
+  }
+}
 
 // Boot initialization: connect to MySQL database
 (async () => {
@@ -123,7 +196,7 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Image Upload Endpoint
+// Image Upload Endpoint (Admin only)
 app.post("/api/upload", formLimiter, requireAuth, (req, res) => {
   try {
     const { filename, base64Data } = req.body || {};
@@ -146,6 +219,13 @@ app.post("/api/upload", formLimiter, requireAuth, (req, res) => {
     }
     const buffer = Buffer.from(matches[2], "base64");
 
+    if (buffer.length > 5 * 1024 * 1024) {
+      return res.status(400).json({ success: false, error: "Image exceeds 5MB size limit." });
+    }
+    if (!validateImageMagicBytes(buffer, mime)) {
+      return res.status(400).json({ success: false, error: "Invalid image file header. Corrupted or unauthorized format." });
+    }
+
     const cleanName = (filename || "upload")
       .replace(/\.[^/.]+$/, "")
       .replace(/[^a-zA-Z0-9-_]/g, "_");
@@ -161,7 +241,7 @@ app.post("/api/upload", formLimiter, requireAuth, (req, res) => {
   }
 });
 
-// Payment Receipt Screenshot Upload Endpoint (Public Rate-Limited)
+// Payment Receipt Screenshot Upload Endpoint (Public Rate-Limited, Protected Storage - TC-03, TC-05)
 app.post("/api/upload-receipt", formLimiter, (req, res) => {
   try {
     const { filename, base64Data } = req.body || {};
@@ -186,25 +266,88 @@ app.post("/api/upload-receipt", formLimiter, (req, res) => {
     else {
       return res.status(400).json({
         success: false,
-        error: "Only JPG, PNG, and WebP payment receipts or screenshots are allowed.",
+        error: "Only JPG, PNG, WebP, or PDF payment receipts are allowed.",
       });
     }
     const buffer = Buffer.from(matches[2], "base64");
 
+    // Enforce 2.5MB max size limit on public receipt uploads (TC-05)
+    if (buffer.length > 2.5 * 1024 * 1024) {
+      return res.status(400).json({
+        success: false,
+        error: "Receipt file size exceeds 2.5MB limit. Please compress or take a smaller screenshot.",
+      });
+    }
+
+    // Verify true magic bytes of the file content (TC-05)
+    if (!validateImageMagicBytes(buffer, mime)) {
+      return res.status(400).json({
+        success: false,
+        error: "Corrupted or invalid file format. File signature does not match image/PDF header.",
+      });
+    }
+
     const cleanName = (filename || "receipt")
       .replace(/\.[^/.]+$/, "")
       .replace(/[^a-zA-Z0-9-_]/g, "_");
-    const uniqueName = `receipt_${cleanName}_${Date.now()}${ext}`;
-    const filePath = path.join(uploadsDir, uniqueName);
-
+    const uniqueName = `receipt_${cleanName}_${Date.now()}_${crypto.randomBytes(4).toString("hex")}${ext}`;
+    
+    // Save to private storage/receipts directory instead of public web root (TC-03)
+    const filePath = path.join(receiptsDir, uniqueName);
     fs.writeFileSync(filePath, buffer);
-    const publicUrl = `/uploads/${uniqueName}`;
-    res.json({ success: true, url: publicUrl, filename: uniqueName });
+
+    const protectedUrl = `/api/admin/receipts/${uniqueName}`;
+    res.json({ success: true, url: protectedUrl, filename: uniqueName });
   } catch (err) {
     console.error("[Receipt Upload Error]", err);
     res.status(500).json({ success: false, error: "Failed to upload payment receipt." });
   }
 });
+
+// Authenticated Admin Endpoint to Serve Private Receipts (TC-03)
+app.get("/api/admin/receipts/:filename", requireAuth, (req, res) => {
+  try {
+    const rawFilename = path.basename(req.params.filename || "");
+    let safePath = path.resolve(receiptsDir, rawFilename);
+
+    // Fallback: check uploads directory if file was created before migration to private storage
+    if (!fs.existsSync(safePath)) {
+      const legacyPath = path.resolve(uploadsDir, rawFilename);
+      if (fs.existsSync(legacyPath)) {
+        safePath = legacyPath;
+      }
+    }
+
+    if (!fs.existsSync(safePath)) {
+      return res.status(404).json({ success: false, error: "Receipt file not found." });
+    }
+
+    const ext = path.extname(safePath).toLowerCase();
+    const mime =
+      ext === ".png"
+        ? "image/png"
+        : ext === ".webp"
+        ? "image/webp"
+        : ext === ".pdf"
+        ? "application/pdf"
+        : ext === ".svg"
+        ? "image/svg+xml"
+        : "image/jpeg";
+
+    res.setHeader("Content-Type", mime);
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Cache-Control", "private, max-age=3600");
+    if (ext === ".pdf") {
+      res.setHeader("Content-Disposition", `inline; filename="${rawFilename}"`);
+    }
+    fs.createReadStream(safePath).pipe(res);
+  } catch (err) {
+    console.error("[Receipt Serve Error]", err);
+    res.status(500).json({ success: false, error: "Failed to load receipt file." });
+  }
+});
+
+
 
 // -------------------------------------------------------------------
 // AUTH API
@@ -216,11 +359,18 @@ app.post("/api/auth/change-password", authHandlers.changePassword);
 app.post("/api/auth/change-email", authHandlers.changeEmail);
 
 // -------------------------------------------------------------------
-// 1. COURSES API
+// 1. COURSES API (TC-08, TC-16, TC-17)
 // -------------------------------------------------------------------
 app.get("/api/courses", async (req, res) => {
   try {
-    const courses = await query("SELECT * FROM courses ORDER BY created_at DESC");
+    const token = extractToken(req);
+    const adminUser = await getUserForToken(token);
+
+    const querySql = adminUser
+      ? "SELECT * FROM courses ORDER BY created_at DESC"
+      : "SELECT * FROM courses WHERE status = 'published' ORDER BY created_at DESC";
+
+    const courses = await query(querySql);
     const formatted = courses.map((c) => ({
       id: c.id,
       name: c.name,
@@ -255,10 +405,14 @@ app.get("/api/courses", async (req, res) => {
 
 app.get("/api/courses/:id", async (req, res) => {
   try {
-    const course = await get(
-      "SELECT * FROM courses WHERE id = ? OR slug = ?",
-      [req.params.id, req.params.id]
-    );
+    const token = extractToken(req);
+    const adminUser = await getUserForToken(token);
+
+    const querySql = adminUser
+      ? "SELECT * FROM courses WHERE id = ? OR slug = ?"
+      : "SELECT * FROM courses WHERE (id = ? OR slug = ?) AND status = 'published'";
+
+    const course = await get(querySql, [req.params.id, req.params.id]);
 
     if (!course) {
       return res.status(404).json({ success: false, error: "Course not found" });
@@ -300,8 +454,15 @@ app.get("/api/courses/:id", async (req, res) => {
 app.post("/api/courses", requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
+    if (!body.name || typeof body.name !== "string" || body.name.trim().length === 0) {
+      return res.status(400).json({ success: false, error: "Course name is required." });
+    }
+    if (body.name.length > 255) {
+      return res.status(400).json({ success: false, error: "Course name cannot exceed 255 characters." });
+    }
+
     const id = body.id || `course-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
-    const slug = (body.name || "course").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const slug = await generateUniqueCourseSlug(body.name);
 
     await run(
       `INSERT INTO courses (
@@ -312,32 +473,32 @@ app.post("/api/courses", requireAuth, async (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
         id,
-        body.name || "New Course",
+        body.name.trim(),
         slug,
         body.description || "",
         body.longDescription || body.description || "",
-        body.thumbnail !== undefined ? body.thumbnail : "",
-        body.bannerImage !== undefined ? body.bannerImage : (body.banner_image || ""),
-        body.instructorName || "Instructor",
-        body.instructorTitle || "Faculty Lead",
-        body.instructorImage !== undefined ? body.instructorImage : (body.instructor_image || ""),
+        body.thumbnail !== undefined ? String(body.thumbnail) : "",
+        body.bannerImage !== undefined ? String(body.bannerImage) : (body.banner_image ? String(body.banner_image) : ""),
+        body.instructorName ? String(body.instructorName).slice(0, 255) : "Instructor",
+        body.instructorTitle ? String(body.instructorTitle).slice(0, 255) : "Faculty Lead",
+        body.instructorImage !== undefined ? String(body.instructorImage) : (body.instructor_image ? String(body.instructor_image) : ""),
         body.instructorDetail || "",
-        body.duration || "4 weeks",
-        body.startDate || "Rolling Admission",
+        body.duration ? String(body.duration).slice(0, 100) : "4 weeks",
+        body.startDate ? String(body.startDate).slice(0, 100) : "Rolling Admission",
         Number(body.price) || 0,
-        body.delivery || "online",
-        body.mode || "Instructor-led",
-        body.language || "English",
-        body.skillLevel || "beginner",
-        body.category || "General",
-        body.certification || "Red Dot Certified",
+        body.delivery ? String(body.delivery).slice(0, 50) : "online",
+        body.mode ? String(body.mode).slice(0, 100) : "Instructor-led",
+        body.language ? String(body.language).slice(0, 100) : "English",
+        body.skillLevel ? String(body.skillLevel).slice(0, 50) : "beginner",
+        body.category ? String(body.category).slice(0, 100) : "General",
+        body.certification ? String(body.certification).slice(0, 100) : "Red Dot Certified",
         body.requirements || "",
         body.curriculum || "",
-        body.status || "published"
+        body.status ? String(body.status).slice(0, 50) : "published"
       ]
     );
 
-    res.json({ success: true, message: "Course created successfully in MySQL", id });
+    res.json({ success: true, message: "Course created successfully in MySQL", id, slug });
   } catch (err) {
     console.error("[Courses API Error]", err);
     res.status(500).json({ success: false, error: "Failed to create course." });
@@ -347,19 +508,34 @@ app.post("/api/courses", requireAuth, async (req, res) => {
 app.put("/api/courses/:id", requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
+    const existing = await get("SELECT id, name, slug FROM courses WHERE id = ?", [req.params.id]);
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "Course not found." });
+    }
+
+    if (body.name && body.name.length > 255) {
+      return res.status(400).json({ success: false, error: "Course name cannot exceed 255 characters." });
+    }
+
+    let slug = existing.slug;
+    if (body.name && body.name !== existing.name) {
+      slug = await generateUniqueCourseSlug(body.name, req.params.id);
+    }
+
     const instructorImage = body.instructorImage !== undefined
-      ? body.instructorImage
-      : (body.instructor_image !== undefined ? body.instructor_image : "");
+      ? String(body.instructorImage)
+      : (body.instructor_image !== undefined ? String(body.instructor_image) : "");
     const bannerImage = body.bannerImage !== undefined
-      ? body.bannerImage
-      : (body.banner_image !== undefined ? body.banner_image : "");
+      ? String(body.bannerImage)
+      : (body.banner_image !== undefined ? String(body.banner_image) : "");
     const thumbnail = body.thumbnail !== undefined
-      ? body.thumbnail
-      : (body.thumbnail_image !== undefined ? body.thumbnail_image : "");
+      ? String(body.thumbnail)
+      : (body.thumbnail_image !== undefined ? String(body.thumbnail_image) : "");
 
     await run(
       `UPDATE courses SET
         name = ?,
+        slug = ?,
         category = ?,
         description = ?,
         long_description = ?,
@@ -382,32 +558,33 @@ app.put("/api/courses/:id", requireAuth, async (req, res) => {
         requirements = ?
       WHERE id = ?`,
       [
-        body.name || "Course",
-        body.category || "Professional Certification",
+        body.name ? String(body.name).trim() : existing.name,
+        slug,
+        body.category ? String(body.category).slice(0, 100) : "Professional Certification",
         body.description || "",
         body.longDescription || body.description || "",
         thumbnail,
         bannerImage,
-        body.instructorName || body.instructor_name || "Instructor",
-        body.instructorTitle || body.instructor_title || "Faculty Lead",
+        body.instructorName ? String(body.instructorName).slice(0, 255) : "Instructor",
+        body.instructorTitle ? String(body.instructorTitle).slice(0, 255) : "Faculty Lead",
         instructorImage,
-        body.instructorDetail || body.instructor_detail || "",
-        body.duration || "4 weeks",
-        body.startDate || body.start_date || "Rolling Admission",
+        body.instructorDetail || "",
+        body.duration ? String(body.duration).slice(0, 100) : "4 weeks",
+        body.startDate ? String(body.startDate).slice(0, 100) : "Rolling Admission",
         Number(body.price) || 0,
-        body.delivery || "online",
-        body.mode || "Instructor-led",
-        body.language || "English",
-        body.skillLevel || body.skill_level || "beginner",
-        body.certification || "PECP Certified",
-        body.status || "published",
+        body.delivery ? String(body.delivery).slice(0, 50) : "online",
+        body.mode ? String(body.mode).slice(0, 100) : "Instructor-led",
+        body.language ? String(body.language).slice(0, 100) : "English",
+        body.skillLevel ? String(body.skillLevel).slice(0, 50) : "beginner",
+        body.certification ? String(body.certification).slice(0, 100) : "PECP Certified",
+        body.status ? String(body.status).slice(0, 50) : "published",
         body.curriculum || "",
         body.requirements || "",
         req.params.id
       ]
     );
 
-    res.json({ success: true, message: "Course updated successfully in MySQL" });
+    res.json({ success: true, message: "Course updated successfully in MySQL", slug });
   } catch (err) {
     console.error("[Courses API Error]", err);
     res.status(500).json({ success: false, error: "Failed to update course." });
@@ -425,7 +602,7 @@ app.delete("/api/courses/:id", requireAuth, async (req, res) => {
 });
 
 // -------------------------------------------------------------------
-// 2. CERTIFICATES API
+// 2. CERTIFICATES API (TC-02, TC-10)
 // -------------------------------------------------------------------
 app.get("/api/certificates", requireAuth, async (req, res) => {
   try {
@@ -452,11 +629,28 @@ app.post("/api/certificates/claim", formLimiter, async (req, res) => {
     } = req.body || {};
 
     if (!name || !email) {
-      return res.status(400).json({ success: false, error: "Name and Email are required" });
+      return res.status(400).json({ success: false, error: "Name and Email are required." });
+    }
+
+    if (String(name).length > 255 || String(email).length > 255) {
+      return res.status(400).json({ success: false, error: "Name or email exceeds maximum allowed length." });
+    }
+
+    // Prevent overwriting existing certificates or minting duplicate IDs (TC-02)
+    if (certificate_id) {
+      const existingCert = await get("SELECT id FROM certificates WHERE certificate_id = ?", [
+        String(certificate_id).trim(),
+      ]);
+      if (existingCert) {
+        return res.status(409).json({
+          success: false,
+          error: "A certificate with this ID already exists. Duplicate issuance is not permitted.",
+        });
+      }
     }
 
     const completed_at = new Date().toISOString().split("T")[0];
-    const resolvedTrack = track || "foundations";
+    const resolvedTrack = track ? String(track).slice(0, 50) : "foundations";
     const resolvedCourseName =
       course_name ||
       (resolvedTrack === "healthcare"
@@ -467,23 +661,26 @@ app.post("/api/certificates/claim", formLimiter, async (req, res) => {
             ? "Professional Executive Certificate"
             : "AI Foundations: General AI Literacy");
 
+    // Cryptographically secure unique certificate ID generation
     const autoCertCode =
-      certificate_id || `RDT-${resolvedTrack.toUpperCase()}-${Date.now().toString().slice(-6)}`;
+      certificate_id && String(certificate_id).trim().length > 0
+        ? String(certificate_id).trim().slice(0, 100)
+        : `RDT-${resolvedTrack.toUpperCase()}-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 
     const result = await run(
       `INSERT INTO certificates (
         name, email, school, track, course_name, certificate_id, organization, role, department, completed_at, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
-        name,
-        email,
-        school || organization || "Red Dot Technologies",
+        String(name).trim().slice(0, 255),
+        String(email).trim().slice(0, 255),
+        school || organization ? String(school || organization).slice(0, 255) : "Red Dot Technologies",
         resolvedTrack,
-        resolvedCourseName,
+        String(resolvedCourseName).slice(0, 255),
         autoCertCode,
-        organization || school || null,
-        role || null,
-        department || null,
+        organization || school ? String(organization || school).slice(0, 255) : null,
+        role ? String(role).slice(0, 100) : null,
+        department ? String(department).slice(0, 100) : null,
         completed_at,
       ]
     );
@@ -492,7 +689,7 @@ app.post("/api/certificates/claim", formLimiter, async (req, res) => {
       success: true,
       id: result.insertId,
       name,
-      email,
+      email: maskEmail(email),
       school,
       track: resolvedTrack,
       course_name: resolvedCourseName,
@@ -515,7 +712,7 @@ app.delete("/api/certificates/:id", requireAuth, async (req, res) => {
   }
 });
 
-// Certificate Verification (Public Verification Endpoint)
+// Certificate Verification (Public Verification Endpoint - TC-10 Privacy & Exact Match)
 app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
   try {
     const rawQuery = String(req.params.query || "").trim();
@@ -523,30 +720,25 @@ app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
       return res.status(400).json({ success: false, error: "Verification identifier is required." });
     }
 
-    // Extract potential integer from end of query e.g. "RDT-FOUNDATIONS-2" -> 2 or "2" -> 2
-    const numMatch = rawQuery.match(/(\d+)$/);
+    // Exact match on certificate ID or numeric ID only (prevent enumeration)
+    const numMatch = rawQuery.match(/^(\d+)$/);
     const extractedNum = numMatch ? parseInt(numMatch[1], 10) : 0;
 
     const cert = await get(
       `SELECT id, name, email, school, completed_at, created_at, track, course_name, certificate_id, organization, role, department 
        FROM certificates 
        WHERE certificate_id = ? 
-          OR certificate_id LIKE ? 
           OR id = ? 
-          OR email = ? 
-          OR email LIKE ? 
-          OR name = ? 
-          OR name LIKE ? 
        ORDER BY id DESC 
        LIMIT 1`,
-      [rawQuery, `%${rawQuery}%`, extractedNum, rawQuery, `%${rawQuery}%`, rawQuery, `%${rawQuery}%`]
+      [rawQuery, extractedNum]
     );
 
     if (!cert) {
       return res.status(404).json({
         success: false,
         verified: false,
-        error: "Certificate record not found in the official registry. Please verify the entered ID or name.",
+        error: "Certificate record not found in the official registry. Please verify the entered ID.",
       });
     }
 
@@ -565,7 +757,7 @@ app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
       data: {
         id: cert.id,
         name: cert.name,
-        email: cert.email,
+        email: maskEmail(cert.email),
         school: cert.school,
         track: cert.track,
         courseName: cert.course_name || trackLabel,
@@ -587,7 +779,7 @@ app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
 });
 
 // -------------------------------------------------------------------
-// 3. CONTACTS API
+// 3. CONTACTS API (TC-16)
 // -------------------------------------------------------------------
 app.get("/api/contacts", requireAuth, async (req, res) => {
   try {
@@ -606,9 +798,31 @@ app.post("/api/contacts", formLimiter, async (req, res) => {
       return res.status(400).json({ success: false, error: "Missing required contact fields" });
     }
 
+    if (
+      String(first_name).length > 100 ||
+      (last_name && String(last_name).length > 100) ||
+      String(email).length > 255 ||
+      (phone && String(phone).length > 50) ||
+      (subject && String(subject).length > 255)
+    ) {
+      return res.status(400).json({ success: false, error: "Field lengths exceed maximum allowed limit." });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim())) {
+      return res.status(400).json({ success: false, error: "Invalid email address format." });
+    }
+
     const result = await run(
       "INSERT INTO contacts (first_name, last_name, email, phone, subject, message, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())",
-      [first_name, last_name || "", email, phone || "", subject || "General Inquiry", message]
+      [
+        String(first_name).trim().slice(0, 100),
+        last_name ? String(last_name).trim().slice(0, 100) : "",
+        String(email).trim().slice(0, 255),
+        phone ? String(phone).trim().slice(0, 50) : "",
+        subject ? String(subject).trim().slice(0, 255) : "General Inquiry",
+        String(message).trim()
+      ]
     );
 
     res.json({
@@ -633,7 +847,7 @@ app.delete("/api/contacts/:id", requireAuth, async (req, res) => {
 });
 
 // -------------------------------------------------------------------
-// 4. SUBSCRIPTIONS API
+// 4. SUBSCRIPTIONS API (TC-16)
 // -------------------------------------------------------------------
 app.get("/api/subscriptions", requireAuth, async (req, res) => {
   try {
@@ -652,9 +866,14 @@ app.post("/api/subscriptions", formLimiter, async (req, res) => {
       return res.status(400).json({ success: false, error: "Email is required" });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim()) || String(email).length > 255) {
+      return res.status(400).json({ success: false, error: "Invalid email address format." });
+    }
+
     const result = await run(
       "INSERT IGNORE INTO subscriptions (email, created_at) VALUES (?, NOW())",
-      [email]
+      [String(email).trim().slice(0, 255)]
     );
     res.json({ success: true, id: result.insertId, message: "Subscribed successfully" });
   } catch (err) {
@@ -735,10 +954,12 @@ app.post("/api/settings", requireAuth, async (req, res) => {
   try {
     const settings = req.body || {};
     for (const [key, value] of Object.entries(settings)) {
-      await run(
-        "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)",
-        [key, String(value)]
-      );
+      if (String(key).length <= 100) {
+        await run(
+          "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)",
+          [String(key), String(value)]
+        );
+      }
     }
     res.json({ success: true, message: "Settings updated successfully in MySQL" });
   } catch (err) {
@@ -748,7 +969,7 @@ app.post("/api/settings", requireAuth, async (req, res) => {
 });
 
 // -------------------------------------------------------------------
-// 6. AI COURSE LEADS & PAYMENT VERIFICATIONS API
+// 6. AI COURSE LEADS & PAYMENT VERIFICATIONS API (TC-06 Mass Assignment Defense)
 // -------------------------------------------------------------------
 const B32_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
@@ -823,7 +1044,7 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
       lead: {
         id: lead.id,
         name: lead.name,
-        email: lead.email,
+        email: maskEmail(lead.email),
         org: lead.org,
         track: lead.track,
       },
@@ -872,7 +1093,7 @@ app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
       lead: {
         id: lead.id,
         name: lead.name,
-        email: lead.email,
+        email: maskEmail(lead.email),
         org: lead.org,
         track: lead.track,
       },
@@ -903,10 +1124,10 @@ app.get("/api/ai-leads", requireAuth, async (req, res) => {
   }
 });
 
+// Public Lead creation (Enforces safe unprivileged defaults - TC-06)
 app.post("/api/ai-leads", formLimiter, async (req, res) => {
   try {
     const {
-      id,
       name,
       email,
       org,
@@ -914,43 +1135,36 @@ app.post("/api/ai-leads", formLimiter, async (req, res) => {
       txn,
       receipt_url,
       receiptUrl,
-      status,
-      accessCode,
-      access_code,
-      notes,
-      emailSent,
-      email_sent,
-      emailSentAt,
-      email_sent_at,
     } = req.body || {};
 
     if (!name || !email || !track) {
       return res.status(400).json({ success: false, error: "Name, email, and track are required." });
     }
 
-    const finalReceiptUrl = receipt_url || receiptUrl || null;
-    const finalStatus = status || "pending";
-    const finalAccessCode = accessCode || access_code ? String(accessCode || access_code).trim().toUpperCase() : null;
-    const finalEmailSent = emailSent || email_sent ? 1 : 0;
-    const finalEmailSentAt = emailSentAt || email_sent_at ? new Date(emailSentAt || email_sent_at) : null;
-    const leadId = id || `lead-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+    if (String(name).length > 255 || String(email).length > 255 || (org && String(org).length > 255)) {
+      return res.status(400).json({ success: false, error: "Field lengths exceed maximum allowed limit." });
+    }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(String(email).trim())) {
+      return res.status(400).json({ success: false, error: "Invalid email address format." });
+    }
+
+    const finalReceiptUrl = receipt_url || receiptUrl || null;
+    const leadId = `lead-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+
+    // Security: Ignore client-supplied status, accessCode, emailSent, notes (TC-06)
     await run(
       `INSERT INTO ai_leads (id, name, email, org, track, txn, status, access_code, notes, email_sent, email_sent_at, receipt_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, 'pending', NULL, NULL, 0, NULL, ?)`,
       [
         leadId,
-        String(name).trim(),
-        String(email).trim(),
-        org ? String(org).trim() : null,
-        track,
-        txn ? String(txn).trim() : null,
-        finalStatus,
-        finalAccessCode,
-        notes ? String(notes).trim() : null,
-        finalEmailSent,
-        finalEmailSentAt,
-        finalReceiptUrl,
+        String(name).trim().slice(0, 255),
+        String(email).trim().slice(0, 255),
+        org ? String(org).trim().slice(0, 255) : null,
+        String(track).trim().slice(0, 50),
+        txn ? String(txn).trim().slice(0, 100) : null,
+        finalReceiptUrl ? String(finalReceiptUrl).slice(0, 500) : null,
       ]
     );
 
@@ -964,8 +1178,8 @@ app.post("/api/ai-leads", formLimiter, async (req, res) => {
         track,
         txn: txn ? String(txn).trim() : null,
         receiptUrl: finalReceiptUrl,
-        status: finalStatus,
-        accessCode: finalAccessCode,
+        status: "pending",
+        accessCode: null,
         date: new Date().toISOString(),
       },
     });
@@ -983,16 +1197,16 @@ app.put("/api/ai-leads/:id", requireAuth, async (req, res) => {
 
     if (status !== undefined) {
       updates.push("status = ?");
-      params.push(status);
+      params.push(String(status).slice(0, 50));
     }
     const resolvedCode = accessCode !== undefined ? accessCode : access_code;
     if (resolvedCode !== undefined) {
       updates.push("access_code = ?");
-      params.push(resolvedCode ? String(resolvedCode).trim().toUpperCase() : null);
+      params.push(resolvedCode ? String(resolvedCode).trim().toUpperCase().slice(0, 100) : null);
     }
     if (notes !== undefined) {
       updates.push("notes = ?");
-      params.push(notes);
+      params.push(notes ? String(notes) : null);
     }
     if (emailSent !== undefined) {
       updates.push("email_sent = ?");
@@ -1004,7 +1218,7 @@ app.put("/api/ai-leads/:id", requireAuth, async (req, res) => {
     }
     if (receiptUrl !== undefined || receipt_url !== undefined) {
       updates.push("receipt_url = ?");
-      params.push(receiptUrl || receipt_url || null);
+      params.push(receiptUrl || receipt_url ? String(receiptUrl || receipt_url).slice(0, 500) : null);
     }
 
     if (updates.length === 0) {
@@ -1163,6 +1377,14 @@ app.get("/api/admin/export-db", requireAuth, async (req, res) => {
   }
 });
 
+// JSON Catch-All 404 Handler for all unmatched /api/* routes (TC-19)
+app.all("/api/*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: `API endpoint ${req.method} ${req.path} not found.`,
+  });
+});
+
 // Export app for production SSR entry (server/prod-entry.js)
 export { app };
 
@@ -1175,3 +1397,4 @@ if (isDirectRun) {
     console.log(`🚀 Red Dot MySQL Backend Server running on http://localhost:${PORT}`);
   });
 }
+

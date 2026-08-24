@@ -61,8 +61,12 @@ fs.writeFileSync(
   "utf8"
 );
 
+// Ensure private storage directories exist
+fs.mkdirSync(path.join(stagingDir, "storage/receipts"), { recursive: true });
+
 // Ensure .htaccess exists so CloudLinux Node.js selector (cl_selector.py) never throws FileNotFoundError
 fs.writeFileSync(path.join(stagingDir, ".htaccess"), "", "utf8");
+
 
 console.log("\n[3/4] Creating deployment archives...");
 

@@ -4,18 +4,18 @@ import { Users, Award, Target, Star, Sparkles } from "lucide-react";
 
 const stats = [
   {
-    value: 12,
+    value: 1,
     suffix: "k+",
     label: "Learners trained",
     description: "Professionals & graduates upskilled across Nepal",
     icon: Users,
     glow: "rgba(251, 146, 60, 0.25)",
     border: "rgba(251, 146, 60, 0.3)",
-    badge: "12,000+ Alumni",
+    badge: "1,000+ Alumni",
     decimals: 0,
   },
   {
-    value: 40,
+    value: 10,
     suffix: "+",
     label: "Global certifications",
     description: "Accredited by USC Upstate, AWS, Cisco & Microsoft",
@@ -25,6 +25,7 @@ const stats = [
     badge: "U.S. Accredited",
     decimals: 0,
   },
+
   {
     value: 96,
     suffix: "%",

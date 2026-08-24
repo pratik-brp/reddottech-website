@@ -122,10 +122,11 @@ export function NewHeroSection() {
           {/* Stats */}
           <dl className="hero-reveal-item mt-8 sm:mt-10 lg:mt-12 flex flex-wrap items-center gap-6 sm:gap-12">
             {[
-              { value: 12, suffix: "k+", label: "Learners trained", decimals: 0 },
-              { value: 40, suffix: "+", label: "Global certifications", decimals: 0 },
+              { value: 1, suffix: "k+", label: "Learners trained", decimals: 0 },
+              { value: 10, suffix: "+", label: "Global certifications", decimals: 0 },
               { value: 96, suffix: "%", label: "Completion rate", decimals: 0 },
             ].map((s) => (
+
               <div key={s.label}>
                 <dt className="display-font text-2xl sm:text-4xl font-bold text-brand-ink tracking-tight">
                   <AnimatedCounter value={s.value} suffix={s.suffix} decimals={s.decimals} />

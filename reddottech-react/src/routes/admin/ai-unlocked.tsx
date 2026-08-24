@@ -17,9 +17,11 @@ import {
   X,
   AlertCircle,
   Eye,
+  Download,
 } from "lucide-react";
+
 import { toast } from "sonner";
-import { requireAdminRoute } from "@/lib/auth";
+import { requireAdminRoute, getToken } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import {
   getAiLeads,
@@ -33,6 +35,30 @@ import {
   validateAccessCode,
 } from "@/lib/ai-course-utils";
 
+function getResolvedReceiptUrl(rawUrl?: string): string {
+  if (!rawUrl) return "";
+  const token = getToken();
+
+  // If base64 data URI, return as-is
+  if (rawUrl.startsWith("data:")) return rawUrl;
+
+  let url = rawUrl.trim();
+
+  // If stored as legacy /uploads/receipt_... or receipt_..., route to /api/admin/receipts/
+  if (url.startsWith("/uploads/")) {
+    const filename = url.replace("/uploads/", "");
+    url = `/api/admin/receipts/${filename}`;
+  } else if (!url.startsWith("http") && !url.startsWith("/api/")) {
+    url = `/api/admin/receipts/${url.replace(/^\/+/, "")}`;
+  }
+
+  if (token) {
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}token=${encodeURIComponent(token)}`;
+  }
+  return url;
+}
+
 export const Route = createFileRoute("/admin/ai-unlocked")({
   beforeLoad: requireAdminRoute,
   head: () => ({
@@ -40,6 +66,7 @@ export const Route = createFileRoute("/admin/ai-unlocked")({
   }),
   component: AdminAiUnlockedPage,
 });
+
 
 export interface AiPaymentLead {
   id: string;
@@ -1259,74 +1286,115 @@ function AdminAiUnlockedPage() {
       )}
 
       {/* ── Receipt Lightbox Modal ── */}
-      {selectedReceiptLead && (
-        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-sm text-slate-900">
-                  Payment Slip Preview
-                </h3>
-                <p className="text-[11px] text-slate-500">
-                  {selectedReceiptLead.name} · Ref: {selectedReceiptLead.txn || "—"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedReceiptLead(null)}
-                className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      {selectedReceiptLead && (() => {
+        const rawReceipt = selectedReceiptLead.receiptUrl || selectedReceiptLead.receipt_url || "";
+        const resolvedUrl = getResolvedReceiptUrl(rawReceipt);
+        const isPdf = resolvedUrl.toLowerCase().includes(".pdf");
 
-            <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-50/50">
-              <div className="relative max-w-full rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white">
-                <img
-                  src={selectedReceiptLead.receiptUrl || selectedReceiptLead.receipt_url}
-                  alt="Payment Slip"
-                  className="max-h-[50vh] object-contain w-auto"
-                />
-              </div>
-
-              <a
-                href={selectedReceiptLead.receiptUrl || selectedReceiptLead.receipt_url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red mt-3 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-2xs transition-colors"
-              >
-                <ExternalLink className="h-3 w-3" />
-                <span>Open Original Slip</span>
-              </a>
-            </div>
-
-            <div className="p-4 border-t border-slate-100 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedReceiptLead(null)}
-                className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs px-3.5 py-2 cursor-pointer"
-              >
-                Close
-              </button>
-              {selectedReceiptLead.status === "pending" && (
+        return (
+          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-sm text-slate-900">
+                    Payment Slip Preview
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {selectedReceiptLead.name} · Ref: {selectedReceiptLead.txn || "—"}
+                  </p>
+                </div>
                 <button
                   type="button"
-                  onClick={async () => {
-                    const target = selectedReceiptLead;
-                    setSelectedReceiptLead(null);
-                    await handleVerifyLead(target);
-                  }}
-                  disabled={sendingEmailMap[selectedReceiptLead.id]}
-                  className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium text-xs px-4 py-2 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  onClick={() => setSelectedReceiptLead(null)}
+                  className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
                 >
-                  <Send className="h-3 w-3" />
-                  <span>Approve &amp; Dispatch Token</span>
+                  <X className="h-4 w-4" />
                 </button>
-              )}
+              </div>
+
+              <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-50/50">
+                {isPdf ? (
+                  <div className="w-full h-[55vh] rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white">
+                    <iframe
+                      src={resolvedUrl}
+                      title="Payment Slip PDF"
+                      className="w-full h-full border-0"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative max-w-full rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white flex flex-col items-center justify-center min-h-[220px] p-2">
+                    <img
+                      src={resolvedUrl}
+                      alt="Payment Slip"
+                      className="max-h-[55vh] object-contain w-auto rounded"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                        const fallback = e.currentTarget.parentElement?.querySelector(".img-error-fallback");
+                        if (fallback) (fallback as HTMLElement).style.display = "flex";
+                      }}
+                    />
+                    <div className="img-error-fallback hidden flex-col items-center justify-center p-8 text-center">
+                      <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
+                      <p className="text-xs font-semibold text-slate-800">Preview Could Not Be Rendered Directly</p>
+                      <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
+                        The file may be in a format that requires opening directly in a new browser tab.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 mt-3">
+                  <a
+                    href={resolvedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span>Open in New Tab</span>
+                  </a>
+                  <a
+                    href={resolvedUrl}
+                    download={`receipt_${selectedReceiptLead.txn || selectedReceiptLead.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    <span>Download File</span>
+                  </a>
+                </div>
+              </div>
+
+              <div className="p-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedReceiptLead(null)}
+                  className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs px-3.5 py-2 cursor-pointer"
+                >
+                  Close
+                </button>
+                {selectedReceiptLead.status === "pending" && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const target = selectedReceiptLead;
+                      setSelectedReceiptLead(null);
+                      await handleVerifyLead(target);
+                    }}
+                    disabled={sendingEmailMap[selectedReceiptLead.id]}
+                    className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium text-xs px-4 py-2 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Send className="h-3 w-3" />
+                    <span>Approve &amp; Dispatch Token</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
     </AdminLayout>
   );
 }

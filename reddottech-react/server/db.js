@@ -105,7 +105,7 @@ async function createTables() {
       status VARCHAR(50) DEFAULT 'published',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
-      INDEX idx_courses_slug (slug),
+      UNIQUE KEY idx_courses_slug (slug),
       INDEX idx_courses_status (status)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
@@ -125,7 +125,7 @@ async function createTables() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
       INDEX idx_certificates_email (email),
-      INDEX idx_certificates_cert_id (certificate_id)
+      UNIQUE KEY idx_certificates_cert_id (certificate_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
     `CREATE TABLE IF NOT EXISTS contacts (
@@ -226,7 +226,21 @@ async function createTables() {
       // Column already exists
     }
   }
+
+  // Safe unique index creation
+  try {
+    await pool.query("ALTER TABLE certificates ADD UNIQUE INDEX idx_certificates_cert_id_unique (certificate_id)");
+  } catch {
+    // Index already exists or non-unique rows
+  }
+
+  try {
+    await pool.query("ALTER TABLE courses ADD UNIQUE INDEX idx_courses_slug_unique (slug)");
+  } catch {
+    // Index already exists
+  }
 }
+
 
 /**
  * Async query helper returning array of rows

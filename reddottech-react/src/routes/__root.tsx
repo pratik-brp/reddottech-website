@@ -86,14 +86,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Empowering Nepalese professionals with globally recognized certifications, immersive labs, and workforce-ready skills.",
       },
+      { property: "og:site_name", content: "Red Dot Technologies" },
       { property: "og:title", content: "Red Dot Technologies | Professional Certification Hub" },
       {
         property: "og:description",
         content: "Global certifications and IT training delivered in partnership with USC Upstate.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://reddottech.com.np" },
+      { property: "og:image", content: "https://reddottech.com.np/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Red Dot Technologies | Professional Certification Hub" },
+      {
+        name: "twitter:description",
+        content: "Global certifications and IT training delivered in partnership with USC Upstate.",
+      },
+      { name: "twitter:image", content: "https://reddottech.com.np/og-image.png" },
     ],
     links: [
+      { rel: "canonical", href: "https://reddottech.com.np" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -113,6 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
+
 });
 
 function RootShell({ children }: { children: ReactNode }) {

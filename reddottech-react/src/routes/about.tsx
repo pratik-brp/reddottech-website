@@ -83,17 +83,18 @@ function AboutPage() {
           <div className="rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-6 shadow-xs sm:shadow-md grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60">
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink">
-                <AnimatedCounter value={12} suffix="k+" />
+                <AnimatedCounter value={1} suffix="k+" />
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Alumni &amp; Professionals</p>
             </div>
 
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink">
-                <AnimatedCounter value={40} suffix="+" />
+                <AnimatedCounter value={10} suffix="+" />
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Corporate Partners</p>
             </div>
+
 
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-emerald-600">

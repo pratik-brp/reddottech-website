@@ -118,6 +118,17 @@ async function handleSsr(req, res) {
 
   res.statusCode = response.status;
   response.headers.forEach((value, key) => res.setHeader(key, value));
+
+  // Global security headers on all SSR HTML responses
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (proto === "https" || process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+  }
+
   res.end(Buffer.from(await response.arrayBuffer()));
 }
 
@@ -147,6 +158,7 @@ const server = createServer((req, res) => {
     }
   });
 });
+
 
 server.listen(PORT, () => {
   console.log(`🚀 Red Dot site + API running on http://localhost:${PORT}`);

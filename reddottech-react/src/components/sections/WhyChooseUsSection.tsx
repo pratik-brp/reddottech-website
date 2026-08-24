@@ -235,16 +235,17 @@ export function WhyChooseUsSection() {
                   <div className="grid grid-cols-3 gap-4 sm:gap-6 text-center sm:text-left w-full sm:w-auto">
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={12} suffix="k+" />
+                        <AnimatedCounter value={1} suffix="k+" />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">Learners</p>
                     </div>
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={40} suffix="+" />
+                        <AnimatedCounter value={10} suffix="+" />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">Certifications</p>
                     </div>
+
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
                         <AnimatedCounter value={4.9} decimals={1} suffix="★" />
