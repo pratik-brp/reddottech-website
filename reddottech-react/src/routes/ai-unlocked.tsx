@@ -39,6 +39,7 @@ import {
   uploadPaymentReceipt,
   verifyAiAccessCode,
   checkAiAccessStatus,
+  fetchAiLesson,
 } from "@/lib/api";
 import { PageHero } from "@/components/PageHero";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -50,7 +51,6 @@ import { financeAdvancedLessons } from "@/data/ai-finance-advanced-data";
 import type { Lesson } from "@/data/ai-healthcare-data";
 import {
   TRACK_CONFIGS,
-  validateAccessCode,
   generateCertificateReference,
   renderSvgDiagram,
   DIAGRAM_CAPTIONS,
@@ -237,6 +237,11 @@ function AiUnlockedPage() {
     return !activeTrackConfig.freePreviewIds.includes(lessonId);
   };
 
+  // ── Dynamic Full Lesson Cache (Server-Side Gated Delivery) ──
+  const [loadedLessons, setLoadedLessons] = useState<Record<string, Lesson>>({});
+  const [isLoadingLesson, setIsLoadingLesson] = useState(false);
+  const [lessonFetchError, setLessonFetchError] = useState<string | null>(null);
+
   const rawActiveView = search.lesson || search.view || "home";
   const activeView = useMemo(() => {
     if (!activeTrackConfig) return "home";
@@ -252,6 +257,72 @@ function AiUnlockedPage() {
     }
     return rawActiveView;
   }, [rawActiveView, activeTrackConfig, isTrackUnlocked]);
+
+  // Dynamic lesson content loader effect
+  useEffect(() => {
+    if (!currentTrackId) return;
+    const targetId = rawActiveView.startsWith("q_") ? rawActiveView.slice(2) : rawActiveView;
+    if (
+      !targetId ||
+      targetId === "home" ||
+      targetId === "sources" ||
+      targetId === "pay" ||
+      targetId === "cert"
+    ) {
+      return;
+    }
+
+    const cacheKey = `${currentTrackId}:${targetId}`;
+    if (loadedLessons[cacheKey] && loadedLessons[cacheKey].sections?.length > 0) {
+      return;
+    }
+
+    // Check if base lesson in manifest already has full sections (e.g. preview lessons or foundations)
+    const baseLesson = currentLessons.find((l) => l.id === targetId);
+    if (baseLesson && baseLesson.sections && baseLesson.sections.length > 0 && (!activeTrackConfig?.isPaid || isTrackUnlocked)) {
+      setLoadedLessons((prev) => ({ ...prev, [cacheKey]: baseLesson }));
+      return;
+    }
+
+    // If paid and locked, paywall intercept handles it
+    if (activeTrackConfig?.isPaid && !isTrackUnlocked && isLessonLocked(targetId)) {
+      return;
+    }
+
+    let isMounted = true;
+    setIsLoadingLesson(true);
+    setLessonFetchError(null);
+
+    fetchAiLesson(currentTrackId, targetId, currentTrackState.accessCode)
+      .then((res) => {
+        if (!isMounted) return;
+        if (res && res.success && res.data) {
+          setLoadedLessons((prev) => ({ ...prev, [cacheKey]: res.data }));
+        } else if (res && res.locked) {
+          setLessonFetchError("This module requires an active verified access code.");
+        } else {
+          setLessonFetchError(res?.error || "Failed to load lesson from server.");
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setLessonFetchError(err instanceof Error ? err.message : "Server connection error.");
+      })
+      .finally(() => {
+        if (isMounted) setIsLoadingLesson(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    currentTrackId,
+    rawActiveView,
+    currentTrackState.accessCode,
+    isTrackUnlocked,
+    currentLessons,
+    activeTrackConfig,
+  ]);
 
   const openCourse = (
     track: "foundations" | "healthcare" | "finance" | "finance-advanced",
@@ -323,8 +394,9 @@ function AiUnlockedPage() {
   // ── Quiz Option Selection ──
   const handleQuizAnswer = (lessonId: string, qIndex: number, optionIndex: number) => {
     if (!currentTrackId || isLessonLocked(lessonId)) return;
-    const lesson = currentLessons.find((l) => l.id === lessonId);
-    if (!lesson) return;
+    const cacheKey = `${currentTrackId}:${lessonId}`;
+    const lesson = loadedLessons[cacheKey] || currentLessons.find((l) => l.id === lessonId);
+    if (!lesson || !lesson.quiz || lesson.quiz.length === 0) return;
 
     const newAnswersForLesson = {
       ...(currentTrackState.answers?.[lessonId] || {}),
@@ -457,15 +529,9 @@ function AiUnlockedPage() {
   const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentTrackId || !activeTrackConfig) return;
-    const salt = activeTrackConfig.salt || "";
     const cleanCode = enteredCode.trim().toUpperCase();
     if (!cleanCode) {
       toast.error("Please enter an access code.");
-      return;
-    }
-
-    if (!validateAccessCode(cleanCode, salt)) {
-      toast.error("Invalid access code format or checksum mismatch.");
       return;
     }
 
@@ -473,6 +539,7 @@ function AiUnlockedPage() {
     try {
       const res = await verifyAiAccessCode(currentTrackId, cleanCode);
       if (res && res.valid) {
+        setLoadedLessons({}); // Reset cache so freshly verified modules load from server
         updateTrackState(currentTrackId, (prev) => ({
           ...prev,
           unlocked: true,
@@ -556,8 +623,8 @@ function AiUnlockedPage() {
         } catch { }
       }
 
-      // Notify Red Dot admin team via FormSubmit (testing: pratik@ubventuresllc.com)
-      fetch("https://formsubmit.co/ajax/pratik@ubventuresllc.com", {
+      // Notify Red Dot admin team via FormSubmit
+      fetch("https://formsubmit.co/ajax/info@reddottech.com.np", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
@@ -953,7 +1020,11 @@ function AiUnlockedPage() {
             </div>
 
             {/* Card 3: Finance Level 1 */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 hover:border-blue-400 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
+            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-blue-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
+              <div className="bg-blue-600 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+                ⭐ Highly Recommended for Banking &amp; FinTech
+              </div>
+
               <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
                 {/* Header Badge */}
                 <div className="flex items-center justify-between gap-2">
@@ -1239,53 +1310,52 @@ function AiUnlockedPage() {
   // 2. DEDICATED COURSE PLAYER VIEW (When a course track is selected)
   // ════════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen bg-slate-50 font-sans pt-20 sm:pt-24 pb-16 sm:pb-20 text-slate-900 selection:bg-brand-red selection:text-white">
-      {/* ── Top Course Navigation Bar ── */}
-      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 pt-1 sm:pt-2 pb-2 sm:pb-3">
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-2.5 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          {/* Back button + Track Title */}
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={backToCatalog}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors cursor-pointer shrink-0"
-              title="Return to AI Unlocked 3 Courses"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              <span>All Courses</span>
-            </button>
+    <div className="min-h-screen bg-slate-50 font-sans pt-16 sm:pt-20 pb-16 sm:pb-20 text-slate-900 selection:bg-brand-red selection:text-white">
+      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 pt-2 pb-16 w-full min-w-0">
+        {/* ── Top Course Navigation Bar ── */}
+        <div className="mb-3 sm:mb-4">
+          <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-2.5 sm:p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            {/* Back button + Track Title */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={backToCatalog}
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 px-2.5 py-1 text-[11px] sm:text-xs font-bold text-slate-700 transition-colors cursor-pointer shrink-0"
+                title="Return to AI Unlocked Courses"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                <span>All Courses</span>
+              </button>
 
-            <div className="h-4 w-px bg-slate-200" />
+              <div className="h-4 w-px bg-slate-200" />
 
-            <div className="min-w-0">
-              <span className="text-[9px] font-black uppercase tracking-wider text-brand-red block leading-none">
-                Active Track
-              </span>
-              <h2 className="text-xs sm:text-sm font-black text-slate-900 leading-tight truncate">
-                {activeTrackConfig.name}
-              </h2>
+              <div className="min-w-0">
+                <span className="text-[9px] font-black uppercase tracking-wider text-brand-red block leading-none">
+                  Active Track
+                </span>
+                <h2 className="text-xs sm:text-sm font-black text-slate-900 leading-tight truncate">
+                  {activeTrackConfig.name}
+                </h2>
+              </div>
             </div>
+          </div>
+
+          {/* Single Mobile Syllabus Drawer Trigger (Visible on screens < lg) */}
+          <div className="mt-2 flex items-center justify-between gap-2 lg:hidden">
+            <button
+              onClick={() => setMobileSideOpen(true)}
+              className="w-full inline-flex items-center justify-between rounded-xl bg-slate-900 hover:bg-brand-red text-white px-3 py-2 text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Menu className="h-3.5 w-3.5 text-red-400" />
+                <span>Course Syllabus &amp; Modules ({completedCount}/{totalLessons} Done)</span>
+              </div>
+              <span className="text-[10px] font-black text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
+                {progressPercent}%
+              </span>
+            </button>
           </div>
         </div>
 
-        {/* Single Mobile Syllabus Drawer Trigger (Visible on screens < lg) */}
-        <div className="mt-2 flex items-center justify-between gap-2 lg:hidden">
-          <button
-            onClick={() => setMobileSideOpen(true)}
-            className="w-full inline-flex items-center justify-between rounded-xl bg-slate-900 hover:bg-brand-red text-white px-3 py-2 text-xs font-bold shadow-2xs transition-colors cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <Menu className="h-3.5 w-3.5 text-red-400" />
-              <span>Course Syllabus &amp; Modules ({completedCount}/{totalLessons} Done)</span>
-            </div>
-            <span className="text-[10px] font-black text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
-              {progressPercent}%
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Main Course Layout: Left Syllabus Sidebar + Right Content Area ── */}
-      <div className="mx-auto max-w-7xl px-3.5 sm:px-6 pt-1 pb-16 w-full min-w-0 overflow-hidden">
         {/* Backdrop on mobile when drawer is open */}
         {mobileSideOpen && (
           <div
@@ -1300,8 +1370,8 @@ function AiUnlockedPage() {
             className={[
               "rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/90 bg-white",
               mobileSideOpen
-                ? "fixed inset-x-3 top-16 bottom-4 z-50 overflow-y-auto block shadow-2xl lg:relative lg:inset-auto lg:top-28 lg:bottom-auto lg:z-auto lg:max-h-none lg:shadow-2xs lg:col-span-1 lg:sticky"
-                : "hidden lg:block lg:col-span-1 lg:sticky lg:top-28 lg:shadow-2xs",
+                ? "fixed inset-x-3 top-16 bottom-4 z-50 overflow-y-auto block shadow-2xl lg:relative lg:inset-auto lg:top-20 lg:bottom-auto lg:z-auto lg:max-h-[calc(100vh-6rem)] lg:shadow-2xs lg:col-span-1 lg:sticky"
+                : "hidden lg:block lg:col-span-1 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:shadow-2xs",
             ].join(" ")}
           >
             {/* Sidebar header */}
@@ -1858,7 +1928,11 @@ function AiUnlockedPage() {
                       </p>
                     </div>
                     <span className="text-[10px] sm:text-xs font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs shrink-0">
-                      {currentLessons.length} Modules • {currentLessons.reduce((acc, l) => acc + l.quiz.length, 0)} Questions
+                      {currentLessons.length} Modules • {currentLessons.reduce((acc, l) => {
+                        const cacheKey = `${currentTrackId}:${l.id}`;
+                        const loaded = loadedLessons[cacheKey];
+                        return acc + (loaded?.quiz?.length || l.quiz?.length || 4);
+                      }, 0)} Questions
                     </span>
                   </div>
 
@@ -1866,6 +1940,8 @@ function AiUnlockedPage() {
                     {currentLessons.map((lesson, idx) => {
                       const isLocked = isLessonLocked(lesson.id);
                       const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
+                      const cacheKey = `${currentTrackId}:${lesson.id}`;
+                      const lessonQuizCount = loadedLessons[cacheKey]?.quiz?.length || lesson.quiz?.length || 4;
 
                       return (
                         <div
@@ -1930,7 +2006,7 @@ function AiUnlockedPage() {
                                   onClick={() => navigateView(`q_${lesson.id}`)}
                                   className="flex-1 sm:flex-none rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs px-3 py-2 transition-colors cursor-pointer text-center"
                                 >
-                                  Quiz ({lesson.quiz.length}Q)
+                                  Quiz ({lessonQuizCount}Q)
                                 </button>
                               </>
                             )}
@@ -1993,6 +2069,67 @@ function AiUnlockedPage() {
                 );
               }
 
+              const cacheKey = `${currentTrackId}:${lesson.id}`;
+              const fullLesson = loadedLessons[cacheKey] || lesson;
+              const hasFullSections = fullLesson.sections && fullLesson.sections.length > 0;
+
+              if (isLoadingLesson && !hasFullSections) {
+                return (
+                  <div key={lesson.id} className="space-y-4 animate-pulse">
+                    <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-3">
+                      <div className="h-5 w-28 bg-slate-200 rounded-full" />
+                      <div className="h-7 w-3/4 bg-slate-200 rounded-lg" />
+                      <div className="h-4 w-1/2 bg-slate-200 rounded-md" />
+                    </div>
+                    <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 p-4 sm:p-6 space-y-3">
+                      <div className="h-4 w-48 bg-slate-200 rounded" />
+                      <div className="h-16 bg-slate-100 rounded-xl" />
+                      <div className="h-16 bg-slate-100 rounded-xl" />
+                    </div>
+                  </div>
+                );
+              }
+
+              if (lessonFetchError && !hasFullSections) {
+                return (
+                  <div key={lesson.id} className="bg-white rounded-2xl border border-red-200 p-8 text-center space-y-4 max-w-xl mx-auto my-6">
+                    <div className="h-12 w-12 mx-auto rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+                      <X className="h-6 w-6 text-red-600" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-black text-slate-900 text-lg">Unable to load module content</h3>
+                      <p className="text-xs text-slate-600 font-medium">{lessonFetchError}</p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          setLessonFetchError(null);
+                          setIsLoadingLesson(true);
+                          fetchAiLesson(currentTrackId!, lesson.id, currentTrackState.accessCode)
+                            .then((res) => {
+                              if (res && res.success && res.data) {
+                                setLoadedLessons((prev) => ({ ...prev, [cacheKey]: res.data }));
+                              } else {
+                                setLessonFetchError(res?.error || "Failed to load.");
+                              }
+                            })
+                            .finally(() => setIsLoadingLesson(false));
+                        }}
+                        className="rounded-xl bg-slate-900 hover:bg-brand-red text-white font-bold text-xs px-4 py-2.5 transition-colors cursor-pointer"
+                      >
+                        Try Again
+                      </button>
+                      <button
+                        onClick={() => navigateView("pay")}
+                        className="rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs px-4 py-2.5 transition-colors cursor-pointer"
+                      >
+                        Access Code Form
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <div
                   key={lesson.id}
@@ -2004,18 +2141,18 @@ function AiUnlockedPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="rounded-full bg-red-50 text-brand-red border border-red-200 px-2.5 py-0.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider">
-                          {lesson.tag}
+                          {fullLesson.tag}
                         </span>
                         <span className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {lesson.time}
+                          {fullLesson.time}
                         </span>
                       </div>
 
                       {/* Mode switch pills (Material vs Quiz) */}
                       <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                         <button
-                          onClick={() => navigateView(lesson.id)}
+                          onClick={() => navigateView(fullLesson.id)}
                           className={[
                             "px-3 py-1 rounded-md text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer",
                             !isQuizMode
@@ -2026,7 +2163,7 @@ function AiUnlockedPage() {
                           Material
                         </button>
                         <button
-                          onClick={() => navigateView(`q_${lesson.id}`)}
+                          onClick={() => navigateView(`q_${fullLesson.id}`)}
                           className={[
                             "px-3 py-1 rounded-md text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer",
                             isQuizMode
@@ -2034,16 +2171,16 @@ function AiUnlockedPage() {
                               : "text-slate-600 hover:text-slate-900",
                           ].join(" ")}
                         >
-                          Practice Quiz ({lesson.quiz.length}Q)
+                          Practice Quiz ({(fullLesson.quiz || []).length}Q)
                         </button>
                       </div>
                     </div>
 
                     <h1 className="text-lg sm:text-2xl font-black text-slate-900 leading-tight">
-                      {lesson.title}
+                      {fullLesson.title}
                     </h1>
                     <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                      {lesson.summary}
+                      {fullLesson.summary}
                     </p>
                   </div>
 
@@ -2057,7 +2194,7 @@ function AiUnlockedPage() {
                           <span>What you will learn in this module</span>
                         </div>
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2.5 text-xs sm:text-[13px] text-slate-700 font-medium leading-relaxed">
-                          {lesson.objectives.map((obj, i) => (
+                          {fullLesson.objectives.map((obj, i) => (
                             <li key={i} className="flex items-start gap-2">
                               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0 mt-0.5" />
                               <span>{obj}</span>
@@ -2067,17 +2204,17 @@ function AiUnlockedPage() {
                       </div>
 
                       {/* Interactive Animated SVG Diagram */}
-                      {renderSvgDiagram(lesson.id) && (
+                      {renderSvgDiagram(fullLesson.id) && (
                         <div className="rounded-xl sm:rounded-2xl bg-slate-950 p-2.5 sm:p-6 border border-slate-800 shadow-2xs overflow-hidden">
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: sanitizeHtml(renderSvgDiagram(lesson.id)),
+                              __html: sanitizeHtml(renderSvgDiagram(fullLesson.id)),
                             }}
                             className="overflow-x-auto"
                           />
-                          {DIAGRAM_CAPTIONS[lesson.id] && (
+                          {DIAGRAM_CAPTIONS[fullLesson.id] && (
                             <p className="mt-2 text-center text-[10px] sm:text-xs text-slate-400 font-medium">
-                              {DIAGRAM_CAPTIONS[lesson.id]}
+                              {DIAGRAM_CAPTIONS[fullLesson.id]}
                             </p>
                           )}
                         </div>
@@ -2085,7 +2222,7 @@ function AiUnlockedPage() {
 
                       {/* Content Sections */}
                       <div className="space-y-3 sm:space-y-4">
-                        {lesson.sections.map((section, sIdx) => (
+                        {(fullLesson.sections || []).map((section, sIdx) => (
                           <div
                             key={sIdx}
                             className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-6 space-y-2"
@@ -2105,15 +2242,15 @@ function AiUnlockedPage() {
                       </div>
 
                       {/* Practitioner's Note */}
-                      {lesson.practitioner && (
+                      {fullLesson.practitioner && (
                         <div className="rounded-xl sm:rounded-2xl bg-blue-50/90 border border-blue-200 p-3.5 sm:p-5 space-y-1.5 shadow-2xs">
                           <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-900 flex items-center gap-1.5">
                             <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                            {lesson.practitioner.title}
+                            {fullLesson.practitioner.title}
                           </h3>
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: sanitizeHtml(lesson.practitioner.text),
+                              __html: sanitizeHtml(fullLesson.practitioner.text),
                             }}
                             className="text-xs sm:text-sm text-blue-950 leading-relaxed font-medium"
                           />
@@ -2121,15 +2258,15 @@ function AiUnlockedPage() {
                       )}
 
                       {/* Hands-on Workplace Activity */}
-                      {lesson.activity && (
+                      {fullLesson.activity && (
                         <div className="rounded-xl sm:rounded-2xl bg-amber-50/90 border border-amber-200 p-3.5 sm:p-5 space-y-1.5 shadow-2xs">
                           <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                             <Lightbulb className="h-3.5 w-3.5 text-amber-600" />
-                            {lesson.activity.title}
+                            {fullLesson.activity.title}
                           </h3>
                           <div
                             dangerouslySetInnerHTML={{
-                              __html: sanitizeHtml(lesson.activity.text),
+                              __html: sanitizeHtml(fullLesson.activity.text),
                             }}
                             className="text-xs sm:text-sm text-amber-950 leading-relaxed font-medium"
                           />
@@ -2137,22 +2274,24 @@ function AiUnlockedPage() {
                       )}
 
                       {/* Key Takeaways */}
-                      <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-6 space-y-2.5">
-                        <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
-                          <FileCheck className="h-3.5 w-3.5 text-brand-red" />
-                          Key Takeaways
-                        </h3>
-                        <ul className="space-y-1.5 text-xs sm:text-sm text-slate-700 font-medium">
-                          {lesson.takeaways.map((t, i) => (
-                            <li key={i} className="flex items-start gap-2.5">
-                              <span className="h-4.5 w-4.5 rounded-full bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5 border border-red-200">
-                                {i + 1}
-                              </span>
-                              <span className="leading-snug">{t}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      {(fullLesson.takeaways || []).length > 0 && (
+                        <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-6 space-y-2.5">
+                          <h3 className="text-xs font-black uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
+                            <FileCheck className="h-3.5 w-3.5 text-brand-red" />
+                            Key Takeaways
+                          </h3>
+                          <ul className="space-y-1.5 text-xs sm:text-sm text-slate-700 font-medium">
+                            {fullLesson.takeaways.map((t, i) => (
+                              <li key={i} className="flex items-start gap-2.5">
+                                <span className="h-4.5 w-4.5 rounded-full bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5 border border-red-200">
+                                  {i + 1}
+                                </span>
+                                <span className="leading-snug">{t}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
 
                       {/* Paywall CTA Card at end of Free Preview for Paid Tracks */}
                       {activeTrackConfig.isPaid && !isTrackUnlocked && (
@@ -2190,10 +2329,10 @@ function AiUnlockedPage() {
                         </button>
 
                         <button
-                          onClick={() => navigateView(`q_${lesson.id}`)}
+                          onClick={() => navigateView(`q_${fullLesson.id}`)}
                           className="inline-flex items-center gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white text-xs font-black px-4 sm:px-5 py-2 sm:py-2.5 shadow-xs hover:shadow-md transition-all cursor-pointer"
                         >
-                          <span>Take {lesson.tag} Assessment</span>
+                          <span>Take {fullLesson.tag} Assessment</span>
                           <ArrowRight className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -2206,15 +2345,15 @@ function AiUnlockedPage() {
                       <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-6 space-y-4">
                         <div className="border-b border-slate-100 pb-3">
                           <h2 className="text-base sm:text-lg font-black text-slate-900">
-                            {lesson.tag} Mastery Assessment
+                            {fullLesson.tag} Mastery Assessment
                           </h2>
                           <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                            Select the correct answer for each of the {lesson.quiz.length} questions below. All questions must be correct to complete the module.
+                            Select the correct answer for each of the {(fullLesson.quiz || []).length} questions below. All questions must be correct to complete the module.
                           </p>
                         </div>
 
-                        {lesson.quiz.map((qItem, qIdx) => {
-                          const selectedOption = (currentTrackState.answers?.[lesson.id] || {})[qIdx];
+                        {(fullLesson.quiz || []).map((qItem, qIdx) => {
+                          const selectedOption = (currentTrackState.answers?.[fullLesson.id] || {})[qIdx];
                           const isAnswered = selectedOption !== undefined;
                           const isCorrect = isAnswered && selectedOption === qItem.a;
 
@@ -2249,7 +2388,7 @@ function AiUnlockedPage() {
                                   return (
                                     <button
                                       key={oIdx}
-                                      onClick={() => handleQuizAnswer(lesson.id, qIdx, oIdx)}
+                                      onClick={() => handleQuizAnswer(fullLesson.id, qIdx, oIdx)}
                                       className={`w-full text-left p-2.5 sm:p-3 rounded-lg sm:rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2.5 cursor-pointer ${btnStyle}`}
                                     >
                                       <span
@@ -2293,7 +2432,7 @@ function AiUnlockedPage() {
                         {/* Bottom navigation */}
                         <div className="flex items-center justify-between pt-1">
                           <button
-                            onClick={() => navigateView(lesson.id)}
+                            onClick={() => navigateView(fullLesson.id)}
                             className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold px-3 py-2 transition-colors cursor-pointer"
                           >
                             <ChevronLeft className="h-3.5 w-3.5" />

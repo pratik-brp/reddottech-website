@@ -552,3 +552,59 @@ export async function checkAiAccessStatus(track: string, code: string): Promise<
   }
 }
 
+// 9. Protected AI Course Delivery API (Server-Side Content Gating)
+export async function fetchAiLesson(
+  track: string,
+  lessonId: string,
+  accessCode?: string
+): Promise<{
+  success: boolean;
+  isFree?: boolean;
+  verified?: boolean;
+  locked?: boolean;
+  data?: any;
+  manifest?: any;
+  error?: string;
+} | null> {
+  const params = new URLSearchParams({
+    track,
+    lessonId,
+  });
+  if (accessCode) {
+    params.set("code", accessCode);
+  }
+  return await fetchApi<{
+    success: boolean;
+    isFree?: boolean;
+    verified?: boolean;
+    locked?: boolean;
+    data?: any;
+    manifest?: any;
+    error?: string;
+  }>(`/ai-courses/lesson?${params.toString()}`);
+}
+
+export async function fetchAiTrack(
+  track: string,
+  accessCode?: string
+): Promise<{
+  success: boolean;
+  unlocked: boolean;
+  data?: any[];
+  error?: string;
+} | null> {
+  const params = new URLSearchParams({
+    track,
+  });
+  if (accessCode) {
+    params.set("code", accessCode);
+  }
+  return await fetchApi<{
+    success: boolean;
+    unlocked: boolean;
+    data?: any[];
+    error?: string;
+  }>(`/ai-courses/track?${params.toString()}`);
+}
+
+

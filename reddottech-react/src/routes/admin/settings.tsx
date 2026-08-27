@@ -228,51 +228,52 @@ function AdminSettingsPage() {
     >
       <div className="space-y-6 max-w-5xl">
         {/* Navigation Tabs Bar */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl w-fit border border-slate-200 overflow-x-auto max-w-full">
+        <div className="inline-flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200/90 shadow-2xs overflow-x-auto max-w-full">
           <button
             type="button"
             onClick={() => setActiveTab("banner")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold select-none transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "banner"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
+                : "text-slate-600 hover:text-slate-900 border border-transparent hover:bg-slate-200/50"
             }`}
           >
-            <Megaphone className="h-3.5 w-3.5 text-brand-red" />
+            <Megaphone className="h-3.5 w-3.5 text-brand-red shrink-0" />
             <span>Announcement Banner</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("contact")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold select-none transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "contact"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
+                : "text-slate-600 hover:text-slate-900 border border-transparent hover:bg-slate-200/50"
             }`}
           >
-            <Phone className="h-3.5 w-3.5 text-blue-600" />
+            <Phone className="h-3.5 w-3.5 text-blue-600 shrink-0" />
             <span>Contact &amp; Social</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("security")}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap ${
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold select-none transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "security"
-                ? "bg-white text-slate-900 shadow-xs"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-white text-slate-900 shadow-xs border border-slate-200/80"
+                : "text-slate-600 hover:text-slate-900 border border-transparent hover:bg-slate-200/50"
             }`}
           >
-            <KeyRound className="h-3.5 w-3.5 text-slate-700" />
+            <KeyRound className="h-3.5 w-3.5 text-slate-700 shrink-0" />
             <span>Security &amp; Auth</span>
           </button>
         </div>
 
-        {/* TAB 1: PECP Batch Banner Announcement */}
-        {activeTab === "banner" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+        <div className="min-h-[560px]">
+          {/* TAB 1: PECP Batch Banner Announcement */}
+          {activeTab === "banner" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+              <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
               <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
                 <div className="h-9 w-9 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold">
                   <Megaphone className="h-4.5 w-4.5" />
@@ -605,116 +606,160 @@ function AdminSettingsPage() {
 
         {/* TAB 3: Superuser Credentials & Security */}
         {activeTab === "security" && (
-          <div className="max-w-2xl bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                  <KeyRound className="h-4.5 w-4.5" />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+            <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    <KeyRound className="h-4.5 w-4.5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900 text-sm">
+                      Administrator Credentials
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Manage superuser login email and access password.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-sm">
-                    Administrator Credentials
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Manage superuser login email and access password.
-                  </p>
-                </div>
-              </div>
 
-              <button
-                type="button"
-                onClick={() => setShowEmailChangeModal(true)}
-                className="text-xs font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
-              >
-                Change Email
-              </button>
-            </div>
-
-            <div className="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between text-xs">
-              <div>
-                <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] block">
-                  Active Superuser Account
-                </span>
-                <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">
-                  {activeAdminEmail || "info@reddottech.com.np"}
-                </span>
-              </div>
-              <span className="rounded-md bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
-                Verified Superuser
-              </span>
-            </div>
-
-            <form onSubmit={handleChangePassword} className="space-y-4 text-xs font-medium text-slate-700">
-              <div>
-                <label htmlFor="current_password" className="block mb-1 text-slate-800 font-semibold">
-                  Current Password *
-                </label>
-                <input
-                  id="current_password"
-                  name="current_password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="new_password" className="block mb-1 text-slate-800 font-semibold">
-                  New Secure Password *
-                </label>
-                <input
-                  id="new_password"
-                  name="new_password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password (min. 6 characters)"
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="confirm_password" className="block mb-1 text-slate-800 font-semibold">
-                  Confirm New Password *
-                </label>
-                <input
-                  id="confirm_password"
-                  name="confirm_password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Re-type new password"
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
+                  onClick={() => setShowEmailChangeModal(true)}
+                  className="text-xs font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  <span>{showPassword ? "Hide Passwords" : "Show Passwords"}</span>
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={isChangingPassword}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
-                >
-                  <Lock className="h-3.5 w-3.5" />
-                  <span>{isChangingPassword ? "Updating..." : "Update Password"}</span>
+                  Change Email
                 </button>
               </div>
-            </form>
+
+              <div className="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] block">
+                    Active Superuser Account
+                  </span>
+                  <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">
+                    {activeAdminEmail || "info@reddottech.com.np"}
+                  </span>
+                </div>
+                <span className="rounded-md bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
+                  Verified Superuser
+                </span>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="space-y-4 text-xs font-medium text-slate-700">
+                <div>
+                  <label htmlFor="current_password" className="block mb-1 text-slate-800 font-semibold">
+                    Current Password *
+                  </label>
+                  <input
+                    id="current_password"
+                    name="current_password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="new_password" className="block mb-1 text-slate-800 font-semibold">
+                    New Secure Password *
+                  </label>
+                  <input
+                    id="new_password"
+                    name="new_password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password (min. 6 characters)"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="confirm_password" className="block mb-1 text-slate-800 font-semibold">
+                    Confirm New Password *
+                  </label>
+                  <input
+                    id="confirm_password"
+                    name="confirm_password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Re-type new password"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    <span>{showPassword ? "Hide Passwords" : "Show Passwords"}</span>
+                  </button>
+
+                  <button
+                    type="submit"
+                    disabled={isChangingPassword}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
+                  >
+                    <Lock className="h-3.5 w-3.5" />
+                    <span>{isChangingPassword ? "Updating..." : "Update Password"}</span>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Security Guidelines & Status Panel */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <Lock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-900 text-sm">Security Recommendations</h4>
+                    <p className="text-xs text-slate-500">Superuser account safety</p>
+                  </div>
+                </div>
+
+                <ul className="space-y-3 text-xs text-slate-600">
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                    <span>Use a strong password with letters, numbers, and symbols.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                    <span>Never share administrative credentials over email or messaging apps.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                    <span>Sessions automatically expire upon logging out or token expiration.</span>
+                  </li>
+                </ul>
+
+                <div className="pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmailChangeModal(true)}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-4 py-2.5 transition-colors cursor-pointer"
+                  >
+                    <KeyRound className="h-3.5 w-3.5 text-slate-600" />
+                    <span>Update Superuser Email</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
+      </div>
       </div>
 
       {/* Change Superuser Email Modal */}

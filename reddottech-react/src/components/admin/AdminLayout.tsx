@@ -81,7 +81,7 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
   }, []);
 
   // ── Toggle this to true whenever you want to unhide Settings in the admin sidebar ──
-  const SHOW_SETTINGS_NAV = false;
+  const SHOW_SETTINGS_NAV = true;
 
   const adminNav = [
     {
@@ -122,13 +122,13 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
     },
     ...(SHOW_SETTINGS_NAV
       ? [
-          {
-            name: "Settings",
-            href: "/admin/settings",
-            icon: Settings,
-            count: null,
-          },
-        ]
+        {
+          name: "Settings",
+          href: "/admin/settings",
+          icon: Settings,
+          count: null,
+        },
+      ]
       : []),
   ];
 
@@ -147,7 +147,7 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 antialiased [scrollbar-gutter:stable]">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 antialiased">
       {/* Mobile Drawer Overlay */}
       {mobileMenuOpen && (
         <div
@@ -200,8 +200,8 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
                   to={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center justify-between rounded-xl px-3.5 py-2.5 text-xs font-semibold select-none ${active
-                      ? "bg-slate-900 text-white shadow-xs"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
                     }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -212,8 +212,8 @@ export function AdminLayout({ children, title, mobileTitle, subtitle, actions }:
                   {item.count !== null && item.count > 0 && (
                     <span
                       className={`text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${active
-                          ? "bg-white/20 text-white"
-                          : "bg-slate-100 text-slate-600"
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-100 text-slate-600"
                         }`}
                     >
                       {item.count}

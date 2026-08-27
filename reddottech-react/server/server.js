@@ -1104,6 +1104,174 @@ app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
   }
 });
 
+// -------------------------------------------------------------------
+// 6.1 PROTECTED SERVER-SIDE AI COURSE CONTENT GATING (TC-06 / DRM)
+// -------------------------------------------------------------------
+const coursesDataPath = path.resolve(__dirname, "./data/ai-courses/courses.json");
+let aiCoursesData = null;
+function getAiCoursesData() {
+  if (!aiCoursesData && fs.existsSync(coursesDataPath)) {
+    try {
+      aiCoursesData = JSON.parse(fs.readFileSync(coursesDataPath, "utf8"));
+    } catch (e) {
+      console.error("[Course Data Load Error]", e);
+    }
+  }
+  return aiCoursesData || {};
+}
+
+const FREE_PREVIEW_MAP = {
+  foundations: ["l1", "l2", "l3", "l4", "l5"],
+  healthcare: ["h1"],
+  finance: ["m1"],
+  "finance-advanced": ["a1"],
+};
+
+// Check if requester is authorized for a paid track
+async function checkTrackEntitlement(req, track, code) {
+  // 1. Admin session token bypass
+  const token = extractToken(req);
+  if (token) {
+    const admin = await getUserForToken(token);
+    if (admin) return { authorized: true, isAdmin: true };
+  }
+
+  // 2. Verified Access Code in MySQL ai_leads
+  const cleanCode = String(code || "").trim().toUpperCase();
+  const cleanTrack = String(track || "").trim().toLowerCase();
+  if (!cleanCode) return { authorized: false, reason: "No access code provided for locked module." };
+
+  const lead = await get(
+    "SELECT id, name, email, org, track, status FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
+    [cleanCode, cleanTrack]
+  );
+
+  if (lead) {
+    return { authorized: true, lead };
+  }
+
+  return { authorized: false, reason: "Invalid, revoked, or unverified access code." };
+}
+
+// Public / Gated Single Lesson API Endpoint
+app.get("/api/ai-courses/lesson", formLimiter, async (req, res) => {
+  try {
+    const track = String(req.query.track || "").trim().toLowerCase();
+    const lessonId = String(req.query.lessonId || "").trim();
+    const code = String(req.query.code || "").trim();
+
+    if (!track || !lessonId) {
+      return res.status(400).json({ success: false, error: "Track and lessonId are required." });
+    }
+
+    const allCourses = getAiCoursesData();
+    const trackLessons = allCourses[track];
+    if (!trackLessons || !Array.isArray(trackLessons)) {
+      return res.status(404).json({ success: false, error: `Track '${track}' not found.` });
+    }
+
+    const lesson = trackLessons.find((l) => l.id === lessonId);
+    if (!lesson) {
+      return res.status(404).json({ success: false, error: `Lesson '${lessonId}' not found in track '${track}'.` });
+    }
+
+    // Free Track (Foundations) or Free Preview Module (e.g. h1, m1, a1)
+    const isFree = track === "foundations" || (FREE_PREVIEW_MAP[track] && FREE_PREVIEW_MAP[track].includes(lessonId));
+    if (isFree) {
+      return res.json({ success: true, isFree: true, data: lesson });
+    }
+
+    // Paid Locked Lesson: Verify database entitlement
+    const authResult = await checkTrackEntitlement(req, track, code);
+    if (!authResult.authorized) {
+      return res.status(403).json({
+        success: false,
+        locked: true,
+        error: authResult.reason || "Access denied. Valid verified enrollment required.",
+        manifest: {
+          id: lesson.id,
+          tag: lesson.tag,
+          time: lesson.time,
+          title: lesson.title,
+          summary: lesson.summary,
+          objectives: lesson.objectives || [],
+        },
+      });
+    }
+
+    // Authorized (Admin or Verified Paid Student)
+    res.json({
+      success: true,
+      verified: true,
+      data: lesson,
+    });
+  } catch (err) {
+    console.error("[AI Course Lesson API Error]", err);
+    res.status(500).json({ success: false, error: "Server error delivering lesson." });
+  }
+});
+
+// Full Track Content API Endpoint (Returns full lessons if unlocked, or outlines if locked)
+app.get("/api/ai-courses/track", formLimiter, async (req, res) => {
+  try {
+    const track = String(req.query.track || "").trim().toLowerCase();
+    const code = String(req.query.code || "").trim();
+
+    if (!track) {
+      return res.status(400).json({ success: false, error: "Track parameter is required." });
+    }
+
+    const allCourses = getAiCoursesData();
+    const trackLessons = allCourses[track];
+    if (!trackLessons || !Array.isArray(trackLessons)) {
+      return res.status(404).json({ success: false, error: `Track '${track}' not found.` });
+    }
+
+    if (track === "foundations") {
+      return res.json({ success: true, unlocked: true, data: trackLessons });
+    }
+
+    const authResult = await checkTrackEntitlement(req, track, code);
+    const freePreviews = FREE_PREVIEW_MAP[track] || [];
+
+    if (authResult.authorized) {
+      return res.json({
+        success: true,
+        unlocked: true,
+        data: trackLessons,
+      });
+    }
+
+    // Return sanitized curriculum outlines with zero proprietary content for locked lessons
+    const sanitized = trackLessons.map((l) => {
+      if (freePreviews.includes(l.id)) {
+        return l;
+      }
+      return {
+        id: l.id,
+        tag: l.tag,
+        time: l.time,
+        title: l.title,
+        summary: l.summary,
+        objectives: l.objectives || [],
+        sections: [],
+        activity: { title: "", text: "" },
+        takeaways: [],
+        quiz: [],
+      };
+    });
+
+    res.json({
+      success: true,
+      unlocked: false,
+      data: sanitized,
+    });
+  } catch (err) {
+    console.error("[AI Course Track API Error]", err);
+    res.status(500).json({ success: false, error: "Server error delivering track." });
+  }
+});
+
 app.get("/api/ai-leads", requireAuth, async (req, res) => {
   try {
     const rows = await query(
