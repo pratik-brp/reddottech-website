@@ -120,4 +120,3 @@ function SmoothScroll({ children }: { children: ReactNode }) {
 }
 
 export default SmoothScroll;
-

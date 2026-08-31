@@ -40,11 +40,15 @@ export async function initDb() {
     // Test connection
     const connection = await pool.getConnection();
     connection.release();
-    console.log(`[MySQL] ✅ Connected to MySQL database "${dbConfig.database}" at ${dbConfig.host}:${dbConfig.port}`);
+    console.log(
+      `[MySQL] ✅ Connected to MySQL database "${dbConfig.database}" at ${dbConfig.host}:${dbConfig.port}`,
+    );
   } catch (err) {
     // If error 1049 (Unknown database), try creating it using a root/server connection
     if (err.code === "ER_BAD_DB_ERROR" || err.errno === 1049) {
-      console.log(`[MySQL] ⚠️ Database "${dbConfig.database}" does not exist. Attempting to create it...`);
+      console.log(
+        `[MySQL] ⚠️ Database "${dbConfig.database}" does not exist. Attempting to create it...`,
+      );
       try {
         const rootConn = await mysql.createConnection({
           host: dbConfig.host,
@@ -52,14 +56,19 @@ export async function initDb() {
           user: dbConfig.user,
           password: dbConfig.password,
         });
-        await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+        await rootConn.query(
+          `CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,
+        );
         await rootConn.end();
         console.log(`[MySQL] ✅ Created database "${dbConfig.database}"`);
 
         // Reconnect pool to newly created database
         pool = mysql.createPool(dbConfig);
       } catch (createErr) {
-        console.error(`[MySQL] ❌ Could not auto-create database. Please create database "${dbConfig.database}" in cPanel MySQL Wizard or phpMyAdmin. Error:`, createErr.message);
+        console.error(
+          `[MySQL] ❌ Could not auto-create database. Please create database "${dbConfig.database}" in cPanel MySQL Wizard or phpMyAdmin. Error:`,
+          createErr.message,
+        );
         throw createErr;
       }
     } else {
@@ -201,7 +210,7 @@ async function createTables() {
       INDEX idx_ai_leads_status (status),
       INDEX idx_ai_leads_email (email),
       INDEX idx_ai_leads_access_code (access_code)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
   ];
 
   for (const q of queries) {
@@ -229,7 +238,9 @@ async function createTables() {
 
   // Safe unique index creation
   try {
-    await pool.query("ALTER TABLE certificates ADD UNIQUE INDEX idx_certificates_cert_id_unique (certificate_id)");
+    await pool.query(
+      "ALTER TABLE certificates ADD UNIQUE INDEX idx_certificates_cert_id_unique (certificate_id)",
+    );
   } catch {
     // Index already exists or non-unique rows
   }
@@ -240,7 +251,6 @@ async function createTables() {
     // Index already exists
   }
 }
-
 
 /**
  * Async query helper returning array of rows

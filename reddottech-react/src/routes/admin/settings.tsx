@@ -37,42 +37,64 @@ export const Route = createFileRoute("/admin/settings")({
 type SettingsTab = "banner" | "contact" | "security";
 
 function AdminSettingsPage() {
-  const [activeAdminEmail, setActiveAdminEmail] = useState<string>(
-    () => getAdminEmail() || ""
-  );
+  const [activeAdminEmail, setActiveAdminEmail] = useState<string>(() => getAdminEmail() || "");
   const [activeTab, setActiveTab] = useState<SettingsTab>("banner");
 
   const cached = getCachedSettings();
 
   // Tab 1: Banner Settings
-  const [batchTitle, setBatchTitle] = useState<string>(
-    () =>
-      cached?.batch_banner_title
-        ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n")
-        : "Next batch begins August 15, 2026.\nLimited seats available."
+  const [batchTitle, setBatchTitle] = useState<string>(() =>
+    cached?.batch_banner_title
+      ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n")
+      : "Next batch begins August 15, 2026.\nLimited seats available.",
   );
   const [batchSubtitle, setBatchSubtitle] = useState<string>(
-    () => cached?.batch_banner_subtitle || "Take the next step toward a globally recognized career."
+    () =>
+      cached?.batch_banner_subtitle || "Take the next step toward a globally recognized career.",
   );
   const [batchBtnText, setBatchBtnText] = useState<string>(
-    () => cached?.batch_banner_button_text || "Enroll Now"
+    () => cached?.batch_banner_button_text || "Enroll Now",
   );
   const [isSubmittingBanner, setIsSubmittingBanner] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
 
   // Tab 2: Contact & Social Info
-  const [contactPhone, setContactPhone] = useState<string>(() => cached?.contact_phone || "01 4535691");
-  const [contactSecondaryPhone, setContactSecondaryPhone] = useState<string>(() => cached?.contact_secondary_phone || "01 4516390");
-  const [contactEmail, setContactEmail] = useState<string>(() => cached?.contact_email || "info@reddottech.com.np");
-  const [admissionsEmail, setAdmissionsEmail] = useState<string>(() => cached?.admissions_email || "admissions@reddottech.com.np");
-  const [whatsappNumber, setWhatsappNumber] = useState<string>(() => cached?.whatsapp_number || "+977 9801234567");
-  const [officeAddress, setOfficeAddress] = useState<string>(() => cached?.office_address || "Baluwatar-04, Kathmandu, Bagmati, Nepal");
-  const [googleMapsUrl, setGoogleMapsUrl] = useState<string>(() => cached?.google_maps_url || "https://maps.app.goo.gl/KmrWV2r6kDgn7cFg6");
-  const [officeHours, setOfficeHours] = useState<string>(() => cached?.office_hours || "Mon – Fri: 9:00 AM – 5:00 PM (NPT)");
-  const [socialFacebook, setSocialFacebook] = useState<string>(() => cached?.social_facebook || "https://www.facebook.com/profile.php?id=61576029361697");
-  const [socialInstagram, setSocialInstagram] = useState<string>(() => cached?.social_instagram || "https://www.instagram.com/reddot.tech/");
-  const [socialLinkedin, setSocialLinkedin] = useState<string>(() => cached?.social_linkedin || "https://www.linkedin.com/company/red-dot-technologies-nepal/");
-  const [socialTiktok, setSocialTiktok] = useState<string>(() => cached?.social_tiktok || "https://www.tiktok.com/@reddot.tech");
+  const [contactPhone, setContactPhone] = useState<string>(
+    () => cached?.contact_phone || "01 4535691",
+  );
+  const [contactSecondaryPhone, setContactSecondaryPhone] = useState<string>(
+    () => cached?.contact_secondary_phone || "01 4516390",
+  );
+  const [contactEmail, setContactEmail] = useState<string>(
+    () => cached?.contact_email || "info@reddottech.com.np",
+  );
+  const [admissionsEmail, setAdmissionsEmail] = useState<string>(
+    () => cached?.admissions_email || "admissions@reddottech.com.np",
+  );
+  const [whatsappNumber, setWhatsappNumber] = useState<string>(
+    () => cached?.whatsapp_number || "+977 9801234567",
+  );
+  const [officeAddress, setOfficeAddress] = useState<string>(
+    () => cached?.office_address || "Baluwatar-04, Kathmandu, Bagmati, Nepal",
+  );
+  const [googleMapsUrl, setGoogleMapsUrl] = useState<string>(
+    () => cached?.google_maps_url || "https://maps.app.goo.gl/KmrWV2r6kDgn7cFg6",
+  );
+  const [officeHours, setOfficeHours] = useState<string>(
+    () => cached?.office_hours || "Mon – Fri: 9:00 AM – 5:00 PM (NPT)",
+  );
+  const [socialFacebook, setSocialFacebook] = useState<string>(
+    () => cached?.social_facebook || "https://www.facebook.com/profile.php?id=61576029361697",
+  );
+  const [socialInstagram, setSocialInstagram] = useState<string>(
+    () => cached?.social_instagram || "https://www.instagram.com/reddot.tech/",
+  );
+  const [socialLinkedin, setSocialLinkedin] = useState<string>(
+    () => cached?.social_linkedin || "https://www.linkedin.com/company/red-dot-technologies-nepal/",
+  );
+  const [socialTiktok, setSocialTiktok] = useState<string>(
+    () => cached?.social_tiktok || "https://www.tiktok.com/@reddot.tech",
+  );
   const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 
   // Tab 3: Password & Security
@@ -168,8 +190,8 @@ function AdminSettingsPage() {
   // Tab 3 Change Password
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPassword || newPassword.length < 6) {
-      toast.error("New password must be at least 6 characters.");
+    if (!newPassword || newPassword.length < 8) {
+      toast.error("New password must be at least 8 characters.");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -274,492 +296,529 @@ function AdminSettingsPage() {
           {activeTab === "banner" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
               <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
-              <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
-                <div className="h-9 w-9 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold">
-                  <Megaphone className="h-4.5 w-4.5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-sm">
-                    PECP Batch Announcement Banner
-                  </h3>
-                  <p className="text-xs text-slate-500">
-                    Controls the global announcement bar shown on the Home and PECP pages.
-                  </p>
-                </div>
-              </div>
-
-              <form onSubmit={handleSaveBanner} className="space-y-4 text-xs font-medium text-slate-700">
-                <div>
-                  <label htmlFor="batch_subtitle" className="block mb-1 text-slate-700">
-                    Banner Eyebrow / Subtitle
-                  </label>
-                  <input
-                    id="batch_subtitle"
-                    name="batch_subtitle"
-                    type="text"
-                    value={batchSubtitle}
-                    onChange={(e) => setBatchSubtitle(e.target.value)}
-                    placeholder="e.g. Take the next step toward a globally recognized career."
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="batch_title" className="block mb-1 text-slate-700">
-                    Main Headline &amp; Start Date
-                  </label>
-                  <textarea
-                    id="batch_title"
-                    name="batch_title"
-                    rows={3}
-                    value={batchTitle}
-                    onChange={(e) => setBatchTitle(e.target.value)}
-                    placeholder="e.g. Next batch begins August 15, 2026. Limited seats available."
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium leading-relaxed"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="batch_btn_text" className="block mb-1 text-slate-700">
-                    Call to Action Button Label
-                  </label>
-                  <input
-                    id="batch_btn_text"
-                    name="batch_btn_text"
-                    type="text"
-                    value={batchBtnText}
-                    onChange={(e) => setBatchBtnText(e.target.value)}
-                    placeholder="e.g. Enroll Now / Join Batch"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                  />
-                </div>
-
-                <div className="pt-2 border-t border-slate-100 flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={isSubmittingBanner}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-4 py-2 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
-                  >
-                    <Save className="h-3.5 w-3.5" />
-                    <span>{isSubmittingBanner ? "Saving..." : "Save Announcement"}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {/* Live Visual Preview */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                    <span>Live Website Preview</span>
-                  </div>
-
-                  <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-md">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewDevice("desktop")}
-                      className={`p-1 rounded ${
-                        previewDevice === "desktop" ? "bg-slate-700 text-white" : "text-slate-400"
-                      }`}
-                      title="Desktop view"
-                    >
-                      <Monitor className="h-3 w-3" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPreviewDevice("mobile")}
-                      className={`p-1 rounded ${
-                        previewDevice === "mobile" ? "bg-slate-700 text-white" : "text-slate-400"
-                      }`}
-                      title="Mobile view"
-                    >
-                      <Smartphone className="h-3 w-3" />
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  className={`rounded-xl bg-gradient-to-r from-brand-red via-red-600 to-brand-red text-white text-center space-y-3 shadow-md mx-auto transition-all ${
-                    previewDevice === "mobile" ? "max-w-xs p-4" : "p-6"
-                  }`}
-                >
-                  <p className="text-[10px] font-semibold text-white/90 uppercase tracking-widest">
-                    {batchSubtitle || "Take the next step toward a globally recognized career."}
-                  </p>
-                  <h4 className="text-sm font-bold leading-snug whitespace-pre-line">
-                    {batchTitle || "Next batch begins August 15, 2026."}
-                  </h4>
-                  <div className="pt-1">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-brand-red font-bold text-xs px-4 py-1.5 shadow-sm">
-                      {batchBtnText || "Enroll Now"}
-                      <ArrowRight className="h-3 w-3" />
-                    </span>
-                  </div>
-                </div>
-
-                <p className="text-[11px] text-slate-400 text-center">
-                  Changes saved here apply immediately across the live site.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* TAB 2: Contact Information & Social Media */}
-        {activeTab === "contact" && (
-          <form onSubmit={handleSaveContact} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Contact Channels */}
-              <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                  <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                    <Phone className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-900 text-sm">Direct Contact Details</h3>
-                    <p className="text-xs text-slate-500">Phone numbers, emails, and WhatsApp</p>
-                  </div>
-                </div>
-
-                <div className="space-y-3 text-xs font-medium text-slate-700">
-                  <div>
-                    <label className="block mb-1 text-slate-700">Primary Phone Number *</label>
-                    <input
-                      type="text"
-                      value={contactPhone}
-                      onChange={(e) => setContactPhone(e.target.value)}
-                      placeholder="+977 9801234567"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 text-slate-700">Secondary / Landline Phone</label>
-                    <input
-                      type="text"
-                      value={contactSecondaryPhone}
-                      onChange={(e) => setContactSecondaryPhone(e.target.value)}
-                      placeholder="+977 01-4455667"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 text-slate-700">General Support Email *</label>
-                    <input
-                      type="email"
-                      value={contactEmail}
-                      onChange={(e) => setContactEmail(e.target.value)}
-                      placeholder="info@reddottech.com.np"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 text-slate-700">Admissions Desk Email</label>
-                    <input
-                      type="email"
-                      value={admissionsEmail}
-                      onChange={(e) => setAdmissionsEmail(e.target.value)}
-                      placeholder="admissions@reddottech.com.np"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-1 text-slate-700">WhatsApp Support Number</label>
-                    <input
-                      type="text"
-                      value={whatsappNumber}
-                      onChange={(e) => setWhatsappNumber(e.target.value)}
-                      placeholder="+977 9801234567"
-                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Physical Location & Social Media */}
-              <div className="space-y-6">
-                <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                    <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                      <MapPin className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 text-sm">Location &amp; Office Hours</h3>
-                      <p className="text-xs text-slate-500">Physical address and timings</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 text-xs font-medium text-slate-700">
-                    <div>
-                      <label className="block mb-1 text-slate-700">Campus / Office Address *</label>
-                      <input
-                        type="text"
-                        value={officeAddress}
-                        onChange={(e) => setOfficeAddress(e.target.value)}
-                        placeholder="Tinkune, Kathmandu, Nepal"
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-slate-700">Office Working Hours</label>
-                      <input
-                        type="text"
-                        value={officeHours}
-                        onChange={(e) => setOfficeHours(e.target.value)}
-                        placeholder="Sun - Fri: 9:00 AM - 6:00 PM"
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-slate-700">Google Maps Link / URL</label>
-                      <input
-                        type="text"
-                        value={googleMapsUrl}
-                        onChange={(e) => setGoogleMapsUrl(e.target.value)}
-                        placeholder="https://maps.google.com/..."
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Social Media Links */}
-                <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                    <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-                      <Share2 className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 text-sm">Official Social Profiles</h3>
-                      <p className="text-xs text-slate-500">Footer and contact page links</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 text-xs font-medium text-slate-700">
-                    <div>
-                      <label className="block mb-1 text-slate-700">Facebook Page URL</label>
-                      <input
-                        type="text"
-                        value={socialFacebook}
-                        onChange={(e) => setSocialFacebook(e.target.value)}
-                        placeholder="https://facebook.com/..."
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-slate-700">Instagram Profile URL</label>
-                      <input
-                        type="text"
-                        value={socialInstagram}
-                        onChange={(e) => setSocialInstagram(e.target.value)}
-                        placeholder="https://instagram.com/..."
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-slate-700">LinkedIn Organization URL</label>
-                      <input
-                        type="text"
-                        value={socialLinkedin}
-                        onChange={(e) => setSocialLinkedin(e.target.value)}
-                        placeholder="https://linkedin.com/company/..."
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block mb-1 text-slate-700">TikTok Handle URL</label>
-                      <input
-                        type="text"
-                        value={socialTiktok}
-                        onChange={(e) => setSocialTiktok(e.target.value)}
-                        placeholder="https://tiktok.com/@..."
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button
-                type="submit"
-                disabled={isSubmittingContact}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
-              >
-                <Save className="h-3.5 w-3.5" />
-                <span>{isSubmittingContact ? "Saving..." : "Save Contact & Social Info"}</span>
-              </button>
-            </div>
-          </form>
-        )}
-
-        {/* TAB 3: Superuser Credentials & Security */}
-        {activeTab === "security" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
-            <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                    <KeyRound className="h-4.5 w-4.5" />
+                <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+                  <div className="h-9 w-9 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold">
+                    <Megaphone className="h-4.5 w-4.5" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 text-sm">
-                      Administrator Credentials
+                      PECP Batch Announcement Banner
                     </h3>
                     <p className="text-xs text-slate-500">
-                      Manage superuser login email and access password.
+                      Controls the global announcement bar shown on the Home and PECP pages.
                     </p>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowEmailChangeModal(true)}
-                  className="text-xs font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                <form
+                  onSubmit={handleSaveBanner}
+                  className="space-y-4 text-xs font-medium text-slate-700"
                 >
-                  Change Email
+                  <div>
+                    <label htmlFor="batch_subtitle" className="block mb-1 text-slate-700">
+                      Banner Eyebrow / Subtitle
+                    </label>
+                    <input
+                      id="batch_subtitle"
+                      name="batch_subtitle"
+                      type="text"
+                      value={batchSubtitle}
+                      onChange={(e) => setBatchSubtitle(e.target.value)}
+                      placeholder="e.g. Take the next step toward a globally recognized career."
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="batch_title" className="block mb-1 text-slate-700">
+                      Main Headline &amp; Start Date
+                    </label>
+                    <textarea
+                      id="batch_title"
+                      name="batch_title"
+                      rows={3}
+                      value={batchTitle}
+                      onChange={(e) => setBatchTitle(e.target.value)}
+                      placeholder="e.g. Next batch begins August 15, 2026. Limited seats available."
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="batch_btn_text" className="block mb-1 text-slate-700">
+                      Call to Action Button Label
+                    </label>
+                    <input
+                      id="batch_btn_text"
+                      name="batch_btn_text"
+                      type="text"
+                      value={batchBtnText}
+                      onChange={(e) => setBatchBtnText(e.target.value)}
+                      placeholder="e.g. Enroll Now / Join Batch"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                    />
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingBanner}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-4 py-2 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      <span>{isSubmittingBanner ? "Saving..." : "Save Announcement"}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Live Visual Preview */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                      <span>Live Website Preview</span>
+                    </div>
+
+                    <div className="flex items-center gap-1 bg-slate-800 p-0.5 rounded-md">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDevice("desktop")}
+                        className={`p-1 rounded ${
+                          previewDevice === "desktop" ? "bg-slate-700 text-white" : "text-slate-400"
+                        }`}
+                        title="Desktop view"
+                      >
+                        <Monitor className="h-3 w-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDevice("mobile")}
+                        className={`p-1 rounded ${
+                          previewDevice === "mobile" ? "bg-slate-700 text-white" : "text-slate-400"
+                        }`}
+                        title="Mobile view"
+                      >
+                        <Smartphone className="h-3 w-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`rounded-xl bg-gradient-to-r from-brand-red via-red-600 to-brand-red text-white text-center space-y-3 shadow-md mx-auto transition-all ${
+                      previewDevice === "mobile" ? "max-w-xs p-4" : "p-6"
+                    }`}
+                  >
+                    <p className="text-[10px] font-semibold text-white/90 uppercase tracking-widest">
+                      {batchSubtitle || "Take the next step toward a globally recognized career."}
+                    </p>
+                    <h4 className="text-sm font-bold leading-snug whitespace-pre-line">
+                      {batchTitle || "Next batch begins August 15, 2026."}
+                    </h4>
+                    <div className="pt-1">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-white text-brand-red font-bold text-xs px-4 py-1.5 shadow-sm">
+                        {batchBtnText || "Enroll Now"}
+                        <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-400 text-center">
+                    Changes saved here apply immediately across the live site.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: Contact Information & Social Media */}
+          {activeTab === "contact" && (
+            <form onSubmit={handleSaveContact} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Contact Channels */}
+                <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                    <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                      <Phone className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900 text-sm">
+                        Direct Contact Details
+                      </h3>
+                      <p className="text-xs text-slate-500">Phone numbers, emails, and WhatsApp</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 text-xs font-medium text-slate-700">
+                    <div>
+                      <label className="block mb-1 text-slate-700">Primary Phone Number *</label>
+                      <input
+                        type="text"
+                        value={contactPhone}
+                        onChange={(e) => setContactPhone(e.target.value)}
+                        placeholder="+977 9801234567"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 text-slate-700">
+                        Secondary / Landline Phone
+                      </label>
+                      <input
+                        type="text"
+                        value={contactSecondaryPhone}
+                        onChange={(e) => setContactSecondaryPhone(e.target.value)}
+                        placeholder="+977 01-4455667"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 text-slate-700">General Support Email *</label>
+                      <input
+                        type="email"
+                        value={contactEmail}
+                        onChange={(e) => setContactEmail(e.target.value)}
+                        placeholder="info@reddottech.com.np"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 text-slate-700">Admissions Desk Email</label>
+                      <input
+                        type="email"
+                        value={admissionsEmail}
+                        onChange={(e) => setAdmissionsEmail(e.target.value)}
+                        placeholder="admissions@reddottech.com.np"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 text-slate-700">WhatsApp Support Number</label>
+                      <input
+                        type="text"
+                        value={whatsappNumber}
+                        onChange={(e) => setWhatsappNumber(e.target.value)}
+                        placeholder="+977 9801234567"
+                        className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Physical Location & Social Media */}
+                <div className="space-y-6">
+                  <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                      <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                        <MapPin className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-sm">
+                          Location &amp; Office Hours
+                        </h3>
+                        <p className="text-xs text-slate-500">Physical address and timings</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 text-xs font-medium text-slate-700">
+                      <div>
+                        <label className="block mb-1 text-slate-700">
+                          Campus / Office Address *
+                        </label>
+                        <input
+                          type="text"
+                          value={officeAddress}
+                          onChange={(e) => setOfficeAddress(e.target.value)}
+                          placeholder="Tinkune, Kathmandu, Nepal"
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 text-slate-700">Office Working Hours</label>
+                        <input
+                          type="text"
+                          value={officeHours}
+                          onChange={(e) => setOfficeHours(e.target.value)}
+                          placeholder="Sun - Fri: 9:00 AM - 6:00 PM"
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 text-slate-700">Google Maps Link / URL</label>
+                        <input
+                          type="text"
+                          value={googleMapsUrl}
+                          onChange={(e) => setGoogleMapsUrl(e.target.value)}
+                          placeholder="https://maps.google.com/..."
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Social Media Links */}
+                  <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                      <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                        <Share2 className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-sm">
+                          Official Social Profiles
+                        </h3>
+                        <p className="text-xs text-slate-500">Footer and contact page links</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 text-xs font-medium text-slate-700">
+                      <div>
+                        <label className="block mb-1 text-slate-700">Facebook Page URL</label>
+                        <input
+                          type="text"
+                          value={socialFacebook}
+                          onChange={(e) => setSocialFacebook(e.target.value)}
+                          placeholder="https://facebook.com/..."
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 text-slate-700">Instagram Profile URL</label>
+                        <input
+                          type="text"
+                          value={socialInstagram}
+                          onChange={(e) => setSocialInstagram(e.target.value)}
+                          placeholder="https://instagram.com/..."
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 text-slate-700">
+                          LinkedIn Organization URL
+                        </label>
+                        <input
+                          type="text"
+                          value={socialLinkedin}
+                          onChange={(e) => setSocialLinkedin(e.target.value)}
+                          placeholder="https://linkedin.com/company/..."
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 text-slate-700">TikTok Handle URL</label>
+                        <input
+                          type="text"
+                          value={socialTiktok}
+                          onChange={(e) => setSocialTiktok(e.target.value)}
+                          placeholder="https://tiktok.com/@..."
+                          className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="submit"
+                  disabled={isSubmittingContact}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
+                >
+                  <Save className="h-3.5 w-3.5" />
+                  <span>{isSubmittingContact ? "Saving..." : "Save Contact & Social Info"}</span>
                 </button>
               </div>
+            </form>
+          )}
 
-              <div className="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] block">
-                    Active Superuser Account
-                  </span>
-                  <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">
-                    {activeAdminEmail || "info@reddottech.com.np"}
-                  </span>
-                </div>
-                <span className="rounded-md bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
-                  Verified Superuser
-                </span>
-              </div>
-
-              <form onSubmit={handleChangePassword} className="space-y-4 text-xs font-medium text-slate-700">
-                <div>
-                  <label htmlFor="current_password" className="block mb-1 text-slate-800 font-semibold">
-                    Current Password *
-                  </label>
-                  <input
-                    id="current_password"
-                    name="current_password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Enter current password"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="new_password" className="block mb-1 text-slate-800 font-semibold">
-                    New Secure Password *
-                  </label>
-                  <input
-                    id="new_password"
-                    name="new_password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Enter new password (min. 6 characters)"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="confirm_password" className="block mb-1 text-slate-800 font-semibold">
-                    Confirm New Password *
-                  </label>
-                  <input
-                    id="confirm_password"
-                    name="confirm_password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Re-type new password"
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                    <span>{showPassword ? "Hide Passwords" : "Show Passwords"}</span>
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={isChangingPassword}
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
-                  >
-                    <Lock className="h-3.5 w-3.5" />
-                    <span>{isChangingPassword ? "Updating..." : "Update Password"}</span>
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            {/* Security Guidelines & Status Panel */}
-            <div className="lg:col-span-5 space-y-4">
-              <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <Lock className="h-4 w-4" />
+          {/* TAB 3: Superuser Credentials & Security */}
+          {activeTab === "security" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
+              <div className="lg:col-span-7 bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                      <KeyRound className="h-4.5 w-4.5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900 text-sm">
+                        Administrator Credentials
+                      </h3>
+                      <p className="text-xs text-slate-500">
+                        Manage superuser login email and access password.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 text-sm">Security Recommendations</h4>
-                    <p className="text-xs text-slate-500">Superuser account safety</p>
-                  </div>
-                </div>
 
-                <ul className="space-y-3 text-xs text-slate-600">
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
-                    <span>Use a strong password with letters, numbers, and symbols.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
-                    <span>Never share administrative credentials over email or messaging apps.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-emerald-600 font-bold mt-0.5">✓</span>
-                    <span>Sessions automatically expire upon logging out or token expiration.</span>
-                  </li>
-                </ul>
-
-                <div className="pt-3 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setShowEmailChangeModal(true)}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-4 py-2.5 transition-colors cursor-pointer"
+                    className="text-xs font-medium text-blue-600 hover:text-blue-800 underline cursor-pointer"
                   >
-                    <KeyRound className="h-3.5 w-3.5 text-slate-600" />
-                    <span>Update Superuser Email</span>
+                    Change Email
                   </button>
+                </div>
+
+                <div className="rounded-lg bg-slate-50 p-4 border border-slate-100 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px] block">
+                      Active Superuser Account
+                    </span>
+                    <span className="font-bold text-slate-900 font-mono text-xs sm:text-sm">
+                      {activeAdminEmail || "info@reddottech.com.np"}
+                    </span>
+                  </div>
+                  <span className="rounded-md bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-[11px] font-semibold">
+                    Verified Superuser
+                  </span>
+                </div>
+
+                <form
+                  onSubmit={handleChangePassword}
+                  className="space-y-4 text-xs font-medium text-slate-700"
+                >
+                  <div>
+                    <label
+                      htmlFor="current_password"
+                      className="block mb-1 text-slate-800 font-semibold"
+                    >
+                      Current Password *
+                    </label>
+                    <input
+                      id="current_password"
+                      name="current_password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="new_password"
+                      className="block mb-1 text-slate-800 font-semibold"
+                    >
+                      New Secure Password *
+                    </label>
+                    <input
+                      id="new_password"
+                      name="new_password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password (min. 6 characters)"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="confirm_password"
+                      className="block mb-1 text-slate-800 font-semibold"
+                    >
+                      Confirm New Password *
+                    </label>
+                    <input
+                      id="confirm_password"
+                      name="confirm_password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Re-type new password"
+                      className="w-full rounded-lg border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-xs font-medium text-slate-500 hover:text-slate-800 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-3.5 w-3.5" />
+                      ) : (
+                        <Eye className="h-3.5 w-3.5" />
+                      )}
+                      <span>{showPassword ? "Hide Passwords" : "Show Passwords"}</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isChangingPassword}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-5 py-2.5 shadow-xs transition-colors disabled:opacity-60 cursor-pointer"
+                    >
+                      <Lock className="h-3.5 w-3.5" />
+                      <span>{isChangingPassword ? "Updating..." : "Update Password"}</span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Security Guidelines & Status Panel */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="bg-white rounded-xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                      <Lock className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-slate-900 text-sm">
+                        Security Recommendations
+                      </h4>
+                      <p className="text-xs text-slate-500">Superuser account safety</p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-3 text-xs text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                      <span>Use a strong password with letters, numbers, and symbols.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                      <span>
+                        Never share administrative credentials over email or messaging apps.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+                      <span>
+                        Sessions automatically expire upon logging out or token expiration.
+                      </span>
+                    </li>
+                  </ul>
+
+                  <div className="pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmailChangeModal(true)}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs px-4 py-2.5 transition-colors cursor-pointer"
+                    >
+                      <KeyRound className="h-3.5 w-3.5 text-slate-600" />
+                      <span>Update Superuser Email</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       </div>
 
       {/* Change Superuser Email Modal */}
@@ -769,11 +828,16 @@ function AdminSettingsPage() {
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
                 <h3 className="font-semibold text-base text-slate-900">Change Superuser Email</h3>
-                <p className="text-xs text-slate-500">Update your primary administrative login address</p>
+                <p className="text-xs text-slate-500">
+                  Update your primary administrative login address
+                </p>
               </div>
             </div>
 
-            <form onSubmit={handleChangeAdminEmail} className="space-y-4 text-xs font-medium text-slate-700">
+            <form
+              onSubmit={handleChangeAdminEmail}
+              className="space-y-4 text-xs font-medium text-slate-700"
+            >
               <div>
                 <label className="block text-slate-700 mb-1">New Superuser Email *</label>
                 <input
@@ -787,7 +851,9 @@ function AdminSettingsPage() {
               </div>
 
               <div>
-                <label className="block text-slate-700 mb-1">Current Password (Identity Verification) *</label>
+                <label className="block text-slate-700 mb-1">
+                  Current Password (Identity Verification) *
+                </label>
                 <input
                   type="password"
                   required

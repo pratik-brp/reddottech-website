@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { GraduationCap, Users, Globe, Briefcase, CheckCircle2, ArrowRight, Sparkles } from "lucide-react";
+import {
+  GraduationCap,
+  Users,
+  Globe,
+  Briefcase,
+  CheckCircle2,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Link } from "@tanstack/react-router";
 import { Magnetic } from "@/components/motion/Magnetic";
@@ -61,7 +69,10 @@ export function WhyChooseUsSection() {
   const Icon = activeFeature.icon;
 
   return (
-    <section id="why-choose-us" className="section-padding-lg bg-[var(--surface-elevated)] relative overflow-hidden">
+    <section
+      id="why-choose-us"
+      className="section-padding-lg bg-[var(--surface-elevated)] relative overflow-hidden"
+    >
       {/* Grid Pattern & Ambient Glow */}
       <div
         className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30"
@@ -85,7 +96,8 @@ export function WhyChooseUsSection() {
             Everything You Need to <span className="gradient-text">Accelerate Your Career</span>
           </h2>
           <p className="text-xs sm:text-base text-slate-600 font-medium">
-            We combine world-class academic partnerships with practical, career-focused training to deliver an unmatched learning experience.
+            We combine world-class academic partnerships with practical, career-focused training to
+            deliver an unmatched learning experience.
           </p>
         </div>
 
@@ -101,15 +113,17 @@ export function WhyChooseUsSection() {
                   key={feature.title}
                   type="button"
                   onClick={() => setActive(index)}
-                  className={`group relative flex-1 min-h-[96px] sm:min-h-[112px] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 rounded-xl sm:rounded-2xl p-2.5 sm:px-5 sm:py-3.5 text-left transition-all duration-200 border overflow-hidden cursor-pointer select-none ${isActive
+                  className={`group relative flex-1 min-h-[96px] sm:min-h-[112px] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 rounded-xl sm:rounded-2xl p-2.5 sm:px-5 sm:py-3.5 text-left transition-all duration-200 border overflow-hidden cursor-pointer select-none ${
+                    isActive
                       ? "bg-white border-brand-red/40 shadow-xs sm:shadow-xl shadow-slate-200/70 ring-1 ring-brand-red/30"
                       : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 hover:shadow-xs"
-                    }`}
+                  }`}
                 >
                   {/* Left Active Glow Indicator Bar */}
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 transition-colors duration-200 ${isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
-                      }`}
+                    className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 transition-colors duration-200 ${
+                      isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
+                    }`}
                   />
 
                   {/* Card Thumbnail Image */}
@@ -123,8 +137,11 @@ export function WhyChooseUsSection() {
                     />
                     <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-transparent transition-colors" />
                     <div
-                      className={`absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded sm:rounded-lg transition-colors ${isActive ? "bg-brand-red text-white shadow-xs" : "bg-slate-900/80 text-white"
-                        }`}
+                      className={`absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded sm:rounded-lg transition-colors ${
+                        isActive
+                          ? "bg-brand-red text-white shadow-xs"
+                          : "bg-slate-900/80 text-white"
+                      }`}
                     >
                       <FIcon className="h-2 w-2 sm:h-3.5 sm:w-3.5" />
                     </div>
@@ -134,14 +151,16 @@ export function WhyChooseUsSection() {
                   <div className="flex-1 min-w-0 w-full flex flex-col justify-center">
                     <div className="flex items-center justify-between gap-1">
                       <h3
-                        className={`display-font text-xs sm:text-base font-extrabold tracking-tight transition-colors duration-200 truncate ${isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
-                          }`}
+                        className={`display-font text-xs sm:text-base font-extrabold tracking-tight transition-colors duration-200 truncate ${
+                          isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
+                        }`}
                       >
                         {feature.title}
                       </h3>
                       <span
-                        className={`text-[8px] sm:text-[10px] font-black transition-colors shrink-0 ${isActive ? "text-brand-red" : "text-slate-400 group-hover:text-brand-red"
-                          }`}
+                        className={`text-[8px] sm:text-[10px] font-black transition-colors shrink-0 ${
+                          isActive ? "text-brand-red" : "text-slate-400 group-hover:text-brand-red"
+                        }`}
                       >
                         {feature.id}
                       </span>
@@ -237,25 +256,34 @@ export function WhyChooseUsSection() {
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
                         <AnimatedCounter value={1} suffix="k+" />
                       </p>
-                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">Learners</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
+                        Learners
+                      </p>
                     </div>
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
                         <AnimatedCounter value={10} suffix="+" />
                       </p>
-                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">Certifications</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
+                        Certifications
+                      </p>
                     </div>
 
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
                         <AnimatedCounter value={4.9} decimals={1} suffix="★" />
                       </p>
-                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">Rating</p>
+                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
+                        Rating
+                      </p>
                     </div>
                   </div>
 
                   <Magnetic>
-                    <Link to="/courses" className="btn-primary text-xs py-3 sm:py-3.5 px-6 shrink-0 w-full sm:w-auto text-center justify-center">
+                    <Link
+                      to="/courses"
+                      className="btn-primary text-xs py-3 sm:py-3.5 px-6 shrink-0 w-full sm:w-auto text-center justify-center"
+                    >
                       <span>Explore Programs</span>
                       <ArrowRight className="h-4 w-4" />
                     </Link>
@@ -269,4 +297,3 @@ export function WhyChooseUsSection() {
     </section>
   );
 }
-

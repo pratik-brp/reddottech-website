@@ -193,7 +193,8 @@ function AdminCertificatesPage() {
     if (cert.track && CERT_TRACK_CONFIGS[cert.track as CertTrackKey]) {
       return cert.track as CertTrackKey;
     }
-    const txt = `${cert.course_name || ""} ${cert.school || ""} ${cert.certificate_id || ""} ${cert.code || ""}`.toLowerCase();
+    const txt =
+      `${cert.course_name || ""} ${cert.school || ""} ${cert.certificate_id || ""} ${cert.code || ""}`.toLowerCase();
     if (
       txt.includes("advanced") ||
       txt.includes("aifa") ||
@@ -263,12 +264,12 @@ function AdminCertificatesPage() {
         newCertTrack === "healthcare"
           ? "RDT-AIHP"
           : newCertTrack === "finance-advanced"
-          ? "RDT-AIFA"
-          : newCertTrack === "finance"
-          ? "RDT-AIFP"
-          : newCertTrack === "foundations"
-          ? "RDT-AIFOUND"
-          : "RDT-PECP";
+            ? "RDT-AIFA"
+            : newCertTrack === "finance"
+              ? "RDT-AIFP"
+              : newCertTrack === "foundations"
+                ? "RDT-AIFOUND"
+                : "RDT-PECP";
 
       const certCode = `${trackPrefix}-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -323,7 +324,15 @@ function AdminCertificatesPage() {
       toast.error("No certificate data to export.");
       return;
     }
-    const headers = ["ID", "Student Name", "Email", "Institution", "Course Track", "Certificate Code", "Issued Date"];
+    const headers = [
+      "ID",
+      "Student Name",
+      "Email",
+      "Institution",
+      "Course Track",
+      "Certificate Code",
+      "Issued Date",
+    ];
     const rows = certs.map((c) => [
       c.id,
       `"${c.name || ""}"`,
@@ -333,7 +342,9 @@ function AdminCertificatesPage() {
       `"${c.certificate_id || c.code || ""}"`,
       `"${c.created_at || ""}"`,
     ]);
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -345,7 +356,12 @@ function AdminCertificatesPage() {
   };
 
   const formatDisplayDate = (d?: string) => {
-    if (!d) return new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    if (!d)
+      return new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
     try {
       const parsed = new Date(d);
       if (isNaN(parsed.getTime())) return d;
@@ -360,7 +376,10 @@ function AdminCertificatesPage() {
     const certTrack = detectTrack(selectedCert);
     printOfficialCertificate({
       name: selectedCert.name,
-      certificateId: selectedCert.certificate_id || selectedCert.code || `RDT-${certTrack.toUpperCase()}-${selectedCert.id}`,
+      certificateId:
+        selectedCert.certificate_id ||
+        selectedCert.code ||
+        `RDT-${certTrack.toUpperCase()}-${selectedCert.id}`,
       track: certTrack,
       courseName: selectedCert.course_name,
       organization: selectedCert.school || selectedCert.organization,
@@ -371,7 +390,8 @@ function AdminCertificatesPage() {
     });
   };
 
-  const previewTrackConfig = CERT_TRACK_CONFIGS[activePreviewTrack] || CERT_TRACK_CONFIGS.foundations;
+  const previewTrackConfig =
+    CERT_TRACK_CONFIGS[activePreviewTrack] || CERT_TRACK_CONFIGS.foundations;
 
   return (
     <AdminLayout
@@ -400,11 +420,12 @@ function AdminCertificatesPage() {
         </div>
       }
     >
-
       <div className="space-y-4 sm:space-y-6">
         {/* ── 5 Course Track Metric Cards (Responsive Grid) ── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3.5">
-          {(["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]).map((tKey) => {
+          {(
+            ["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]
+          ).map((tKey) => {
             const cfg = CERT_TRACK_CONFIGS[tKey];
             const count = certs.filter((c) => detectTrack(c) === tKey).length;
             const isSelected = trackFilter === tKey;
@@ -426,7 +447,9 @@ function AdminCertificatesPage() {
                   >
                     {cfg.badge}
                   </span>
-                  <Award className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isSelected ? "text-amber-400" : "text-slate-400"}`} />
+                  <Award
+                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isSelected ? "text-amber-400" : "text-slate-400"}`}
+                  />
                 </div>
                 <div className="mt-2 sm:mt-3">
                   <div className="text-base sm:text-2xl font-black">{count}</div>
@@ -505,14 +528,17 @@ function AdminCertificatesPage() {
               filteredCerts.map((cert) => {
                 const cTrack = detectTrack(cert);
                 const cfg = CERT_TRACK_CONFIGS[cTrack];
-                const certCode = cert.certificate_id || cert.code || `RDT-${cTrack.toUpperCase()}-${cert.id}`;
+                const certCode =
+                  cert.certificate_id || cert.code || `RDT-${cTrack.toUpperCase()}-${cert.id}`;
 
                 return (
                   <div key={cert.id} className="p-3.5 space-y-2.5 bg-white">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="font-bold text-slate-900 text-xs truncate">{cert.name}</div>
-                        <div className="text-[11px] text-slate-500 truncate">{cert.email || "—"}</div>
+                        <div className="text-[11px] text-slate-500 truncate">
+                          {cert.email || "—"}
+                        </div>
                         <div className="text-[10px] text-slate-400 mt-0.5 truncate">
                           {cert.school || "Red Dot Technologies"}
                         </div>
@@ -523,13 +549,20 @@ function AdminCertificatesPage() {
                         >
                           {cTrack === "healthcare" && <Stethoscope className="h-2.5 w-2.5" />}
                           {cTrack === "finance" && <Building2 className="h-2.5 w-2.5" />}
-                          {cTrack === "finance-advanced" && <Sparkles className="h-2.5 w-2.5 text-purple-600" />}
+                          {cTrack === "finance-advanced" && (
+                            <Sparkles className="h-2.5 w-2.5 text-purple-600" />
+                          )}
                           {cTrack === "foundations" && <Sparkles className="h-2.5 w-2.5" />}
                           {cTrack === "pecp" && <Award className="h-2.5 w-2.5" />}
                           <span>{cfg.badge}</span>
                         </span>
                         <span className="text-[9px] text-slate-400">
-                          {cert.created_at ? new Date(cert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "Verified"}
+                          {cert.created_at
+                            ? new Date(cert.created_at).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                              })
+                            : "Verified"}
                         </span>
                       </div>
                     </div>
@@ -599,7 +632,10 @@ function AdminCertificatesPage() {
                   </tr>
                 ) : filteredCerts.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400 font-medium space-y-2">
+                    <td
+                      colSpan={6}
+                      className="px-5 py-12 text-center text-slate-400 font-medium space-y-2"
+                    >
                       <p>No certificate records found matching your filters.</p>
                       {trackFilter !== "all" && (
                         <button
@@ -615,7 +651,8 @@ function AdminCertificatesPage() {
                   filteredCerts.map((cert) => {
                     const cTrack = detectTrack(cert);
                     const cfg = CERT_TRACK_CONFIGS[cTrack];
-                    const certCode = cert.certificate_id || cert.code || `RDT-${cTrack.toUpperCase()}-${cert.id}`;
+                    const certCode =
+                      cert.certificate_id || cert.code || `RDT-${cTrack.toUpperCase()}-${cert.id}`;
 
                     return (
                       <tr key={cert.id} className="hover:bg-slate-50/60 transition-colors">
@@ -634,7 +671,9 @@ function AdminCertificatesPage() {
                           >
                             {cTrack === "healthcare" && <Stethoscope className="h-3 w-3" />}
                             {cTrack === "finance" && <Building2 className="h-3 w-3" />}
-                            {cTrack === "finance-advanced" && <Sparkles className="h-3 w-3 text-purple-600" />}
+                            {cTrack === "finance-advanced" && (
+                              <Sparkles className="h-3 w-3 text-purple-600" />
+                            )}
                             {cTrack === "foundations" && <Sparkles className="h-3 w-3" />}
                             {cTrack === "pecp" && <Award className="h-3 w-3" />}
                             <span>{cfg.title}</span>
@@ -703,8 +742,12 @@ function AdminCertificatesPage() {
                   <Award className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">Issue Official Certificate</h3>
-                  <p className="text-[11px] sm:text-xs text-slate-500">Record a verified course completion credential.</p>
+                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">
+                    Issue Official Certificate
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-slate-500">
+                    Record a verified course completion credential.
+                  </p>
                 </div>
               </div>
               <button
@@ -715,7 +758,10 @@ function AdminCertificatesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleIssueCert} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-xs font-semibold text-slate-700 overflow-y-auto flex-1">
+            <form
+              onSubmit={handleIssueCert}
+              className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-xs font-semibold text-slate-700 overflow-y-auto flex-1"
+            >
               <div>
                 <label className="block mb-1 text-slate-900 font-bold">Candidate Full Name *</label>
                 <input
@@ -741,7 +787,9 @@ function AdminCertificatesPage() {
               </div>
 
               <div>
-                <label className="block mb-1 text-slate-900 font-bold">Institution / Hospital / Bank</label>
+                <label className="block mb-1 text-slate-900 font-bold">
+                  Institution / Hospital / Bank
+                </label>
                 <input
                   type="text"
                   value={newCertSchool}
@@ -759,8 +807,12 @@ function AdminCertificatesPage() {
                   className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none cursor-pointer"
                 >
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
-                  <option value="finance">AI for Financial Professionals (Level 1 · 8 Modules)</option>
-                  <option value="finance-advanced">Advanced AI for Finance Professionals (Level 2 · 12 Modules)</option>
+                  <option value="finance">
+                    AI for Financial Professionals (Level 1 · 8 Modules)
+                  </option>
+                  <option value="finance-advanced">
+                    Advanced AI for Finance Professionals (Level 2 · 12 Modules)
+                  </option>
                   <option value="foundations">AI Unlocked — AI Foundations (5 Modules)</option>
                   <option value="pecp">PECP — Professional Executive Certificate Program</option>
                 </select>
@@ -828,8 +880,18 @@ function AdminCertificatesPage() {
 
             {/* Track Switcher Bar in Preview Modal */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-100">
-              <span className="text-[10px] font-bold uppercase text-slate-400 mr-1">Preview Track:</span>
-              {(["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]).map((k) => (
+              <span className="text-[10px] font-bold uppercase text-slate-400 mr-1">
+                Preview Track:
+              </span>
+              {(
+                [
+                  "healthcare",
+                  "finance",
+                  "finance-advanced",
+                  "foundations",
+                  "pecp",
+                ] as CertTrackKey[]
+              ).map((k) => (
                 <button
                   key={k}
                   onClick={() => setActivePreviewTrack(k)}
@@ -887,7 +949,7 @@ function AdminCertificatesPage() {
                 <div className="max-w-[620px] mx-auto text-[#1A233A] text-xs sm:text-[13.5px] leading-relaxed">
                   {previewTrackConfig.descriptionTemplate(
                     selectedCert.name,
-                    selectedCert.school || "Red Dot Technologies"
+                    selectedCert.school || "Red Dot Technologies",
                   )}
                 </div>
 
@@ -929,14 +991,20 @@ function AdminCertificatesPage() {
                 </div>
 
                 <div className="mt-3 sm:mt-4 text-[9.5px] sm:text-[10.5px] text-[#6B7C96] tracking-[0.8px] font-mono">
-                  Certificate reference: {selectedCert.certificate_id || selectedCert.code || `RDT-${activePreviewTrack.toUpperCase()}-${selectedCert.id}`}
+                  Certificate reference:{" "}
+                  {selectedCert.certificate_id ||
+                    selectedCert.code ||
+                    `RDT-${activePreviewTrack.toUpperCase()}-${selectedCert.id}`}
                 </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 pt-1 sm:pt-2">
               <div className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
-                Recipient: <strong className="text-slate-800">{selectedCert.email || selectedCert.name}</strong>
+                Recipient:{" "}
+                <strong className="text-slate-800">
+                  {selectedCert.email || selectedCert.name}
+                </strong>
               </div>
               <div className="flex items-center gap-2">
                 <button

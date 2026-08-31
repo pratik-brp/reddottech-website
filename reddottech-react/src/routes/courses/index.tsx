@@ -109,7 +109,9 @@ function CoursesPage() {
       "Analytics & Data",
       "Quality Management",
     ];
-    const rawCats = Array.from(new Set(coursesList.map((c) => c.category).filter(Boolean))) as string[];
+    const rawCats = Array.from(
+      new Set(coursesList.map((c) => c.category).filter(Boolean)),
+    ) as string[];
     const sorted = rawCats.sort((a, b) => {
       const idxA = PREFERRED_ORDER.indexOf(a);
       const idxB = PREFERRED_ORDER.indexOf(b);
@@ -205,7 +207,10 @@ function CoursesPage() {
       {/* ───────────────────────────────────────────────────────────── */}
       {/* ── REDESIGNED PREMIUM STICKY FILTER & COMMAND TOOLBAR ──       */}
       {/* ───────────────────────────────────────────────────────────── */}
-      <section id="catalog" className="sticky top-[4.25rem] z-30 bg-white/95 border-b border-slate-200/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] will-change-transform transform-gpu">
+      <section
+        id="catalog"
+        className="sticky top-[4.25rem] z-30 bg-white/95 border-b border-slate-200/90 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] will-change-transform transform-gpu"
+      >
         <div className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-4">
           <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-3.5">
             {/* Search Bar Input */}

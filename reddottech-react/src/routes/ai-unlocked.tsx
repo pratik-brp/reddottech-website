@@ -70,7 +70,9 @@ interface AiUnlockedSearch {
 export const Route = createFileRoute("/ai-unlocked")({
   validateSearch: (search: Record<string, unknown>): AiUnlockedSearch => {
     return {
-      track: (search.track as "foundations" | "healthcare" | "finance" | "finance-advanced") || undefined,
+      track:
+        (search.track as "foundations" | "healthcare" | "finance" | "finance-advanced") ||
+        undefined,
       lesson: (search.lesson as string) || undefined,
       view: (search.view as string) || undefined,
     };
@@ -78,8 +80,7 @@ export const Route = createFileRoute("/ai-unlocked")({
   head: () => ({
     meta: [
       {
-        title:
-          "AI Unlocked — Multi-Track Applied AI Learning Hub | Red Dot Technologies",
+        title: "AI Unlocked — Multi-Track Applied AI Learning Hub | Red Dot Technologies",
       },
       {
         name: "description",
@@ -118,7 +119,8 @@ function AiUnlockedPage() {
   const navigateRouter = useNavigate({ from: "/ai-unlocked" });
 
   // Single source of truth from router search params
-  const currentTrackId: "foundations" | "healthcare" | "finance" | "finance-advanced" | null = search.track || null;
+  const currentTrackId: "foundations" | "healthcare" | "finance" | "finance-advanced" | null =
+    search.track || null;
 
   const [mobileSideOpen, setMobileSideOpen] = useState(false);
 
@@ -184,7 +186,7 @@ function AiUnlockedPage() {
             loaded[tid] = { done: {}, answers: {}, unlocked: false };
             try {
               localStorage.setItem(cfg.storageKey, JSON.stringify(loaded[tid]));
-            } catch { }
+            } catch {}
           } else {
             loaded[tid] = parsed;
           }
@@ -201,7 +203,7 @@ function AiUnlockedPage() {
   // Save changes to localStorage
   const updateTrackState = (
     trackId: string,
-    updater: (prev: (typeof trackStates)[string]) => (typeof trackStates)[string]
+    updater: (prev: (typeof trackStates)[string]) => (typeof trackStates)[string],
   ) => {
     setTrackStates((prev) => {
       const current = prev[trackId] || {
@@ -215,7 +217,7 @@ function AiUnlockedPage() {
       if (cfg && typeof window !== "undefined") {
         try {
           localStorage.setItem(cfg.storageKey, JSON.stringify(updated));
-        } catch { }
+        } catch {}
       }
       return next;
     });
@@ -223,10 +225,10 @@ function AiUnlockedPage() {
 
   const currentTrackState = currentTrackId
     ? trackStates[currentTrackId] || {
-      done: {},
-      answers: {},
-      unlocked: !activeTrackConfig?.isPaid,
-    }
+        done: {},
+        answers: {},
+        unlocked: !activeTrackConfig?.isPaid,
+      }
     : { done: {}, answers: {}, unlocked: false };
 
   const isTrackUnlocked = !activeTrackConfig?.isPaid || !!currentTrackState.unlocked;
@@ -279,7 +281,12 @@ function AiUnlockedPage() {
 
     // Check if base lesson in manifest already has full sections (e.g. preview lessons or foundations)
     const baseLesson = currentLessons.find((l) => l.id === targetId);
-    if (baseLesson && baseLesson.sections && baseLesson.sections.length > 0 && (!activeTrackConfig?.isPaid || isTrackUnlocked)) {
+    if (
+      baseLesson &&
+      baseLesson.sections &&
+      baseLesson.sections.length > 0 &&
+      (!activeTrackConfig?.isPaid || isTrackUnlocked)
+    ) {
       setLoadedLessons((prev) => ({ ...prev, [cacheKey]: baseLesson }));
       return;
     }
@@ -326,9 +333,13 @@ function AiUnlockedPage() {
 
   const openCourse = (
     track: "foundations" | "healthcare" | "finance" | "finance-advanced",
-    initialView: string = "home"
+    initialView: string = "home",
   ) => {
-    const isSpecial = initialView === "home" || initialView === "sources" || initialView === "pay" || initialView === "cert";
+    const isSpecial =
+      initialView === "home" ||
+      initialView === "sources" ||
+      initialView === "pay" ||
+      initialView === "cert";
     navigateRouter({
       search: {
         track,
@@ -456,6 +467,19 @@ function AiUnlockedPage() {
       return;
     }
 
+    // If marked unlocked on a paid track but missing an accessCode (e.g. localStorage tampering), revoke unlock immediately
+    if (activeTrackConfig?.isPaid && currentTrackState.unlocked && !currentTrackState.accessCode) {
+      updateTrackState(currentTrackId, () => ({
+        done: {},
+        answers: {},
+        unlocked: false,
+        accessCode: undefined,
+        lead: undefined,
+        requestedLead: undefined,
+      }));
+      return;
+    }
+
     // If not unlocked on a paid track, ensure done and answers are wiped clean
     if (!currentTrackState.unlocked) {
       const hasDone = Object.keys(currentTrackState.done || {}).length > 0;
@@ -492,7 +516,9 @@ function AiUnlockedPage() {
             setCertOrg("");
             setCertRole("");
             setCertDept("");
-            toast.warning("Course access has been revoked or removed by the administrator. All progress has been fully reset.");
+            toast.warning(
+              "Course access has been revoked or removed by the administrator. All progress has been fully reset.",
+            );
             // Redirect to paywall view
             navigateView("pay");
           }
@@ -505,7 +531,12 @@ function AiUnlockedPage() {
         isMounted = false;
       };
     }
-  }, [currentTrackId, currentTrackState.unlocked, currentTrackState.accessCode, activeTrackConfig?.isPaid]);
+  }, [
+    currentTrackId,
+    currentTrackState.unlocked,
+    currentTrackState.accessCode,
+    activeTrackConfig?.isPaid,
+  ]);
 
   const handleReceiptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -546,23 +577,26 @@ function AiUnlockedPage() {
           accessCode: cleanCode,
           ...(res.lead
             ? {
-              lead: {
-                name: res.lead.name || prev.lead?.name || "",
-                email: res.lead.email || prev.lead?.email || "",
-                org: res.lead.org || prev.lead?.org || "",
-                role: prev.lead?.role || "",
-                dept: prev.lead?.dept || "",
-                date: new Date().toISOString(),
-                captured: false,
-              },
-            }
+                lead: {
+                  name: res.lead.name || prev.lead?.name || "",
+                  email: res.lead.email || prev.lead?.email || "",
+                  org: res.lead.org || prev.lead?.org || "",
+                  role: prev.lead?.role || "",
+                  dept: prev.lead?.dept || "",
+                  date: new Date().toISOString(),
+                  captured: false,
+                },
+              }
             : {}),
         }));
         toast.success(`✓ Full Access Unlocked for ${activeTrackConfig.name}!`);
         setEnteredCode("");
         navigateView("home");
       } else {
-        toast.error(res?.error || "Access code is invalid, revoked, or no active verified enrolment was found.");
+        toast.error(
+          res?.error ||
+            "Access code is invalid, revoked, or no active verified enrolment was found.",
+        );
       }
     } catch (err: any) {
       toast.error(err?.message || "Failed to verify access code with server. Please try again.");
@@ -608,19 +642,17 @@ function AiUnlockedPage() {
       };
 
       // Save directly to MySQL database
-      createAiLead(newEntry).catch(() => { });
+      createAiLead(newEntry).catch(() => {});
 
       // Synchronize to localStorage backup
       if (typeof window !== "undefined") {
         try {
-          const existingLeads = JSON.parse(
-            localStorage.getItem("rdt_ai_payment_leads") || "[]"
-          );
+          const existingLeads = JSON.parse(localStorage.getItem("rdt_ai_payment_leads") || "[]");
           localStorage.setItem(
             "rdt_ai_payment_leads",
-            JSON.stringify([newEntry, ...existingLeads])
+            JSON.stringify([newEntry, ...existingLeads]),
           );
-        } catch { }
+        } catch {}
       }
 
       // Notify Red Dot admin team via FormSubmit
@@ -641,13 +673,15 @@ function AiUnlockedPage() {
           Admin_Verification_Url: "https://reddottech.com.np/admin/ai-unlocked",
         }),
         signal: AbortSignal.timeout(4000),
-      }).catch(() => { });
+      }).catch(() => {});
     } catch {
       // Fallback continues gracefully
     }
 
     setRequestSubmitted(true);
-    toast.success("Payment details submitted! Admin will verify your transaction ref and email your unlock code.");
+    toast.success(
+      "Payment details submitted! Admin will verify your transaction ref and email your unlock code.",
+    );
   };
 
   // ── Certificate Claim State (Track-Scoped) ──
@@ -713,7 +747,7 @@ function AiUnlockedPage() {
       activeTrackConfig.certCodePrefix,
       certName.trim() || "Candidate",
       certEmail.trim() || "email@example.com",
-      new Date().toISOString()
+      new Date().toISOString(),
     );
 
     try {
@@ -776,7 +810,7 @@ function AiUnlockedPage() {
       activeTrackConfig.certCodePrefix,
       certName || "Candidate",
       certEmail || "email@example.com",
-      currentTrackState.lead?.date
+      currentTrackState.lead?.date,
     );
   }, [activeTrackConfig, certName, certEmail, currentTrackState.lead?.date]);
 
@@ -812,25 +846,36 @@ function AiUnlockedPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto pt-2 sm:pt-4 w-full">
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
               <div className="text-lg sm:text-2xl font-black text-brand-ink">4</div>
-              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">Specialized Tracks</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
+                Specialized Tracks
+              </div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
               <div className="text-lg sm:text-2xl font-black text-brand-ink">34</div>
-              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">In-Depth Modules</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
+                In-Depth Modules
+              </div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
               <div className="text-lg sm:text-2xl font-black text-brand-ink">150+</div>
-              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">Quiz Questions</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
+                Quiz Questions
+              </div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
               <div className="text-lg sm:text-2xl font-black text-emerald-600">100%</div>
-              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">Verified Certs</div>
+              <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
+                Verified Certs
+              </div>
             </div>
           </div>
         </PageHero>
 
         {/* ── Course Catalog Grid Section ── */}
-        <section id="course-catalog" className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-10 sm:py-16">
+        <section
+          id="course-catalog"
+          className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-10 sm:py-16"
+        >
           <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-12">
             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-brand-red bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
               Industry-Specific Curricula
@@ -839,7 +884,8 @@ function AiUnlockedPage() {
               Select Your Learning Track
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto">
-              Choose from foundational general literacy, clinical healthcare AI, foundational banking AI (Level 1), or enterprise financial architecture (Level 2).
+              Choose from foundational general literacy, clinical healthcare AI, foundational
+              banking AI (Level 1), or enterprise financial architecture (Level 2).
             </p>
           </div>
 
@@ -866,7 +912,8 @@ function AiUnlockedPage() {
                     AI Foundations &amp; Literacy
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Essential artificial intelligence concepts, prompt engineering, multimodal creation, study systems, and critical AI safety.
+                    Essential artificial intelligence concepts, prompt engineering, multimodal
+                    creation, study systems, and critical AI safety.
                   </p>
                 </div>
 
@@ -881,31 +928,41 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         1
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Neural Networks, Transformers &amp; LLMs</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Neural Networks, Transformers &amp; LLMs
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         2
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Prompt Engineering &amp; Role Conditioning</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Prompt Engineering &amp; Role Conditioning
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         3
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Multimodal Image, Audio &amp; Video Gen</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Multimodal Image, Audio &amp; Video Gen
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         4
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">AI for Productivity &amp; Research</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        AI for Productivity &amp; Research
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
                         5
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Ethics, Hallucinations &amp; AI Safety</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Ethics, Hallucinations &amp; AI Safety
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -954,7 +1011,8 @@ function AiUnlockedPage() {
                     AI for Healthcare Professionals
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Clinical decision support, diagnostic deep learning, ambient scribes, healthcare ethics, and the 10-20-70 implementation framework.
+                    Clinical decision support, diagnostic deep learning, ambient scribes, healthcare
+                    ethics, and the 10-20-70 implementation framework.
                   </p>
                 </div>
 
@@ -969,31 +1027,41 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         1
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Clinical AI &amp; Diagnostic CNN Foundations</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Clinical AI &amp; Diagnostic CNN Foundations
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         2
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Electronic Health Records &amp; Data Realities</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Electronic Health Records &amp; Data Realities
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         3
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Case Studies: TB X-ray, Retinopathy &amp; Cry</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Case Studies: TB X-ray, Retinopathy &amp; Cry
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         4
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Ambient Generative Clinical Scribing</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Ambient Generative Clinical Scribing
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
                         5
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">10-20-70 Deployment &amp; Hospital Governance</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        10-20-70 Deployment &amp; Hospital Governance
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -1003,7 +1071,9 @@ function AiUnlockedPage() {
                 <div className="flex items-center justify-between text-xs">
                   <div>
                     <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 1,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">NPR 2,999</span>
+                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
+                      NPR 2,999
+                    </span>
                   </div>
                   <span className="font-bold text-emerald-700 bg-white border border-emerald-200 px-2 py-0.5 rounded-full text-[10px]">
                     Module 1 Free
@@ -1045,7 +1115,8 @@ function AiUnlockedPage() {
                     AI for Financial Professionals
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Credit scoring ML, fraud AML graph detection, generative banking &amp; RAG, model risk governance, and Nepal Rastra Bank AI Guidelines.
+                    Credit scoring ML, fraud AML graph detection, generative banking &amp; RAG,
+                    model risk governance, and Nepal Rastra Bank AI Guidelines.
                   </p>
                 </div>
 
@@ -1060,31 +1131,41 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         1
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Banking AI Foundations &amp; Value Levers</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Banking AI Foundations &amp; Value Levers
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         2
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Credit Risk ML vs Traditional Scorecards</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Credit Risk ML vs Traditional Scorecards
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         3
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Real-Time Fraud &amp; Mule Account Graphs</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Real-Time Fraud &amp; Mule Account Graphs
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         4
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Generative Banking &amp; Policy RAG Search</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Generative Banking &amp; Policy RAG Search
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
                         5
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Model Risk Management &amp; NRB Compliance</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Model Risk Management &amp; NRB Compliance
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -1094,7 +1175,9 @@ function AiUnlockedPage() {
                 <div className="flex items-center justify-between text-xs">
                   <div>
                     <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 1,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">NPR 2,999</span>
+                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
+                      NPR 2,999
+                    </span>
                   </div>
                   <span className="font-bold text-blue-700 bg-white border border-blue-200 px-2 py-0.5 rounded-full text-[10px]">
                     Module 1 Free
@@ -1136,7 +1219,8 @@ function AiUnlockedPage() {
                     Advanced AI for Finance Professionals
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Advanced follow-on covering capability stacks, MRM validation, deep XAI, multi-agent systems, systemic risk, and target operating models.
+                    Advanced follow-on covering capability stacks, MRM validation, deep XAI,
+                    multi-agent systems, systemic risk, and target operating models.
                   </p>
                 </div>
 
@@ -1151,31 +1235,41 @@ function AiUnlockedPage() {
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         1
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">From Practitioner to Enterprise Architect</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        From Practitioner to Enterprise Architect
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         2
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">The AI Capability Stack for Financial Institutions</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        The AI Capability Stack for Financial Institutions
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         3
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Advanced Model Risk Management &amp; Validation</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Advanced Model Risk Management &amp; Validation
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         4
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Explainability in Regulated Environments (XAI)</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Explainability in Regulated Environments (XAI)
+                      </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
                         5
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">Agentic AI, Multi-Agent Systems &amp; Macro Risk</span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        Agentic AI, Multi-Agent Systems &amp; Macro Risk
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -1185,7 +1279,9 @@ function AiUnlockedPage() {
                 <div className="flex items-center justify-between text-xs">
                   <div>
                     <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 2,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">NPR 3,999</span>
+                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
+                      NPR 3,999
+                    </span>
                   </div>
                   <span className="font-bold text-purple-700 bg-white border border-purple-200 px-2 py-0.5 rounded-full text-[10px]">
                     Module 1 Free
@@ -1214,7 +1310,8 @@ function AiUnlockedPage() {
                 Why Professionals Choose Red Dot Applied AI
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                Not just theory—practical blueprints engineered for immediate workplace and clinical impact.
+                Not just theory—practical blueprints engineered for immediate workplace and clinical
+                impact.
               </p>
             </div>
 
@@ -1235,7 +1332,8 @@ function AiUnlockedPage() {
                     Domain-Specific Focus
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                    Curricula engineered specifically for hospital diagnostic workflows, clinical decision support, credit underwriting, and fraud detection.
+                    Curricula engineered specifically for hospital diagnostic workflows, clinical
+                    decision support, credit underwriting, and fraud detection.
                   </p>
                 </div>
               </div>
@@ -1255,7 +1353,8 @@ function AiUnlockedPage() {
                     Interactive Visual Labs
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                    Visual animated architectures demonstrating neural layers, RAG retrieval pipelines, EHR linkage, and triage decision trees.
+                    Visual animated architectures demonstrating neural layers, RAG retrieval
+                    pipelines, EHR linkage, and triage decision trees.
                   </p>
                 </div>
               </div>
@@ -1275,7 +1374,8 @@ function AiUnlockedPage() {
                     Mastery Assessment Engine
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                    Module-by-module quizzes with instant explanatory feedback and scenario-based testing to solidify conceptual understanding.
+                    Module-by-module quizzes with instant explanatory feedback and scenario-based
+                    testing to solidify conceptual understanding.
                   </p>
                 </div>
               </div>
@@ -1295,7 +1395,8 @@ function AiUnlockedPage() {
                     Verifiable Credentials
                   </h3>
                   <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                    Earn high-resolution digital certificates complete with unique reference IDs, cryptographic verification, and PDF print layout.
+                    Earn high-resolution digital certificates complete with unique reference IDs,
+                    cryptographic verification, and PDF print layout.
                   </p>
                 </div>
               </div>
@@ -1347,7 +1448,9 @@ function AiUnlockedPage() {
             >
               <div className="flex items-center gap-2">
                 <Menu className="h-3.5 w-3.5 text-red-400" />
-                <span>Course Syllabus &amp; Modules ({completedCount}/{totalLessons} Done)</span>
+                <span>
+                  Course Syllabus &amp; Modules ({completedCount}/{totalLessons} Done)
+                </span>
               </div>
               <span className="text-[10px] font-black text-slate-300 bg-white/10 px-2 py-0.5 rounded-md">
                 {progressPercent}%
@@ -1436,17 +1539,15 @@ function AiUnlockedPage() {
                 >
                   <BookOpen className="h-3 w-3" />
                 </span>
-                <span className="truncate font-extrabold text-xs">
-                  Programme Overview
-                </span>
+                <span className="truncate font-extrabold text-xs">Programme Overview</span>
               </button>
 
               {/* Modules List */}
               {currentLessons.map((lesson, idx) => {
                 const isLocked = isLessonLocked(lesson.id);
-                const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
-                const isActive =
-                  activeView === lesson.id || activeView === `q_${lesson.id}`;
+                const isDone =
+                  isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
+                const isActive = activeView === lesson.id || activeView === `q_${lesson.id}`;
 
                 return (
                   <button
@@ -1511,9 +1612,7 @@ function AiUnlockedPage() {
                     <ChevronRight
                       className={[
                         "h-3 w-3 shrink-0 transition-opacity",
-                        isActive
-                          ? "opacity-90"
-                          : "opacity-30 group-hover:opacity-60",
+                        isActive ? "opacity-90" : "opacity-30 group-hover:opacity-60",
                       ].join(" ")}
                     />
                   </button>
@@ -1542,9 +1641,7 @@ function AiUnlockedPage() {
                     <BookMarked className="h-3 w-3" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-extrabold truncate text-xs">
-                      Sources &amp; Reading
-                    </p>
+                    <p className="font-extrabold truncate text-xs">Sources &amp; Reading</p>
                   </div>
                 </button>
               )}
@@ -1571,12 +1668,9 @@ function AiUnlockedPage() {
                     <QrCode className="h-3 w-3" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-extrabold truncate text-xs">
-                      Unlock Full Access
-                    </p>
+                    <p className="font-extrabold truncate text-xs">Unlock Full Access</p>
                     <p className="text-[9px] font-medium opacity-80 truncate">
-                      {activeTrackConfig.price?.currency}{" "}
-                      {activeTrackConfig.price?.amount}
+                      {activeTrackConfig.price?.currency} {activeTrackConfig.price?.amount}
                     </p>
                   </div>
                 </button>
@@ -1610,9 +1704,7 @@ function AiUnlockedPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
-                    <p className="font-extrabold truncate text-xs">
-                      Certificate
-                    </p>
+                    <p className="font-extrabold truncate text-xs">Certificate</p>
                     {isCourseComplete ? (
                       <span className="text-[8px] bg-white text-emerald-800 px-1 py-0.2 rounded font-black">
                         READY
@@ -1642,7 +1734,10 @@ function AiUnlockedPage() {
                 1. OVERVIEW / HOME VIEW
             ══════════════════════════════════════════════════════════ */}
             {activeView === "home" && (
-              <div className="space-y-4 sm:space-y-5 animate-fade-in-up w-full min-w-0" style={{ animationDuration: "0.3s" }}>
+              <div
+                className="space-y-4 sm:space-y-5 animate-fade-in-up w-full min-w-0"
+                style={{ animationDuration: "0.3s" }}
+              >
                 {/* Hero card */}
                 <div
                   className={[
@@ -1675,14 +1770,15 @@ function AiUnlockedPage() {
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-800 shadow-2xs shrink-0">
                         <span
-                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${currentTrackId === "healthcare"
-                            ? "bg-emerald-500"
-                            : currentTrackId === "finance-advanced"
-                              ? "bg-purple-500"
-                              : currentTrackId === "finance"
-                                ? "bg-blue-500"
-                                : "bg-brand-red"
-                            }`}
+                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${
+                            currentTrackId === "healthcare"
+                              ? "bg-emerald-500"
+                              : currentTrackId === "finance-advanced"
+                                ? "bg-purple-500"
+                                : currentTrackId === "finance"
+                                  ? "bg-blue-500"
+                                  : "bg-brand-red"
+                          }`}
                         />
                         {activeTrackConfig.badge}
                       </span>
@@ -1756,7 +1852,8 @@ function AiUnlockedPage() {
                             Built for Clinical Practice
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Applied directly to diagnosis, radiology, triage, clinical workflows, and patient safety in Nepal.
+                            Applied directly to diagnosis, radiology, triage, clinical workflows,
+                            and patient safety in Nepal.
                           </p>
                         </div>
                       </div>
@@ -1769,7 +1866,8 @@ function AiUnlockedPage() {
                             Real-World Deployments
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Case studies in TB X-ray screening, diabetic retinopathy, ambient scribes, and neonatal cry analysis.
+                            Case studies in TB X-ray screening, diabetic retinopathy, ambient
+                            scribes, and neonatal cry analysis.
                           </p>
                         </div>
                       </div>
@@ -1782,7 +1880,8 @@ function AiUnlockedPage() {
                             Governance &amp; 10-20-70 Rule
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Evaluate clinical AI safety, dataset shift, and submit defensible proposals to hospital committees.
+                            Evaluate clinical AI safety, dataset shift, and submit defensible
+                            proposals to hospital committees.
                           </p>
                         </div>
                       </div>
@@ -1798,7 +1897,8 @@ function AiUnlockedPage() {
                             Capability Architecture Stack
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Architect 4-layer institutional capability across engagement, AI decisioning, core data, and operating model.
+                            Architect 4-layer institutional capability across engagement, AI
+                            decisioning, core data, and operating model.
                           </p>
                         </div>
                       </div>
@@ -1811,7 +1911,8 @@ function AiUnlockedPage() {
                             Advanced MRM &amp; Deep XAI
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Risk tiering, independent validation rigor, and context-aware explainability for supervisors and audit.
+                            Risk tiering, independent validation rigor, and context-aware
+                            explainability for supervisors and audit.
                           </p>
                         </div>
                       </div>
@@ -1824,7 +1925,8 @@ function AiUnlockedPage() {
                             Agents &amp; Systemic Risk
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Multi-agent governance boundaries, BIS model herding analysis, and target operating model transformation.
+                            Multi-agent governance boundaries, BIS model herding analysis, and
+                            target operating model transformation.
                           </p>
                         </div>
                       </div>
@@ -1840,7 +1942,8 @@ function AiUnlockedPage() {
                             Board &amp; Supervisory Ready
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Grounded in Nepal Rastra Bank AI Guidelines, placing ultimate accountability on management and boards.
+                            Grounded in Nepal Rastra Bank AI Guidelines, placing ultimate
+                            accountability on management and boards.
                           </p>
                         </div>
                       </div>
@@ -1853,7 +1956,8 @@ function AiUnlockedPage() {
                             Credit Scoring &amp; Fraud AML
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Supervised credit ML vs scorecards, mule account network detection, precision vs recall trade-offs.
+                            Supervised credit ML vs scorecards, mule account network detection,
+                            precision vs recall trade-offs.
                           </p>
                         </div>
                       </div>
@@ -1866,7 +1970,8 @@ function AiUnlockedPage() {
                             Generative Banking &amp; RAG
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Deterministic core + LLM interface architecture, policy RAG search, and avoiding model hallucination.
+                            Deterministic core + LLM interface architecture, policy RAG search, and
+                            avoiding model hallucination.
                           </p>
                         </div>
                       </div>
@@ -1882,7 +1987,8 @@ function AiUnlockedPage() {
                             Neural Foundations
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Understand how models learn from weights, parameters, tokens, and inference without confusing jargon.
+                            Understand how models learn from weights, parameters, tokens, and
+                            inference without confusing jargon.
                           </p>
                         </div>
                       </div>
@@ -1895,7 +2001,8 @@ function AiUnlockedPage() {
                             Advanced Prompting
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Master role steering, few-shot conditioning, multimodal image/audio prompting, and context management.
+                            Master role steering, few-shot conditioning, multimodal image/audio
+                            prompting, and context management.
                           </p>
                         </div>
                       </div>
@@ -1908,7 +2015,8 @@ function AiUnlockedPage() {
                             Free Verified Credential
                           </h3>
                           <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
-                            Pass 5 short mastery quizzes to earn a shareable, verified Red Dot Technologies digital certificate.
+                            Pass 5 short mastery quizzes to earn a shareable, verified Red Dot
+                            Technologies digital certificate.
                           </p>
                         </div>
                       </div>
@@ -1928,20 +2036,24 @@ function AiUnlockedPage() {
                       </p>
                     </div>
                     <span className="text-[10px] sm:text-xs font-bold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-full shadow-2xs shrink-0">
-                      {currentLessons.length} Modules • {currentLessons.reduce((acc, l) => {
+                      {currentLessons.length} Modules •{" "}
+                      {currentLessons.reduce((acc, l) => {
                         const cacheKey = `${currentTrackId}:${l.id}`;
                         const loaded = loadedLessons[cacheKey];
                         return acc + (loaded?.quiz?.length || l.quiz?.length || 4);
-                      }, 0)} Questions
+                      }, 0)}{" "}
+                      Questions
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 gap-2.5 w-full min-w-0">
                     {currentLessons.map((lesson, idx) => {
                       const isLocked = isLessonLocked(lesson.id);
-                      const isDone = isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
+                      const isDone =
+                        isTrackUnlocked && !isLocked && !!currentTrackState.done?.[lesson.id];
                       const cacheKey = `${currentTrackId}:${lesson.id}`;
-                      const lessonQuizCount = loadedLessons[cacheKey]?.quiz?.length || lesson.quiz?.length || 4;
+                      const lessonQuizCount =
+                        loadedLessons[cacheKey]?.quiz?.length || lesson.quiz?.length || 4;
 
                       return (
                         <div
@@ -2023,8 +2135,7 @@ function AiUnlockedPage() {
                 2. INDIVIDUAL LESSON CONTENT VIEW
             ══════════════════════════════════════════════════════════ */}
             {currentLessons.map((lesson, idx) => {
-              if (activeView !== lesson.id && activeView !== `q_${lesson.id}`)
-                return null;
+              if (activeView !== lesson.id && activeView !== `q_${lesson.id}`) return null;
               const isQuizMode = activeView === `q_${lesson.id}`;
               const isLocked = isLessonLocked(lesson.id);
 
@@ -2045,7 +2156,10 @@ function AiUnlockedPage() {
                         {lesson.title}
                       </h2>
                       <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed font-medium">
-                        This module is part of the full verified <span className="font-bold text-slate-900">{activeTrackConfig.name}</span> programme. Please unlock full access using your verified Access Code to access all lessons, quizzes, and digital credential.
+                        This module is part of the full verified{" "}
+                        <span className="font-bold text-slate-900">{activeTrackConfig.name}</span>{" "}
+                        programme. Please unlock full access using your verified Access Code to
+                        access all lessons, quizzes, and digital credential.
                       </p>
                     </div>
 
@@ -2092,12 +2206,17 @@ function AiUnlockedPage() {
 
               if (lessonFetchError && !hasFullSections) {
                 return (
-                  <div key={lesson.id} className="bg-white rounded-2xl border border-red-200 p-8 text-center space-y-4 max-w-xl mx-auto my-6">
+                  <div
+                    key={lesson.id}
+                    className="bg-white rounded-2xl border border-red-200 p-8 text-center space-y-4 max-w-xl mx-auto my-6"
+                  >
                     <div className="h-12 w-12 mx-auto rounded-full bg-red-50 text-red-600 flex items-center justify-center">
                       <X className="h-6 w-6 text-red-600" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="font-black text-slate-900 text-lg">Unable to load module content</h3>
+                      <h3 className="font-black text-slate-900 text-lg">
+                        Unable to load module content
+                      </h3>
                       <p className="text-xs text-slate-600 font-medium">{lessonFetchError}</p>
                     </div>
                     <div className="flex flex-wrap justify-center gap-3 pt-2">
@@ -2303,7 +2422,10 @@ function AiUnlockedPage() {
                             Unlock All {totalLessons} Modules &amp; Your Official Certificate
                           </h3>
                           <p className="text-xs sm:text-sm text-slate-200 max-w-2xl font-medium leading-relaxed">
-                            Full access unlocks all remaining modules, diagnostic/banking case studies, mastery assessments, and your verified digital certificate of completion for {activeTrackConfig.price?.currency} {activeTrackConfig.price?.amount}.
+                            Full access unlocks all remaining modules, diagnostic/banking case
+                            studies, mastery assessments, and your verified digital certificate of
+                            completion for {activeTrackConfig.price?.currency}{" "}
+                            {activeTrackConfig.price?.amount}.
                           </p>
                           <button
                             onClick={() => navigateView("pay")}
@@ -2348,12 +2470,16 @@ function AiUnlockedPage() {
                             {fullLesson.tag} Mastery Assessment
                           </h2>
                           <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                            Select the correct answer for each of the {(fullLesson.quiz || []).length} questions below. All questions must be correct to complete the module.
+                            Select the correct answer for each of the{" "}
+                            {(fullLesson.quiz || []).length} questions below. All questions must be
+                            correct to complete the module.
                           </p>
                         </div>
 
                         {(fullLesson.quiz || []).map((qItem, qIdx) => {
-                          const selectedOption = (currentTrackState.answers?.[fullLesson.id] || {})[qIdx];
+                          const selectedOption = (currentTrackState.answers?.[fullLesson.id] || {})[
+                            qIdx
+                          ];
                           const isAnswered = selectedOption !== undefined;
                           const isCorrect = isAnswered && selectedOption === qItem.a;
 
@@ -2392,12 +2518,13 @@ function AiUnlockedPage() {
                                       className={`w-full text-left p-2.5 sm:p-3 rounded-lg sm:rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2.5 cursor-pointer ${btnStyle}`}
                                     >
                                       <span
-                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${isAnswered && oIdx === qItem.a
-                                          ? "bg-emerald-500 text-white"
-                                          : isThisSelected && !isCorrect
-                                            ? "bg-red-500 text-white"
-                                            : "bg-slate-100 text-slate-600"
-                                          }`}
+                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
+                                          isAnswered && oIdx === qItem.a
+                                            ? "bg-emerald-500 text-white"
+                                            : isThisSelected && !isCorrect
+                                              ? "bg-red-500 text-white"
+                                              : "bg-slate-100 text-slate-600"
+                                        }`}
                                       >
                                         {LETTERS[oIdx]}
                                       </span>
@@ -2412,16 +2539,18 @@ function AiUnlockedPage() {
 
                               {isAnswered && (
                                 <div
-                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${isCorrect
-                                    ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
-                                    : "bg-red-50 border border-red-200 text-red-900"
-                                    }`}
+                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${
+                                    isCorrect
+                                      ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
+                                      : "bg-red-50 border border-red-200 text-red-900"
+                                  }`}
                                 >
                                   <span className="font-bold text-xs leading-none">
                                     {isCorrect ? "✓" : "✗"}
                                   </span>
                                   <span>
-                                    <strong>{isCorrect ? "Correct!" : "Not quite:"}</strong> {qItem.fb}
+                                    <strong>{isCorrect ? "Correct!" : "Not quite:"}</strong>{" "}
+                                    {qItem.fb}
                                   </span>
                                 </div>
                               )}
@@ -2468,7 +2597,10 @@ function AiUnlockedPage() {
                 3. SOURCES & RESEARCH VIEW
             ══════════════════════════════════════════════════════════ */}
             {activeView === "sources" && (
-              <div className="space-y-4 sm:space-y-5 animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
+              <div
+                className="space-y-4 sm:space-y-5 animate-fade-in-up"
+                style={{ animationDuration: "0.3s" }}
+              >
                 <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs p-4 sm:p-6 space-y-2">
                   <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">
                     Academic &amp; Industry Citations
@@ -2477,7 +2609,9 @@ function AiUnlockedPage() {
                     Sources &amp; Further Reading
                   </h1>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                    This programme has been developed by Red Dot Technologies and draws on published research, white papers, and regulatory guidelines from leading global institutions, applied directly to Nepal and developing economies.
+                    This programme has been developed by Red Dot Technologies and draws on published
+                    research, white papers, and regulatory guidelines from leading global
+                    institutions, applied directly to Nepal and developing economies.
                   </p>
                 </div>
 
@@ -2508,7 +2642,10 @@ function AiUnlockedPage() {
                 </div>
 
                 <div className="bg-blue-50/80 rounded-xl border border-blue-200 p-3.5 sm:p-4 text-xs text-blue-900 leading-relaxed">
-                  <strong>Notice on citations:</strong> Statistics and findings are reproduced for professional educational purposes. Figures reflect the study periods and should be treated as indicative of direction. Participants must verify regulatory and ethical requirements with their institution and the relevant national authorities.
+                  <strong>Notice on citations:</strong> Statistics and findings are reproduced for
+                  professional educational purposes. Figures reflect the study periods and should be
+                  treated as indicative of direction. Participants must verify regulatory and
+                  ethical requirements with their institution and the relevant national authorities.
                 </div>
               </div>
             )}
@@ -2517,7 +2654,10 @@ function AiUnlockedPage() {
                 4. PAYWALL & ACCESS UNLOCK SCREEN
             ══════════════════════════════════════════════════════════ */}
             {activeView === "pay" && (
-              <div className="space-y-4 sm:space-y-5 animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
+              <div
+                className="space-y-4 sm:space-y-5 animate-fade-in-up"
+                style={{ animationDuration: "0.3s" }}
+              >
                 {/* Paywall Hero Banner */}
                 <div className="bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 text-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-7 border border-amber-200 shadow-2xs space-y-2">
                   <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-200 px-2.5 py-0.5 rounded-full">
@@ -2528,7 +2668,9 @@ function AiUnlockedPage() {
                     Unlock All {totalLessons} Modules &amp; Verified Credential
                   </h1>
                   <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed font-medium">
-                    You have been exploring the free preview of {activeTrackConfig.name}. Unlock full access to all {totalLessons} in-depth modules, practitioner case studies, interactive assessments, and your official Certificate of Completion.
+                    You have been exploring the free preview of {activeTrackConfig.name}. Unlock
+                    full access to all {totalLessons} in-depth modules, practitioner case studies,
+                    interactive assessments, and your official Certificate of Completion.
                   </p>
 
                   <div className="flex flex-wrap items-baseline gap-2.5 pt-1">
@@ -2560,7 +2702,8 @@ function AiUnlockedPage() {
                         </h3>
                       </div>
                       <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium">
-                        Scan the official QR code using any Nepali mobile banking app or digital wallet (eSewa, Khalti, ConnectIPS, Mobile Banking).
+                        Scan the official QR code using any Nepali mobile banking app or digital
+                        wallet (eSewa, Khalti, ConnectIPS, Mobile Banking).
                       </p>
 
                       <div className="p-3.5 bg-slate-50/90 rounded-2xl border border-slate-200 flex flex-col items-center justify-center text-center">
@@ -2609,14 +2752,17 @@ function AiUnlockedPage() {
                         </h3>
                       </div>
                       <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium">
-                        Fill in your name and transaction reference so our team can verify and dispatch your access code.
+                        Fill in your name and transaction reference so our team can verify and
+                        dispatch your access code.
                       </p>
 
                       {requestSubmitted ? (
                         <div className="p-3.5 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-900 space-y-1.5 text-xs">
                           <p className="font-bold">✓ Details Received!</p>
                           <p className="text-[11px] sm:text-xs">
-                            Thank you, {requestName}. We will verify your transaction (Txn: {requestTxn || "Submitted"}) and email your unlock code to <strong>{requestEmail}</strong> promptly.
+                            Thank you, {requestName}. We will verify your transaction (Txn:{" "}
+                            {requestTxn || "Submitted"}) and email your unlock code to{" "}
+                            <strong>{requestEmail}</strong> promptly.
                           </p>
                         </div>
                       ) : (
@@ -2727,7 +2873,9 @@ function AiUnlockedPage() {
                                 ) : (
                                   <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
                                     <Upload className="h-3.5 w-3.5 text-brand-red" />
-                                    <span className="text-[11px]">Upload payment receipt screenshot</span>
+                                    <span className="text-[11px]">
+                                      Upload payment receipt screenshot
+                                    </span>
                                   </div>
                                 )}
                               </label>
@@ -2784,7 +2932,8 @@ function AiUnlockedPage() {
                         </h3>
                       </div>
                       <p className="text-[11px] sm:text-xs text-slate-600 leading-relaxed font-medium">
-                        Already have an access code? Enter it below for immediate offline activation in this browser.
+                        Already have an access code? Enter it below for immediate offline activation
+                        in this browser.
                       </p>
 
                       <form onSubmit={handleVerifyCode} className="space-y-2.5 pt-1">
@@ -2832,7 +2981,10 @@ function AiUnlockedPage() {
                 5. CERTIFICATE VIEW
             ══════════════════════════════════════════════════════════ */}
             {activeView === "cert" && (
-              <div className="space-y-4 sm:space-y-5 animate-fade-in-up" style={{ animationDuration: "0.3s" }}>
+              <div
+                className="space-y-4 sm:space-y-5 animate-fade-in-up"
+                style={{ animationDuration: "0.3s" }}
+              >
                 {!isTrackUnlocked && activeTrackConfig.isPaid ? (
                   <div className="bg-white rounded-xl sm:rounded-2xl border border-amber-200 p-6 sm:p-10 text-center space-y-4 shadow-2xs max-w-2xl mx-auto">
                     <div className="mx-auto h-16 w-16 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl shadow-inner text-amber-600">
@@ -2842,7 +2994,9 @@ function AiUnlockedPage() {
                       Certificate Locked — Enrolment Required
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
-                      Official Certificate issuance is available only to verified students enrolled in <span className="font-bold text-slate-800">{activeTrackConfig.name}</span>. Please unlock the course with your Access Code to proceed.
+                      Official Certificate issuance is available only to verified students enrolled
+                      in <span className="font-bold text-slate-800">{activeTrackConfig.name}</span>.
+                      Please unlock the course with your Access Code to proceed.
                     </p>
                     <button
                       onClick={() => navigateView("pay")}
@@ -2861,7 +3015,8 @@ function AiUnlockedPage() {
                       Certificate Unlocks After All {totalLessons} Modules
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">
-                      Complete all {totalLessons} module mastery quizzes to unlock your verified credential. You have finished{" "}
+                      Complete all {totalLessons} module mastery quizzes to unlock your verified
+                      credential. You have finished{" "}
                       <span className="font-extrabold text-slate-900">
                         {completedCount} of {totalLessons}
                       </span>{" "}
@@ -2872,10 +3027,9 @@ function AiUnlockedPage() {
                       {currentLessons.map((l) => (
                         <div
                           key={l.id}
-                          className={`h-2.5 w-2.5 rounded-full transition-colors ${currentTrackState.done?.[l.id]
-                            ? "bg-emerald-500"
-                            : "bg-slate-200"
-                            }`}
+                          className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                            currentTrackState.done?.[l.id] ? "bg-emerald-500" : "bg-slate-200"
+                          }`}
                         />
                       ))}
                     </div>
@@ -2911,7 +3065,8 @@ function AiUnlockedPage() {
 
                     <div className="p-4 sm:p-6">
                       <p className="text-xs sm:text-sm text-slate-600 mb-4 font-medium">
-                        Enter your full legal name and details as you would like them to appear on your official digital certificate.
+                        Enter your full legal name and details as you would like them to appear on
+                        your official digital certificate.
                       </p>
 
                       <form onSubmit={handleClaimCertificateSubmit} className="space-y-3 max-w-lg">
@@ -3164,7 +3319,14 @@ function AiUnlockedPage() {
                         </h2>
 
                         <p className="text-xs sm:text-sm text-[#CFDCEF] leading-relaxed">
-                          This programme is a gateway to the <strong>Professional Excellence &amp; Certification Program (PECP)</strong> from Red Dot Technologies, in partnership with the <strong>University of South Carolina Upstate</strong> — instructor-led, cohort-based professional certification in project management, business analytics, quality, and leadership, designed for working professionals.
+                          This programme is a gateway to the{" "}
+                          <strong>
+                            Professional Excellence &amp; Certification Program (PECP)
+                          </strong>{" "}
+                          from Red Dot Technologies, in partnership with the{" "}
+                          <strong>University of South Carolina Upstate</strong> — instructor-led,
+                          cohort-based professional certification in project management, business
+                          analytics, quality, and leadership, designed for working professionals.
                         </p>
 
                         <div className="flex flex-wrap items-center gap-3 pt-3">

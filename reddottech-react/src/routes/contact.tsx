@@ -110,18 +110,17 @@ function ContactPage() {
             "Email Address": form.email,
             "Phone Number": form.phone || "Not provided",
             "Inquiry Topic": form.subject || "General Inquiry",
-            "Message": form.message,
+            Message: form.message,
             "Submission Source": "Red Dot Technologies Website (Contact Page)",
-            "Submitted Date": new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
+            "Submitted Date":
+              new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
           }),
         });
       } catch (emailErr) {
         console.warn("[Contact FormSubmit Error]", emailErr);
       }
 
-      toast.success(
-        "Your message has been sent successfully! Our team will contact you shortly.",
-      );
+      toast.success("Your message has been sent successfully! Our team will contact you shortly.");
       setForm({ fullName: "", email: "", phone: "", subject: "", message: "" });
     } catch {
       toast.error("Failed to submit inquiry. Please try again or call us directly.");
@@ -229,15 +228,25 @@ function ContactPage() {
                     className="group relative flex flex-col sm:flex-row items-start gap-2.5 sm:gap-4 rounded-xl sm:rounded-2xl bg-white border border-slate-200/80 p-3.5 sm:p-5 shadow-xs sm:shadow-lg hover:shadow-xl hover:border-slate-300 transition-all duration-300 cursor-pointer overflow-hidden h-full"
                   >
                     {/* Subtle gradient glow on hover */}
-                    <div className={`absolute inset-0 ${item.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    <div
+                      className={`absolute inset-0 ${item.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                    />
 
-                    <div className={`relative z-10 flex h-8 w-8 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br ${item.accent} text-white shadow-xs sm:shadow-md group-hover:scale-105 transition-transform duration-300`}>
+                    <div
+                      className={`relative z-10 flex h-8 w-8 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br ${item.accent} text-white shadow-xs sm:shadow-md group-hover:scale-105 transition-transform duration-300`}
+                    >
                       <Icon className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                     </div>
                     <div className="relative z-10 min-w-0 flex-1">
-                      <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">{item.title}</p>
-                      <p className="text-xs sm:text-sm font-extrabold text-brand-ink leading-snug break-words whitespace-normal">{item.detail}</p>
-                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5 break-words whitespace-normal">{item.sub}</p>
+                      <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+                        {item.title}
+                      </p>
+                      <p className="text-xs sm:text-sm font-extrabold text-brand-ink leading-snug break-words whitespace-normal">
+                        {item.detail}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5 break-words whitespace-normal">
+                        {item.sub}
+                      </p>
                     </div>
                     {isLink && (
                       <ExternalLink className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
@@ -265,8 +274,7 @@ function ContactPage() {
                     </span>
                   </div>
                   <h2 className="display-font text-2xl sm:text-4xl font-black text-brand-ink leading-[1.1] tracking-tight">
-                    We'd Love to Hear{" "}
-                    <span className="gradient-text">From You</span>
+                    We'd Love to Hear <span className="gradient-text">From You</span>
                   </h2>
                   <p className="text-xs sm:text-base text-slate-600 leading-relaxed max-w-lg">
                     Whether you're exploring our certification programs, need help with enrollment,
@@ -300,8 +308,12 @@ function ContactPage() {
                           <FIcon className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
                         </div>
                         <div>
-                          <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink">{feat.title}</h4>
-                          <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed mt-0.5">{feat.desc}</p>
+                          <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink">
+                            {feat.title}
+                          </h4>
+                          <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed mt-0.5">
+                            {feat.desc}
+                          </p>
                         </div>
                       </div>
                     );
@@ -449,11 +461,11 @@ function ContactPage() {
                 </span>
               </div>
               <h2 className="display-font text-3xl sm:text-4xl font-black text-brand-ink leading-[1.1] tracking-tight">
-                Got Questions?{" "}
-                <span className="gradient-text">We're Here to Help</span>
+                Got Questions? <span className="gradient-text">We're Here to Help</span>
               </h2>
               <p className="mt-3 text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
-                Quick answers to common questions regarding admissions, certifications, and schedules.
+                Quick answers to common questions regarding admissions, certifications, and
+                schedules.
               </p>
             </div>
           </ScrollReveal>
@@ -483,9 +495,13 @@ function ContactPage() {
                               : "bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-600"
                           }`}
                         >
-                          <span className="text-sm font-black">{String(idx + 1).padStart(2, "0")}</span>
+                          <span className="text-sm font-black">
+                            {String(idx + 1).padStart(2, "0")}
+                          </span>
                         </div>
-                        <span className={`text-sm sm:text-base font-bold leading-snug transition-colors duration-200 ${isOpen ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"}`}>
+                        <span
+                          className={`text-sm sm:text-base font-bold leading-snug transition-colors duration-200 ${isOpen ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"}`}
+                        >
                           {faq.q}
                         </span>
                       </div>
@@ -502,7 +518,9 @@ function ContactPage() {
 
                     {/* Animated Answer Content */}
                     <div
-                      ref={(el) => { faqContentRefs.current[idx] = el; }}
+                      ref={(el) => {
+                        faqContentRefs.current[idx] = el;
+                      }}
                       className="overflow-hidden transition-all duration-300 ease-in-out"
                       style={{
                         maxHeight: isOpen
@@ -513,9 +531,7 @@ function ContactPage() {
                     >
                       <div className="px-6 pb-6 pt-0">
                         <div className="pl-[3.25rem] border-l-2 border-brand-red/20 ml-0.5">
-                          <p className="text-sm text-slate-600 leading-relaxed pl-4">
-                            {faq.a}
-                          </p>
+                          <p className="text-sm text-slate-600 leading-relaxed pl-4">{faq.a}</p>
                         </div>
                       </div>
                     </div>

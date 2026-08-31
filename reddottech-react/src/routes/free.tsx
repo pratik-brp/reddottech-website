@@ -4,13 +4,7 @@ import { PageHero } from "@/components/PageHero";
 import { SectionHeader } from "@/components/SectionHeader";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { GradientBackground } from "@/components/GradientBackground";
-import {
-  Download,
-  Video,
-  Calendar,
-  ArrowRight,
-  X,
-} from "lucide-react";
+import { Download, Video, Calendar, ArrowRight, X } from "lucide-react";
 import { toast } from "sonner";
 import { submitContact } from "@/lib/api";
 
@@ -228,7 +222,8 @@ Scope + Schedule + Cost (quality is the center of the triangle).
             "Attendee Name": rsvpName,
             "Attendee Email": rsvpEmail,
             "Program / Event": "Free Tech & AI Community Webinar Series",
-            "Timestamp": new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
+            Timestamp:
+              new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" }) + " (NPT)",
           }),
         });
       } catch (emailErr) {
@@ -283,11 +278,17 @@ Scope + Schedule + Cost (quality is the center of the triangle).
                 <div className="space-y-2 sm:space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="badge-brand text-[9px] sm:text-xs">{sheet.category}</span>
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{sheet.format}</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">
+                      {sheet.format}
+                    </span>
                   </div>
 
-                  <h3 className="text-xs sm:text-xl font-extrabold text-brand-ink line-clamp-2">{sheet.title}</h3>
-                  <p className="text-slate-600 text-[11px] sm:text-xs leading-relaxed line-clamp-2 sm:line-clamp-none">{sheet.desc}</p>
+                  <h3 className="text-xs sm:text-xl font-extrabold text-brand-ink line-clamp-2">
+                    {sheet.title}
+                  </h3>
+                  <p className="text-slate-600 text-[11px] sm:text-xs leading-relaxed line-clamp-2 sm:line-clamp-none">
+                    {sheet.desc}
+                  </p>
 
                   <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-400 font-semibold pt-1 sm:pt-2">
                     <Download className="h-3.5 w-3.5 text-brand-red" />
@@ -335,15 +336,23 @@ Scope + Schedule + Cost (quality is the center of the triangle).
                       <span className="text-[8px] sm:text-[10px] font-extrabold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded bg-brand-red/10 text-brand-red uppercase tracking-wider">
                         {vid.tag}
                       </span>
-                      <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">{vid.duration}</span>
+                      <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">
+                        {vid.duration}
+                      </span>
                     </div>
 
-                    <h4 className="text-xs sm:text-lg font-bold text-brand-ink line-clamp-2">{vid.title}</h4>
-                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">{vid.desc}</p>
+                    <h4 className="text-xs sm:text-lg font-bold text-brand-ink line-clamp-2">
+                      {vid.title}
+                    </h4>
+                    <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed line-clamp-2 sm:line-clamp-none">
+                      {vid.desc}
+                    </p>
                   </div>
 
                   <div className="pt-2 sm:pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5">
-                    <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">{vid.views}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 font-semibold">
+                      {vid.views}
+                    </span>
                     <button
                       onClick={() => toast.info(`Launching ${vid.title} player...`)}
                       className="btn-secondary text-[11px] sm:text-xs py-1.5 px-2.5 sm:py-2 sm:px-4 justify-center"

@@ -1,17 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useState, useEffect, useMemo } from "react";
-import {
-  Trash2,
-  Mail,
-  Calendar,
-  Search,
-  Download,
-  Copy,
-  User,
-  X,
-  Reply,
-} from "lucide-react";
+import { Trash2, Mail, Calendar, Search, Download, Copy, User, X, Reply } from "lucide-react";
 import { toast } from "sonner";
 import { getContacts, deleteContact } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
@@ -68,7 +58,8 @@ function AdminContactsPage() {
         (c.message && c.message.toLowerCase().includes(q));
 
       const matchesSubject =
-        selectedSubject === "all" || (c.subject && c.subject.toLowerCase() === selectedSubject.toLowerCase());
+        selectedSubject === "all" ||
+        (c.subject && c.subject.toLowerCase() === selectedSubject.toLowerCase());
 
       return matchesSearch && matchesSubject;
     });
@@ -94,7 +85,16 @@ function AdminContactsPage() {
       toast.error("No inquiries to export.");
       return;
     }
-    const headers = ["ID", "First Name", "Last Name", "Email", "Phone", "Subject", "Message", "Date"];
+    const headers = [
+      "ID",
+      "First Name",
+      "Last Name",
+      "Email",
+      "Phone",
+      "Subject",
+      "Message",
+      "Date",
+    ];
     const rows = contacts.map((c) => [
       c.id,
       `"${c.first_name || ""}"`,
@@ -105,7 +105,9 @@ function AdminContactsPage() {
       `"${(c.message || "").replace(/"/g, '""')}"`,
       `"${c.created_at || ""}"`,
     ]);
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -206,11 +208,10 @@ function AdminContactsPage() {
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-sm text-slate-900">
-                Inbound Messages
-              </h3>
+              <h3 className="font-semibold text-sm text-slate-900">Inbound Messages</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                {filteredContacts.length} {filteredContacts.length === 1 ? "inquiry" : "inquiries"} found
+                {filteredContacts.length} {filteredContacts.length === 1 ? "inquiry" : "inquiries"}{" "}
+                found
               </p>
             </div>
 
@@ -339,7 +340,7 @@ function AdminContactsPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <a
                             href={`mailto:${contact.email}?subject=Re: ${encodeURIComponent(
-                              contact.subject || "Red Dot Inquiry"
+                              contact.subject || "Red Dot Inquiry",
                             )}`}
                             className="p-1.5 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors"
                             title="Reply via email"
@@ -417,7 +418,7 @@ function AdminContactsPage() {
                     <div className="flex items-center gap-1.5">
                       <a
                         href={`mailto:${contact.email}?subject=Re: ${encodeURIComponent(
-                          contact.subject || "Red Dot Inquiry"
+                          contact.subject || "Red Dot Inquiry",
                         )}`}
                         className="p-1.5 rounded-md border border-slate-200 text-slate-600"
                       >
@@ -446,7 +447,9 @@ function AdminContactsPage() {
             <div className="flex items-start justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-10 w-10 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-semibold text-sm flex items-center justify-center shrink-0">
-                  {activeMessage.first_name ? activeMessage.first_name.charAt(0).toUpperCase() : "U"}
+                  {activeMessage.first_name
+                    ? activeMessage.first_name.charAt(0).toUpperCase()
+                    : "U"}
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-semibold text-base text-slate-900 truncate">
@@ -507,7 +510,7 @@ function AdminContactsPage() {
 
                 <a
                   href={`mailto:${activeMessage.email}?subject=Re: ${encodeURIComponent(
-                    activeMessage.subject || "Red Dot Inquiry"
+                    activeMessage.subject || "Red Dot Inquiry",
                   )}`}
                   className="rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs px-4 py-2 shadow-xs inline-flex items-center gap-1.5 transition-colors"
                 >

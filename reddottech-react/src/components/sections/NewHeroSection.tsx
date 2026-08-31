@@ -83,7 +83,6 @@ export function NewHeroSection() {
         />
       </div>
 
-
       <div className="relative z-10 my-auto mx-auto grid w-full max-w-7xl items-center gap-8 sm:gap-10 px-4 sm:px-6 pt-20 pb-12 sm:pt-28 lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:pt-28 lg:pb-16">
         {/* Left content */}
         <div>
@@ -109,11 +108,17 @@ export function NewHeroSection() {
           </p>
 
           <div className="hero-reveal-item mt-6 sm:mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
-            <Link to="/courses" className="btn-primary group py-3 sm:py-3.5 px-6 sm:px-7 text-xs sm:text-sm">
+            <Link
+              to="/courses"
+              className="btn-primary group py-3 sm:py-3.5 px-6 sm:px-7 text-xs sm:text-sm"
+            >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
             </Link>
-            <Link to="/pecp" className="btn-secondary group inline-flex items-center gap-2 py-3 sm:py-3.5 px-5 sm:px-6 text-xs sm:text-sm">
+            <Link
+              to="/pecp"
+              className="btn-secondary group inline-flex items-center gap-2 py-3 sm:py-3.5 px-5 sm:px-6 text-xs sm:text-sm"
+            >
               <PlayCircle className="h-4 w-4 text-brand-red" />
               <span>Explore PECP</span>
             </Link>
@@ -126,22 +131,24 @@ export function NewHeroSection() {
               { value: 10, suffix: "+", label: "Global certifications", decimals: 0 },
               { value: 96, suffix: "%", label: "Completion rate", decimals: 0 },
             ].map((s) => (
-
               <div key={s.label}>
                 <dt className="display-font text-2xl sm:text-4xl font-bold text-brand-ink tracking-tight">
                   <AnimatedCounter value={s.value} suffix={s.suffix} decimals={s.decimals} />
                 </dt>
-                <dd className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-slate-500 font-semibold">{s.label}</dd>
+                <dd className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-slate-500 font-semibold">
+                  {s.label}
+                </dd>
               </div>
             ))}
           </dl>
         </div>
 
         {/* Right visual — Static 3D Hero Illustration */}
-        <div className="relative w-full mt-6 sm:mt-8 lg:mt-0 flex justify-center" aria-hidden="true">
-          <div
-            className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[440px] lg:max-w-[620px]"
-          >
+        <div
+          className="relative w-full mt-6 sm:mt-8 lg:mt-0 flex justify-center"
+          aria-hidden="true"
+        >
+          <div className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[440px] lg:max-w-[620px]">
             {/* Ambient Background Glow (Static) */}
             <div
               className="absolute inset-[20%] rounded-full opacity-60 pointer-events-none"
@@ -164,11 +171,11 @@ export function NewHeroSection() {
             />
 
             {/* Floating glass card (Static Position) */}
-            <div
-              className="hero-float-card glass-card absolute bottom-[6%] right-0 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-4 shadow-xl"
-            >
+            <div className="hero-float-card glass-card absolute bottom-[6%] right-0 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-4 shadow-xl">
               <p className="display-font text-xl sm:text-3xl font-bold text-brand-red">4.9★</p>
-              <p className="mt-0.5 text-[9px] sm:text-xs font-semibold text-slate-500">Learner rating</p>
+              <p className="mt-0.5 text-[9px] sm:text-xs font-semibold text-slate-500">
+                Learner rating
+              </p>
             </div>
           </div>
         </div>
@@ -177,7 +184,9 @@ export function NewHeroSection() {
       {/* Scroll indicator */}
       <div className="hero-reveal-item absolute bottom-4 sm:bottom-6 left-1/2 z-10 -translate-x-1/2 animate-bounce-gentle">
         <div className="flex flex-col items-center gap-1 text-slate-400">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">Scroll</span>
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">
+            Scroll
+          </span>
           <ChevronDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </div>
       </div>

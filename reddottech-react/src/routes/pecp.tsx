@@ -249,7 +249,10 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 1. WHO WE ARE - STRATEGIC JOINT INITIATIVE                     */}
       {/* ------------------------------------------------------------- */}
-      <section id="who-we-are" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white">
+      <section
+        id="who-we-are"
+        className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white"
+      >
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center">
             {/* Left Text Narrative */}
@@ -296,7 +299,10 @@ function PecpPage() {
               </div>
 
               <div className="pt-2 sm:pt-4">
-                <Link to="/contact" className="btn-primary shadow-md py-2.5 sm:py-3 px-5 sm:px-7 text-xs sm:text-sm">
+                <Link
+                  to="/contact"
+                  className="btn-primary shadow-md py-2.5 sm:py-3 px-5 sm:px-7 text-xs sm:text-sm"
+                >
                   <span>Explore Admissions</span>
                   <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Link>
@@ -339,7 +345,10 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 2. ABOUT USC UPSTATE - INTERACTIVE SPOTLIGHT SHOWCASE          */}
       {/* ------------------------------------------------------------- */}
-      <section id="partnership" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
+      <section
+        id="partnership"
+        className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80"
+      >
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
@@ -356,7 +365,11 @@ function PecpPage() {
 
             <div className="relative mx-auto max-w-3xl rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3.5 sm:p-7 shadow-xs">
               <p className="text-xs sm:text-base text-slate-700 font-normal leading-relaxed text-left sm:text-center">
-                The University of South Carolina Upstate (USC Upstate) is a leading public university in the United States, part of the respected University of South Carolina system. Located in Spartanburg, South Carolina, USC Upstate is home to over 6,000 students and is known for its strong emphasis on business, technology, and professional studies.
+                The University of South Carolina Upstate (USC Upstate) is a leading public
+                university in the United States, part of the respected University of South Carolina
+                system. Located in Spartanburg, South Carolina, USC Upstate is home to over 6,000
+                students and is known for its strong emphasis on business, technology, and
+                professional studies.
               </p>
             </div>
           </div>
@@ -393,10 +406,14 @@ function PecpPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-10 lg:gap-12 items-stretch">
             {/* Left 7 Columns: Active Tab Stage */}
             <div className="lg:col-span-7 flex flex-col">
-              <div className={`relative h-full flex flex-col justify-between rounded-2xl sm:rounded-[2.5rem] border ${uscTabs[activeUscTab].accentBorder} bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl transition-all duration-500`}>
+              <div
+                className={`relative h-full flex flex-col justify-between rounded-2xl sm:rounded-[2.5rem] border ${uscTabs[activeUscTab].accentBorder} bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl transition-all duration-500`}
+              >
                 <div className="space-y-3.5 sm:space-y-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 sm:px-4 sm:py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider ${uscTabs[activeUscTab].badgeColor}`}>
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 sm:px-4 sm:py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider ${uscTabs[activeUscTab].badgeColor}`}
+                    >
                       {uscTabs[activeUscTab].badge}
                     </span>
                     <span className="rounded-full bg-slate-100 border border-slate-200/80 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-black text-slate-700 uppercase tracking-widest">
@@ -434,7 +451,9 @@ function PecpPage() {
                         key={idx}
                         onClick={() => setActiveUscTab(idx)}
                         className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-                          activeUscTab === idx ? "w-6 sm:w-8 bg-brand-red" : "w-1.5 sm:w-2 bg-slate-200"
+                          activeUscTab === idx
+                            ? "w-6 sm:w-8 bg-brand-red"
+                            : "w-1.5 sm:w-2 bg-slate-200"
                         }`}
                         aria-label={`Go to tab ${idx + 1}`}
                       />
@@ -482,7 +501,9 @@ function PecpPage() {
                       <span>Impact in Nepal</span>
                     </div>
                     <p className="text-[11px] sm:text-sm text-slate-700 font-medium leading-relaxed italic">
-                      “By partnering with Red Dot Technologies for PECP, USC Upstate extends its academic excellence and global credibility to learners in Nepal, making the U.S.-standard certification accessible and affordable locally.”
+                      “By partnering with Red Dot Technologies for PECP, USC Upstate extends its
+                      academic excellence and global credibility to learners in Nepal, making the
+                      U.S.-standard certification accessible and affordable locally.”
                     </p>
                   </div>
                 </div>
@@ -495,7 +516,10 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 3. WHY PECP? - 3D STAGGERED BENTO GRID                         */}
       {/* ------------------------------------------------------------- */}
-      <section id="advantages" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-slate-50/90 text-brand-ink border-y border-slate-200/80">
+      <section
+        id="advantages"
+        className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-slate-50/90 text-brand-ink border-y border-slate-200/80"
+      >
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[750px] w-[1050px] rounded-full opacity-[0.16] blur-[170px]"
@@ -522,7 +546,8 @@ function PecpPage() {
             </h2>
 
             <p className="text-xs sm:text-base text-slate-600 font-normal leading-relaxed max-w-2xl mx-auto">
-              A transformative professional development experience delivering measurable career advancement.
+              A transformative professional development experience delivering measurable career
+              advancement.
             </p>
           </div>
 
@@ -537,10 +562,14 @@ function PecpPage() {
 
                     <div className="space-y-3 sm:space-y-5">
                       <div className="flex items-center justify-between">
-                        <div className={`flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-2xl ${pillar.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-105`}>
+                        <div
+                          className={`flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-2xl ${pillar.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-105`}
+                        >
                           <IconComponent className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                         </div>
-                        <span className={`rounded-full border px-2 py-0.5 text-[8px] sm:text-[10px] font-black uppercase tracking-wider ${pillar.badgeBg}`}>
+                        <span
+                          className={`rounded-full border px-2 py-0.5 text-[8px] sm:text-[10px] font-black uppercase tracking-wider ${pillar.badgeBg}`}
+                        >
                           {pillar.badge}
                         </span>
                       </div>
@@ -559,7 +588,10 @@ function PecpPage() {
 
                       <div className="space-y-1 sm:space-y-1.5 pt-1">
                         {pillar.highlights.map((hl, hIdx) => (
-                          <div key={hIdx} className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-700">
+                          <div
+                            key={hIdx}
+                            className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-slate-700"
+                          >
                             <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-500 shrink-0" />
                             <span>{hl}</span>
                           </div>
@@ -582,7 +614,10 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 5. TARGET AUDIENCE - WHO IS IT FOR?                            */}
       {/* ------------------------------------------------------------- */}
-      <section id="audiences" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white border-b border-slate-200/80">
+      <section
+        id="audiences"
+        className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-white border-b border-slate-200/80"
+      >
         {/* Decorative Atmosphere Glows */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div
@@ -596,7 +631,10 @@ function PecpPage() {
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Section Heading */}
-          <ScrollReveal direction="up" className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
+          <ScrollReveal
+            direction="up"
+            className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4"
+          >
             <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-4 py-1 sm:py-1.5 shadow-xs">
               <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-brand-red animate-pulse" />
               <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-brand-red">
@@ -689,7 +727,10 @@ function PecpPage() {
       {/* ------------------------------------------------------------- */}
       {/* 6. PROGRAM FRAMEWORK & BLUEPRINT                               */}
       {/* ------------------------------------------------------------- */}
-      <section id="curriculum" className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80">
+      <section
+        id="curriculum"
+        className="relative py-10 sm:py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50/90 text-brand-ink border-y border-slate-200/80"
+      >
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-6 sm:mb-16 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
             <div className="inline-flex items-center gap-1.5 sm:gap-2.5 rounded-full border border-brand-red/20 bg-brand-red/5 px-3 sm:px-5 py-1 sm:py-2 shadow-xs">

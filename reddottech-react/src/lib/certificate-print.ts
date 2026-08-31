@@ -20,24 +20,30 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
     TRACK_CONFIGS[trackKey] ||
     (trackKey.includes("health")
       ? TRACK_CONFIGS.healthcare
-      : trackKey.includes("adv") || trackKey.includes("fa") || trackKey.includes("level 2") || trackKey.includes("level-2")
-      ? TRACK_CONFIGS["finance-advanced"]
-      : trackKey.includes("finan") || trackKey.includes("bank")
-      ? TRACK_CONFIGS.finance
-      : TRACK_CONFIGS.foundations);
+      : trackKey.includes("adv") ||
+          trackKey.includes("fa") ||
+          trackKey.includes("level 2") ||
+          trackKey.includes("level-2")
+        ? TRACK_CONFIGS["finance-advanced"]
+        : trackKey.includes("finan") || trackKey.includes("bank")
+          ? TRACK_CONFIGS.finance
+          : TRACK_CONFIGS.foundations);
 
   const courseTitle = options.courseName || cfg?.certTitle || "AI Foundations: General AI Literacy";
   const certSubtitle = cfg?.certSubtitle || "Professional Certificate Programme";
-  const certDesc = cfg?.certDesc || "has successfully satisfied all rigorous curriculum modules, practical lab benchmarks, and mastery assessments conducted by Red Dot Technologies in academic collaboration with the University of South Carolina Upstate (USA).";
+  const certDesc =
+    cfg?.certDesc ||
+    "has successfully satisfied all rigorous curriculum modules, practical lab benchmarks, and mastery assessments conducted by Red Dot Technologies in academic collaboration with the University of South Carolina Upstate (USA).";
   const modules = cfg?.modules || [];
 
-  const affiliation = [
-    options.organization || options.role || options.department ? options.organization : "",
-    options.role ? options.role : "",
-    options.department ? `(${options.department})` : "",
-  ]
-    .filter(Boolean)
-    .join(" · ") || "Red Dot Technologies";
+  const affiliation =
+    [
+      options.organization || options.role || options.department ? options.organization : "",
+      options.role ? options.role : "",
+      options.department ? `(${options.department})` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ") || "Red Dot Technologies";
 
   let certDate = "Officially Validated";
   const rawDate = options.completedAt || options.issuedAt;
@@ -59,7 +65,9 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
     });
   }
 
-  const certReference = options.certificateId || `RDT-${(options.track || "AI").toUpperCase()}-${Date.now().toString().slice(-6)}`;
+  const certReference =
+    options.certificateId ||
+    `RDT-${(options.track || "AI").toUpperCase()}-${Date.now().toString().slice(-6)}`;
 
   const printHtml = `
     <!DOCTYPE html>

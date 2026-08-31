@@ -10,8 +10,14 @@ interface CourseCardProps {
 }
 
 const levelConfig = {
-  beginner: { label: "Beginner", color: "text-emerald-400 bg-emerald-950/80 border-emerald-500/40" },
-  intermediate: { label: "Intermediate", color: "text-amber-400 bg-amber-950/80 border-amber-500/40" },
+  beginner: {
+    label: "Beginner",
+    color: "text-emerald-400 bg-emerald-950/80 border-emerald-500/40",
+  },
+  intermediate: {
+    label: "Intermediate",
+    color: "text-amber-400 bg-amber-950/80 border-amber-500/40",
+  },
   advanced: { label: "Advanced", color: "text-rose-400 bg-rose-950/80 border-rose-500/40" },
 } as const;
 
@@ -20,7 +26,10 @@ function CourseCardComponent({ course }: CourseCardProps) {
   const formattedPrice =
     typeof course.price === "number" ? `$${course.price.toFixed(2)}` : course.price;
 
-  const cardImage = course.thumbnail || course.bannerImage || "/storage/courses/thumbnails/rB9PeE8IXEHOxY0LH0WwUNCsPvfSsPScZwI7kQAg.jpg";
+  const cardImage =
+    course.thumbnail ||
+    course.bannerImage ||
+    "/storage/courses/thumbnails/rB9PeE8IXEHOxY0LH0WwUNCsPvfSsPScZwI7kQAg.jpg";
 
   return (
     <TiltCard maxTilt={4} className="h-full">
@@ -51,7 +60,9 @@ function CourseCardComponent({ course }: CourseCardProps) {
 
           {/* Bottom Badge over Image */}
           <div className="absolute bottom-1.5 left-1.5 right-1.5 sm:bottom-3 sm:left-4 sm:right-4 z-10 flex items-center justify-between gap-1">
-            <span className={`text-[7.5px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border shadow-xs ${level.color}`}>
+            <span
+              className={`text-[7.5px] sm:text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border shadow-xs ${level.color}`}
+            >
               {level.label}
             </span>
             {course.certification && (
@@ -86,7 +97,9 @@ function CourseCardComponent({ course }: CourseCardProps) {
 
               <div className="flex items-center justify-center gap-0.5 sm:gap-1 p-1 sm:p-2 rounded-md sm:rounded-xl bg-slate-50 border border-slate-100">
                 <Layers className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-slate-500 shrink-0" />
-                <span className="text-brand-ink font-extrabold capitalize">{course.delivery || "Online"}</span>
+                <span className="text-brand-ink font-extrabold capitalize">
+                  {course.delivery || "Online"}
+                </span>
               </div>
             </div>
 
@@ -136,4 +149,3 @@ function CourseCardComponent({ course }: CourseCardProps) {
 }
 
 export const CourseCard = memo(CourseCardComponent);
-

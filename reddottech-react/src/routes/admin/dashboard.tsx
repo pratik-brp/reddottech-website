@@ -1,14 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import {
-  BookOpen,
-  Mail,
-  Bell,
-  Award,
-  Plus,
-  ArrowRight,
-  ChevronRight,
-} from "lucide-react";
+import { BookOpen, Mail, Bell, Award, Plus, ArrowRight, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getDashboardStats, getCourses, getContacts } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
@@ -35,11 +27,7 @@ function AdminDashboardPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    Promise.all([
-      getDashboardStats(),
-      getCourses(),
-      getContacts(),
-    ])
+    Promise.all([getDashboardStats(), getCourses(), getContacts()])
       .then(([statsData, coursesData, contactsData]) => {
         if (statsData) setStats(statsData);
         if (coursesData) setRecentCourses(coursesData);
@@ -74,14 +62,20 @@ function AdminDashboardPage() {
           {/* Card 1: Courses */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">Total Courses</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">
+                Total Courses
+              </span>
               <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
                 <BookOpen className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div>
-              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">{stats.coursesCount}</p>
-              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Published &amp; draft</p>
+              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">
+                {stats.coursesCount}
+              </p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+                Published &amp; draft
+              </p>
             </div>
             <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between">
               <Link
@@ -97,14 +91,20 @@ function AdminDashboardPage() {
           {/* Card 2: Contacts */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">Inquiries</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">
+                Inquiries
+              </span>
               <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
                 <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div>
-              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">{stats.contactsCount}</p>
-              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Form submissions</p>
+              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">
+                {stats.contactsCount}
+              </p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+                Form submissions
+              </p>
             </div>
             <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between">
               <Link
@@ -120,14 +120,20 @@ function AdminDashboardPage() {
           {/* Card 3: Certificates */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">Certificates</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">
+                Certificates
+              </span>
               <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                 <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div>
-              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">{stats.certificatesCount}</p>
-              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Issued credentials</p>
+              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">
+                {stats.certificatesCount}
+              </p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+                Issued credentials
+              </p>
             </div>
             <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between">
               <Link
@@ -143,14 +149,20 @@ function AdminDashboardPage() {
           {/* Card 4: Subscribers */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
             <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">Subscribers</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-slate-500 truncate">
+                Subscribers
+              </span>
               <div className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
                 <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div>
-              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">{stats.subscriptionsCount}</p>
-              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">Email subscribers</p>
+              <p className="text-xl sm:text-3xl font-extrabold text-slate-900">
+                {stats.subscriptionsCount}
+              </p>
+              <p className="text-[9px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+                Email subscribers
+              </p>
             </div>
             <div className="mt-2.5 sm:mt-4 pt-2 sm:pt-3 border-t border-slate-100 flex items-center justify-between">
               <Link
@@ -204,13 +216,16 @@ function AdminDashboardPage() {
                       <div className="min-w-0">
                         <h4 className="text-xs font-bold text-slate-900 truncate">{course.name}</h4>
                         <p className="text-[11px] text-slate-500 truncate">
-                          {course.instructor_name || course.instructorName || "Instructor"} • {course.duration || "6 weeks"}
+                          {course.instructor_name || course.instructorName || "Instructor"} •{" "}
+                          {course.duration || "6 weeks"}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2.5 shrink-0">
-                      <span className="text-xs font-bold text-slate-800">${course.price || "250.00"}</span>
+                      <span className="text-xs font-bold text-slate-800">
+                        ${course.price || "250.00"}
+                      </span>
                       <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded capitalize">
                         {course.delivery || "online"}
                       </span>

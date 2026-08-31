@@ -58,7 +58,7 @@ const prodPackageJson = {
 fs.writeFileSync(
   path.join(stagingDir, "package.json"),
   JSON.stringify(prodPackageJson, null, 2),
-  "utf8"
+  "utf8",
 );
 
 // Ensure private storage directories exist
@@ -66,7 +66,6 @@ fs.mkdirSync(path.join(stagingDir, "storage/receipts"), { recursive: true });
 
 // Ensure .htaccess exists so CloudLinux Node.js selector (cl_selector.py) never throws FileNotFoundError
 fs.writeFileSync(path.join(stagingDir, ".htaccess"), "", "utf8");
-
 
 console.log("\n[3/4] Creating deployment archives...");
 
@@ -112,7 +111,9 @@ if (hasTarGz) {
   const tarMb = (tarStats.size / (1024 * 1024)).toFixed(2);
   console.log(` ⭐ RECOMMENDED ARCHIVE: cpanel-deploy.tar.gz (${tarMb} MB)`);
   console.log(`    Location: ${tarOutput}`);
-  console.log(`    👉 Use this for cPanel File Manager upload to bypass Foxhole.JS_Zip antivirus false positives!`);
+  console.log(
+    `    👉 Use this for cPanel File Manager upload to bypass Foxhole.JS_Zip antivirus false positives!`,
+  );
 }
 if (hasZip) {
   const zipStats = fs.statSync(zipOutput);
@@ -121,4 +122,3 @@ if (hasZip) {
   console.log(`    Location: ${zipOutput}`);
 }
 console.log("=================================================");
-

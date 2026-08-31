@@ -13,8 +13,9 @@ const clientDir = path.join(dirname, "../dist/client");
 let ssrHandlerPromise = null;
 function getSsrHandler() {
   if (!ssrHandlerPromise) {
-    ssrHandlerPromise = import(pathToFileURL(path.join(dirname, "../dist/server/server.js")).href)
-      .then((mod) => mod.default || mod);
+    ssrHandlerPromise = import(
+      pathToFileURL(path.join(dirname, "../dist/server/server.js")).href
+    ).then((mod) => mod.default || mod);
   }
   return ssrHandlerPromise;
 }
@@ -125,6 +126,10 @@ async function handleSsr(req, res) {
   res.setHeader("X-XSS-Protection", "1; mode=block");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'self';",
+  );
   if (proto === "https" || process.env.NODE_ENV === "production") {
     res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   }
@@ -158,7 +163,6 @@ const server = createServer((req, res) => {
     }
   });
 });
-
 
 server.listen(PORT, () => {
   console.log(`🚀 Red Dot site + API running on http://localhost:${PORT}`);

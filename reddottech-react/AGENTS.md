@@ -1,14 +1,17 @@
 # Red Dot Technologies — Agent Guidelines & System Architecture
 
 ## Overview
+
 Full-stack production web application for **Red Dot Technologies** (Kathmandu, Nepal), delivering professional IT certifications (PECP), executive training, and AI courses.
 
 ## Tech Stack & Architecture
+
 - **Frontend**: TanStack Router + TanStack Start (SSR), React 19, TypeScript, Tailwind CSS v4, Lucide React, Framer Motion, Embla Carousel.
 - **Backend**: Node.js + Express (`server/server.js`), MySQL 8.x (`mysql2/promise`), session token auth with `scrypt` hashing.
 - **Production Entry**: `server/prod-entry.js` serving both SSR pages and `/api/*` endpoints on unified port (`PORT=5000`).
 
 ## Key Project Conventions
+
 1. **Database Source of Truth**:
    - MySQL database is the sole source of truth. All queries use parameterized placeholders to prevent SQL injection.
    - Schema defined in `server/schema.sql`.

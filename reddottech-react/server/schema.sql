@@ -150,7 +150,7 @@ INSERT INTO `settings` (`key`, `value`) VALUES
 ('whatsapp_number', '+977 9801234567');
 
 -- ------------------------------------------------------------------------------
--- 6. Table structure for `admin_users` & `admin_sessions`
+-- 6. Table structure for `admin_users`, `admin_sessions` & `password_reset_tokens`
 -- ------------------------------------------------------------------------------
 DROP TABLE IF EXISTS `admin_users`;
 CREATE TABLE `admin_users` (
@@ -173,6 +173,16 @@ CREATE TABLE `admin_sessions` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`token`),
   INDEX `idx_admin_sessions_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `password_reset_tokens`;
+CREATE TABLE `password_reset_tokens` (
+  `token` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `expires_at` DATETIME NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`token`),
+  INDEX `idx_password_reset_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------------------------

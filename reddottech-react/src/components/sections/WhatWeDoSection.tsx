@@ -1,11 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
-import {
-  Globe2,
-  Zap,
-  Award,
-  Briefcase,
-  ArrowRight,
-} from "lucide-react";
+import { Globe2, Zap, Award, Briefcase, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export function WhatWeDoSection() {
@@ -61,9 +55,15 @@ export function WhatWeDoSection() {
   ];
 
   return (
-    <section id="what-we-do" className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80">
+    <section
+      id="what-we-do"
+      className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80"
+    >
       {/* Background Lighting & Subtle Grid Texture */}
-      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30"
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full opacity-20 blur-3xl"
@@ -75,7 +75,6 @@ export function WhatWeDoSection() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
         {/* Section Header */}
         <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
           <ScrollReveal direction="up">
@@ -95,7 +94,8 @@ export function WhatWeDoSection() {
 
           <ScrollReveal direction="up" delay={0.2}>
             <p className="text-xs sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-              Bridging higher education and workforce employability in Nepal with high-impact programs and globally recognized credentials.
+              Bridging higher education and workforce employability in Nepal with high-impact
+              programs and globally recognized credentials.
             </p>
           </ScrollReveal>
         </div>
@@ -105,18 +105,15 @@ export function WhatWeDoSection() {
           {services.map((s, idx) => {
             const IconComp = s.icon;
             return (
-              <ScrollReveal
-                key={s.number}
-                direction="up"
-                delay={0.1 * idx}
-                className="flex h-full"
-              >
+              <ScrollReveal key={s.number} direction="up" delay={0.1 * idx} className="flex h-full">
                 <Link
                   to="/contact"
                   className={`group relative flex flex-col justify-between w-full overflow-hidden rounded-xl sm:rounded-[2rem] border border-slate-200/90 bg-white p-3 sm:p-7 shadow-xs transition-all duration-300 hover:-translate-y-1 cursor-pointer ${s.glowBorder}`}
                 >
                   {/* Top Gradient Accent Rail */}
-                  <div className={`absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r ${s.color}`} />
+                  <div
+                    className={`absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r ${s.color}`}
+                  />
 
                   {/* Watermark Number */}
                   <span className="pointer-events-none absolute right-2.5 top-2 sm:right-6 sm:top-4 text-2xl sm:text-6xl font-black text-slate-100/90 select-none transition-all duration-300 group-hover:text-slate-200/80">
@@ -153,7 +150,9 @@ export function WhatWeDoSection() {
 
                   {/* Bottom Footer Action Link */}
                   <div className="mt-3 sm:mt-8 pt-2 sm:pt-4 border-t border-slate-100 relative z-10 flex items-center justify-between text-[10px] sm:text-xs font-bold text-slate-500">
-                    <span className="group-hover:text-brand-red transition-colors font-extrabold">Learn More</span>
+                    <span className="group-hover:text-brand-red transition-colors font-extrabold">
+                      Learn More
+                    </span>
                     <div className="flex h-5 w-5 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-slate-100 group-hover:bg-brand-red group-hover:text-white transition-colors duration-300 shrink-0">
                       <ArrowRight className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 stroke-[2.5]" />
                     </div>
@@ -163,7 +162,6 @@ export function WhatWeDoSection() {
             );
           })}
         </div>
-
       </div>
     </section>
   );

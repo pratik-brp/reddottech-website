@@ -111,7 +111,11 @@ export function RichTextEditor({
     if (isCodeView) return;
     const mediaUrl = prompt("Enter Video or Image URL:", "https://");
     if (mediaUrl && mediaUrl !== "https://") {
-      if (mediaUrl.includes("youtube.com") || mediaUrl.includes("youtu.be") || mediaUrl.includes("vimeo.com")) {
+      if (
+        mediaUrl.includes("youtube.com") ||
+        mediaUrl.includes("youtu.be") ||
+        mediaUrl.includes("vimeo.com")
+      ) {
         const videoHtml = `
           <div class="my-3 aspect-video w-full rounded-xl overflow-hidden shadow-md">
             <iframe src="${mediaUrl}" class="w-full h-full" allowfullscreen></iframe>

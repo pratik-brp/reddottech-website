@@ -45,7 +45,7 @@ export const TRACK_CONFIGS: Record<string, TrackConfig> = {
     name: "AI Foundations & Literacy",
     shortName: "AI Foundations",
     badge: "Free Literacy Track",
-    tagline: "From \"What even is AI?\" to using it like a pro",
+    tagline: 'From "What even is AI?" to using it like a pro',
     description:
       "A free, hands-on 5-lesson AI literacy course and digital credential created for students, educators, and curious professionals by Red Dot Technologies.",
     modulesCount: 5,
@@ -255,7 +255,7 @@ export function generateCertificateReference(
   prefix: string,
   name: string,
   email: string,
-  dateStr?: string
+  dateStr?: string,
 ): string {
   const s = (name || "") + (email || "") + (dateStr || "");
   let hsh = 0;
@@ -342,8 +342,7 @@ export const HEALTHCARE_SOURCES: SourceItem[] = [
   },
   {
     org: "Nepal — National Regulatory Framework",
-    title:
-      "Privacy Act (2075), Health Sector Regulation & Institutional Ethics Oversight",
+    title: "Privacy Act (2075), Health Sector Regulation & Institutional Ethics Oversight",
     summary:
       "The governing local framework for health data and clinical research in Nepal. Requirements continue to evolve — always confirm the current position with your institution's ethics committee and the relevant national authority.",
   },
@@ -352,8 +351,7 @@ export const HEALTHCARE_SOURCES: SourceItem[] = [
 export const FINANCE_SOURCES: SourceItem[] = [
   {
     org: "Ernst & Young (EY)",
-    title:
-      "AI Bank White Paper: Reconstructing the Financial Paradigm through Intelligent Agents",
+    title: "AI Bank White Paper: Reconstructing the Financial Paradigm through Intelligent Agents",
     summary:
       "EY Greater China. Source of the five-stage AI Bank Maturity Assessment Scheme, the five assessment dimensions, and global findings on AI governance, talent structure and scalability. Also draws on joint EY–Institute of International Finance (IIF) research on data quality as the primary barrier to AI adoption.",
   },
@@ -411,7 +409,7 @@ export function renderSvgDiagram(diagramId: string): string {
     const ys = (n: number) =>
       Array.from(
         { length: n },
-        (_, i) => top + (n === 1 ? (bot - top) / 2 : ((bot - top) * i) / (n - 1))
+        (_, i) => top + (n === 1 ? (bot - top) / 2 : ((bot - top) * i) / (n - 1)),
       );
     const pos = layers.map((L) => ys(L.n).map((y) => ({ x: L.x, y })));
     let lines = "",
@@ -420,13 +418,13 @@ export function renderSvgDiagram(diagramId: string): string {
       pos[li].forEach((a) =>
         pos[li + 1].forEach((b) => {
           lines += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#7FA0D0" stroke-opacity="0.25" stroke-width="1.3" stroke-dasharray="4 6"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="1.8s" repeatCount="indefinite"/></line>`;
-        })
+        }),
       );
     }
     pos.forEach((layer, li) =>
       layer.forEach((p, i) => {
         nodes += `<circle cx="${p.x}" cy="${p.y}" r="13" fill="${layers[li].c}" stroke="#CADCFC" stroke-width="1.4"><animate attributeName="opacity" values="0.55;1;0.55" dur="${2 + (i % 3) * 0.5}s" repeatCount="indefinite"/></circle>`;
-      })
+      }),
     );
     const lab = `<text x="150" y="202" fill="#9DB8E6" font-size="12" text-anchor="middle">Input</text><text x="340" y="202" fill="#9DB8E6" font-size="12" text-anchor="middle">Hidden layers</text><text x="530" y="202" fill="#9DB8E6" font-size="12" text-anchor="middle">Output</text>`;
     return `<svg viewBox="0 0 680 214" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${lines}${nodes}${lab}</svg>`;
@@ -642,13 +640,46 @@ export function renderSvgDiagram(diagramId: string): string {
       t1: string,
       t2: string,
       c1: string,
-      c2: string
+      c2: string,
     ) =>
       `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${fill}" stroke="${stroke}"/><text x="${x + w / 2}" y="${y + h / 2 - 3}" fill="${c1}" font-size="11" text-anchor="middle" font-weight="bold">${t1}</text>${t2 ? `<text x="${x + w / 2}" y="${y + h / 2 + 13}" fill="${c2}" font-size="9.5" text-anchor="middle">${t2}</text>` : ""}`;
-    g += box(12, 72, 108, 54, "#22386A", "#3A5680", "Clinician asks", '"What is our..."', "#fff", "#A8C0E4");
+    g += box(
+      12,
+      72,
+      108,
+      54,
+      "#22386A",
+      "#3A5680",
+      "Clinician asks",
+      '"What is our..."',
+      "#fff",
+      "#A8C0E4",
+    );
     g += `<path d="M122 99 h32" stroke="#7FA0D0" stroke-width="1.5" marker-end="url(#ah5)"/>`;
-    g += box(156, 72, 116, 54, "#2E6FB0", "#8FB0E0", "RETRIEVE", "your protocols", "#fff", "#DDE8F6");
-    g += box(156, 10, 116, 44, "#12274d", "#3A5680", "Formulary · guidelines", "SOPs · national protocols", "#F0DCB4", "#A8C0E4");
+    g += box(
+      156,
+      72,
+      116,
+      54,
+      "#2E6FB0",
+      "#8FB0E0",
+      "RETRIEVE",
+      "your protocols",
+      "#fff",
+      "#DDE8F6",
+    );
+    g += box(
+      156,
+      10,
+      116,
+      44,
+      "#12274d",
+      "#3A5680",
+      "Formulary · guidelines",
+      "SOPs · national protocols",
+      "#F0DCB4",
+      "#A8C0E4",
+    );
     g += `<path d="M214 56 v14" stroke="#7FA0D0" stroke-width="1.4"/>`;
     g += `<path d="M274 99 h32" stroke="#7FA0D0" stroke-width="1.5" marker-end="url(#ah5)"/>`;
     g += box(308, 72, 116, 54, "#C8102E", "#FF6B7A", "LLM", "answers only from", "#fff", "#FFD8DD");
@@ -692,7 +723,12 @@ export function renderSvgDiagram(diagramId: string): string {
     const q = [
       ["R", "Robust Capacity Building", "Train and empower local professionals", "#C8102E"],
       ["I", "Inclusive Research Agenda", "Localisation over one-size-fits-all", "#2E6FB0"],
-      ["S", "Smart & Accessible Infrastructure", "Affordable, interoperable, low-resource ready", "#B8892B"],
+      [
+        "S",
+        "Smart & Accessible Infrastructure",
+        "Affordable, interoperable, low-resource ready",
+        "#B8892B",
+      ],
       ["E", "Equitable & Secure Data", "Fair, safe, representative data practices", "#1E7A52"],
     ];
     let g = "";
@@ -888,13 +924,46 @@ export function renderSvgDiagram(diagramId: string): string {
       t1: string,
       t2: string,
       c1: string,
-      c2: string
+      c2: string,
     ) =>
       `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${fill}" stroke="${stroke}"/><text x="${x + w / 2}" y="${y + h / 2 - 3}" fill="${c1}" font-size="11" text-anchor="middle" font-weight="bold">${t1}</text>${t2 ? `<text x="${x + w / 2}" y="${y + h / 2 + 13}" fill="${c2}" font-size="9.5" text-anchor="middle">${t2}</text>` : ""}`;
-    g += box(12, 72, 104, 54, "#22386A", "#3A5680", "Staff question", '"What is our…?"', "#fff", "#A8C0E4");
+    g += box(
+      12,
+      72,
+      104,
+      54,
+      "#22386A",
+      "#3A5680",
+      "Staff question",
+      '"What is our…?"',
+      "#fff",
+      "#A8C0E4",
+    );
     g += `<path d="M118 99 h34" stroke="#7FA0D0" stroke-width="1.5" marker-end="url(#a5)"/>`;
-    g += box(154, 72, 116, 54, "#2E6FB0", "#8FB0E0", "RETRIEVE", "search bank docs", "#fff", "#DDE8F6");
-    g += box(154, 10, 116, 44, "#12274d", "#3A5680", "Policy · circulars", "KYC · product terms", "#F0DCB4", "#A8C0E4");
+    g += box(
+      154,
+      72,
+      116,
+      54,
+      "#2E6FB0",
+      "#8FB0E0",
+      "RETRIEVE",
+      "search bank docs",
+      "#fff",
+      "#DDE8F6",
+    );
+    g += box(
+      154,
+      10,
+      116,
+      44,
+      "#12274d",
+      "#3A5680",
+      "Policy · circulars",
+      "KYC · product terms",
+      "#F0DCB4",
+      "#A8C0E4",
+    );
     g += `<path d="M212 56 v14" stroke="#7FA0D0" stroke-width="1.4"/>`;
     g += `<path d="M272 99 h34" stroke="#7FA0D0" stroke-width="1.5" marker-end="url(#a5)"/>`;
     g += box(308, 72, 116, 54, "#C8102E", "#FF6B7A", "LLM", "answers only from", "#fff", "#FFD8DD");
@@ -958,15 +1027,7 @@ export function renderSvgDiagram(diagramId: string): string {
   }
 
   if (diagramId === "m8") {
-    const steps = [
-      "Define",
-      "Develop",
-      "Validate",
-      "Approve",
-      "Deploy",
-      "Monitor",
-      "Retire",
-    ];
+    const steps = ["Define", "Develop", "Validate", "Approve", "Deploy", "Monitor", "Retire"];
     const cx = 345,
       cy = 122,
       r = 76;
@@ -1011,9 +1072,17 @@ export function renderSvgDiagram(diagramId: string): string {
   if (diagramId === "a2") {
     const layers = [
       ["ENGAGEMENT", "Personalisation · omnichannel · embedded finance", "#C8102E"],
-      ["AI-POWERED DECISIONING", "Decision inventory · feature store · serving · logging", "#2E6FB0"],
+      [
+        "AI-POWERED DECISIONING",
+        "Decision inventory · feature store · serving · logging",
+        "#2E6FB0",
+      ],
       ["CORE TECHNOLOGY & DATA", "Identifiers · APIs · compute · environments", "#B8892B"],
-      ["PLATFORM OPERATING MODEL", "Persistent ownership · funding · standards · decision rights", "#1E7A52"],
+      [
+        "PLATFORM OPERATING MODEL",
+        "Persistent ownership · funding · standards · decision rights",
+        "#1E7A52",
+      ],
     ];
     let g = "";
     const w = 560,
@@ -1033,9 +1102,24 @@ export function renderSvgDiagram(diagramId: string): string {
 
   if (diagramId === "a3") {
     const t = [
-      ["TIER 1", "Determines customer outcomes or regulatory numbers", "Full independent validation · annual revalidation · continuous monitoring", "#C8102E"],
-      ["TIER 2", "Materially informs decisions with human review", "Independent review · periodic revalidation · regular monitoring", "#B8892B"],
-      ["TIER 3", "Internal productivity, no direct consequence", "Lighter review · documented owner · spot checks", "#2E6FB0"],
+      [
+        "TIER 1",
+        "Determines customer outcomes or regulatory numbers",
+        "Full independent validation · annual revalidation · continuous monitoring",
+        "#C8102E",
+      ],
+      [
+        "TIER 2",
+        "Materially informs decisions with human review",
+        "Independent review · periodic revalidation · regular monitoring",
+        "#B8892B",
+      ],
+      [
+        "TIER 3",
+        "Internal productivity, no direct consequence",
+        "Lighter review · documented owner · spot checks",
+        "#2E6FB0",
+      ],
     ];
     let g = "";
     const w = 612,
@@ -1087,8 +1171,28 @@ export function renderSvgDiagram(diagramId: string): string {
       });
       return s;
     };
-    g += col(30, "PREDICTIVE AI STACK", ["Data warehouse", "Feature store", "Training pipelines / MLOps", "Model serving & monitoring"], "#2E6FB0");
-    g += col(370, "GENERATIVE AI STACK", ["Foundation & embedding models", "Vector store & retrieval", "Prompt / agent orchestration", "Guardrails & evaluation harness"], "#C8102E");
+    g += col(
+      30,
+      "PREDICTIVE AI STACK",
+      [
+        "Data warehouse",
+        "Feature store",
+        "Training pipelines / MLOps",
+        "Model serving & monitoring",
+      ],
+      "#2E6FB0",
+    );
+    g += col(
+      370,
+      "GENERATIVE AI STACK",
+      [
+        "Foundation & embedding models",
+        "Vector store & retrieval",
+        "Prompt / agent orchestration",
+        "Guardrails & evaluation harness",
+      ],
+      "#C8102E",
+    );
     g += `<text x="345" y="24" fill="#F0DCB4" font-size="11.5" text-anchor="middle" font-weight="bold">LARGELY SEPARATE STACKS</text>`;
     g += `<text x="345" y="208" fill="#A8C0E4" font-size="10" text-anchor="middle">Shared component: the data lake / document store. A weak warehouse does not block document-centric use cases.</text>`;
     return `<svg viewBox="0 0 690 220" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-w-full block mx-auto">${g}</svg>`;
@@ -1212,7 +1316,12 @@ export function renderSvgDiagram(diagramId: string): string {
       ["ACTIVITY", "models deployed · users", "worthless as evidence", "#5A6779"],
       ["OPERATIONAL", "cycle time · cost per file", "directly attributable", "#2E6FB0"],
       ["BUSINESS", "approval at constant risk", "control for confounds", "#B8892B"],
-      ["FINANCIAL", "revenue · cost · efficiency ratio", "the only level a board accepts", "#1E7A52"],
+      [
+        "FINANCIAL",
+        "revenue · cost · efficiency ratio",
+        "the only level a board accepts",
+        "#1E7A52",
+      ],
     ];
     let g = "";
     const w = 148,
@@ -1266,13 +1375,15 @@ export const FINANCE_ADVANCED_SOURCES: SourceItem[] = [
   },
   {
     org: "Bank for International Settlements",
-    title: "Intelligent financial system: how AI is transforming finance (BIS Working Paper No. 1194)",
+    title:
+      "Intelligent financial system: how AI is transforming finance (BIS Working Paper No. 1194)",
     summary:
       "Aldasoro, Gambacorta, Korinek, Shreeti and Stein, June 2024. Source of the financial stability analysis — model herding, uniformity and network connectedness — the real-economy scenarios, and principles for upgrading financial regulation.",
   },
   {
     org: "McKinsey & Company",
-    title: "Building the AI Bank of the Future / AI-bank of the future: Can banks meet the AI challenge?",
+    title:
+      "Building the AI Bank of the Future / AI-bank of the future: Can banks meet the AI challenge?",
     summary:
       "Source of the four-layer AI capability stack — engagement, AI-powered decisioning, core technology and data, and platform operating model — and the estimate of up to USD 1 trillion in annual value for global banking.",
   },
@@ -1284,7 +1395,8 @@ export const FINANCE_ADVANCED_SOURCES: SourceItem[] = [
   },
   {
     org: "Applied Artificial Intelligence (Taylor & Francis)",
-    title: "Explainable Artificial Intelligence in the Banking Sector: A Systematic Literature Review",
+    title:
+      "Explainable Artificial Intelligence in the Banking Sector: A Systematic Literature Review",
     summary:
       "Tuge & Msweli, 2026. PRISMA 2020 review of 78 peer-reviewed studies and industry reports (2021–2025). Source of the XAI implementation gap, the accuracy–interpretability trade-off, the 'explaining the explanation' problem, and the organisational barriers to adoption.",
   },

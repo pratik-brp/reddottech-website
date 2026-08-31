@@ -14,7 +14,8 @@
     "package:cpanel": "node scripts/package-cpanel.js",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "node scripts/test-api-security.js"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

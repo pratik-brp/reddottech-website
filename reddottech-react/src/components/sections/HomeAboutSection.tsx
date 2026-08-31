@@ -182,7 +182,9 @@ export function HomeAboutSection() {
                         : "text-slate-600 hover:text-brand-ink hover:bg-white/50"
                     }`}
                   >
-                    <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isActive ? "text-brand-red" : "text-slate-400"}`} />
+                    <Icon
+                      className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isActive ? "text-brand-red" : "text-slate-400"}`}
+                    />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -214,9 +216,14 @@ export function HomeAboutSection() {
                 {/* Bullet Points with uniform row heights */}
                 <div className="space-y-2 sm:space-y-2.5 pt-2 sm:pt-3 border-t border-slate-100 min-h-[105px] sm:min-h-[115px]">
                   {currentTab.points.map((pt) => (
-                    <div key={pt} className="flex items-start gap-2.5 sm:gap-3 min-h-[26px] sm:min-h-[28px]">
+                    <div
+                      key={pt}
+                      className="flex items-start gap-2.5 sm:gap-3 min-h-[26px] sm:min-h-[28px]"
+                    >
                       <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                      <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug line-clamp-2">{pt}</span>
+                      <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug line-clamp-2">
+                        {pt}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -225,7 +232,10 @@ export function HomeAboutSection() {
               {/* Actions Row (Pinned Stably at Bottom) */}
               <div className="pt-3 sm:pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 shrink-0 mt-auto">
                 <Magnetic>
-                  <Link to="/about" className="btn-primary group text-xs sm:text-sm py-3 px-6 justify-center w-full sm:w-auto text-center">
+                  <Link
+                    to="/about"
+                    className="btn-primary group text-xs sm:text-sm py-3 px-6 justify-center w-full sm:w-auto text-center"
+                  >
                     <span>Learn More</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
@@ -256,12 +266,18 @@ export function HomeAboutSection() {
                 <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${item.color}`} />
                 <div className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl bg-brand-red/8 text-brand-red transition-all duration-300 group-hover:bg-brand-red group-hover:text-white group-hover:scale-110 mb-2.5 sm:mb-4 p-1.5 sm:p-2.5">
                   {item.svg ? (
-                    <img src={item.svg} alt={item.label} className="h-4 w-4 sm:h-6 sm:w-6 object-contain" />
+                    <img
+                      src={item.svg}
+                      alt={item.label}
+                      className="h-4 w-4 sm:h-6 sm:w-6 object-contain"
+                    />
                   ) : (
                     <Icon className="h-4 w-4 sm:h-6 sm:w-6 stroke-[2.2]" />
                   )}
                 </div>
-                <h3 className="display-font text-sm sm:text-lg font-bold text-brand-ink">{item.label}</h3>
+                <h3 className="display-font text-sm sm:text-lg font-bold text-brand-ink">
+                  {item.label}
+                </h3>
                 <p className="mt-1 sm:mt-2 text-xs sm:text-sm leading-relaxed text-slate-500 font-medium">
                   {item.text}
                 </p>
@@ -273,6 +289,3 @@ export function HomeAboutSection() {
     </section>
   );
 }
-
-
-

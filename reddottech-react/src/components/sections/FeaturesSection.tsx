@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  Award,
-  ArrowRight,
-  CheckCircle2,
-  Zap,
-} from "lucide-react";
+import { Award, ArrowRight, CheckCircle2, Zap } from "lucide-react";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Magnetic } from "@/components/motion/Magnetic";
 
@@ -73,11 +68,16 @@ export function FeaturesSection() {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
           className="animate-float absolute top-[10%] left-[15%] h-96 w-96 rounded-full opacity-25 blur-[100px] transition-all duration-700"
-          style={{ background: `radial-gradient(circle, ${activeFeature.glowColor} 0%, transparent 70%)` }}
+          style={{
+            background: `radial-gradient(circle, ${activeFeature.glowColor} 0%, transparent 70%)`,
+          }}
         />
         <div
           className="animate-float absolute bottom-[10%] right-[10%] h-80 w-80 rounded-full opacity-20 blur-[90px]"
-          style={{ background: "radial-gradient(circle, rgba(125, 211, 252, 0.3) 0%, transparent 70%)", animationDelay: "2.5s" }}
+          style={{
+            background: "radial-gradient(circle, rgba(125, 211, 252, 0.3) 0%, transparent 70%)",
+            animationDelay: "2.5s",
+          }}
         />
         <div className="absolute inset-0 bg-grid-pattern opacity-15" />
       </div>
@@ -93,7 +93,8 @@ export function FeaturesSection() {
           </span>
 
           <h2 className="display-font text-xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
-            Professional <span className="gradient-text">Excellence and Certification</span> Program (PECP)
+            Professional <span className="gradient-text">Excellence and Certification</span> Program
+            (PECP)
           </h2>
 
           <p className="text-xs sm:text-base text-slate-600 font-medium leading-relaxed max-w-2xl mx-auto">
@@ -126,15 +127,17 @@ export function FeaturesSection() {
               >
                 <TiltCard maxTilt={5} className="h-full">
                   <div
-                    className={`group relative h-full overflow-hidden rounded-xl sm:rounded-[2.25rem] border p-3 sm:p-8 transition-all duration-300 flex flex-col justify-between ${isActive
+                    className={`group relative h-full overflow-hidden rounded-xl sm:rounded-[2.25rem] border p-3 sm:p-8 transition-all duration-300 flex flex-col justify-between ${
+                      isActive
                         ? "bg-white border-brand-red/40 shadow-md sm:shadow-xl scale-[1.01] ring-2 ring-brand-red/20"
                         : "bg-white/90 border-slate-200/80 hover:bg-white hover:border-slate-300 shadow-xs sm:shadow-sm"
-                      }`}
+                    }`}
                   >
                     {/* Top Glow Accent Bar */}
                     <div
-                      className={`absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r ${item.accentColor} transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                        }`}
+                      className={`absolute inset-x-0 top-0 h-1 sm:h-1.5 bg-gradient-to-r ${item.accentColor} transition-opacity duration-300 ${
+                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
                     />
 
                     {/* Card Header: Watermark Number & Badge */}
@@ -153,10 +156,11 @@ export function FeaturesSection() {
 
                       {/* Icon Pedestal */}
                       <div
-                        className={`flex h-8 w-8 sm:h-16 sm:w-16 items-center justify-center rounded-lg sm:rounded-2xl p-1.5 sm:p-3.5 transition-all duration-300 shadow-xs ${isActive
+                        className={`flex h-8 w-8 sm:h-16 sm:w-16 items-center justify-center rounded-lg sm:rounded-2xl p-1.5 sm:p-3.5 transition-all duration-300 shadow-xs ${
+                          isActive
                             ? "bg-brand-red text-white scale-105 shadow-md shadow-red-900/30 ring-2 ring-brand-red/20"
                             : "bg-slate-900 text-white group-hover:bg-brand-red group-hover:scale-105"
-                          }`}
+                        }`}
                       >
                         <img
                           src={item.icon}
@@ -204,9 +208,14 @@ export function FeaturesSection() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1">
                 {activeFeature.highlights.map((h) => (
-                  <div key={h} className="flex items-start gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-2xl border border-slate-100 min-h-[52px] sm:min-h-[56px]">
+                  <div
+                    key={h}
+                    className="flex items-start gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-2xl border border-slate-100 min-h-[52px] sm:min-h-[56px]"
+                  >
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug line-clamp-2">{h}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-slate-700 leading-snug line-clamp-2">
+                      {h}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -224,7 +233,10 @@ export function FeaturesSection() {
                   Globally recognized certification programs with limited executive cohort seats.
                 </p>
                 <Magnetic>
-                  <Link to="/pecp" className="btn-primary group text-xs py-2.5 sm:py-3 px-6 w-full justify-center">
+                  <Link
+                    to="/pecp"
+                    className="btn-primary group text-xs py-2.5 sm:py-3 px-6 w-full justify-center"
+                  >
                     <span>Enroll In PECP Batch</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </Link>
@@ -237,4 +249,3 @@ export function FeaturesSection() {
     </section>
   );
 }
-

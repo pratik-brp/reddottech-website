@@ -12,7 +12,14 @@ interface PageHeroProps {
   children?: ReactNode;
 }
 
-export function PageHero({ badge, title, subtitle, className = "", actions, children }: PageHeroProps) {
+export function PageHero({
+  badge,
+  title,
+  subtitle,
+  className = "",
+  actions,
+  children,
+}: PageHeroProps) {
   const ref = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -81,11 +88,7 @@ export function PageHero({ badge, title, subtitle, className = "", actions, chil
           </div>
         )}
 
-        {children && (
-          <div className="pagehero-reveal mt-4 sm:mt-8 w-full">
-            {children}
-          </div>
-        )}
+        {children && <div className="pagehero-reveal mt-4 sm:mt-8 w-full">{children}</div>}
       </div>
 
       {/* Bottom edge separator */}

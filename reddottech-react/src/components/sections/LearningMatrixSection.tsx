@@ -218,7 +218,10 @@ export function LearningMatrixSection() {
                     {/* Features Checklist */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 pt-1">
                       {featuredPillar.features.map((feat) => (
-                        <div key={feat} className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm font-semibold text-slate-200">
+                        <div
+                          key={feat}
+                          className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm font-semibold text-slate-200"
+                        >
                           <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-brand-red/30 text-brand-red shrink-0">
                             <Check className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 stroke-[3]" />
                           </div>
@@ -230,7 +233,10 @@ export function LearningMatrixSection() {
                     {/* Actions */}
                     <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
                       <Magnetic>
-                        <Link to={featuredPillar.link as any} className="btn-primary group py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm w-full sm:w-auto text-center justify-center">
+                        <Link
+                          to={featuredPillar.link as any}
+                          className="btn-primary group py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm w-full sm:w-auto text-center justify-center"
+                        >
                           <span>Explore PECP Credentials</span>
                           <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
@@ -253,7 +259,9 @@ export function LearningMatrixSection() {
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-3 border-y border-white/10 py-2.5 sm:py-5">
                         {featuredPillar.stats.map((s) => (
                           <div key={s.label}>
-                            <p className="text-[9px] sm:text-[11px] text-slate-400 font-medium leading-tight">{s.label}</p>
+                            <p className="text-[9px] sm:text-[11px] text-slate-400 font-medium leading-tight">
+                              {s.label}
+                            </p>
                             <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-sm font-extrabold text-white">
                               {s.val}
                             </p>
@@ -288,10 +296,11 @@ export function LearningMatrixSection() {
                     <div
                       onMouseEnter={() => setHoveredId(pillar.id)}
                       onMouseLeave={() => setHoveredId(null)}
-                      className={`h-full flex flex-col justify-between rounded-xl sm:rounded-[2rem] border bg-white p-3 sm:p-6 lg:p-7 shadow-xs sm:shadow-sm transition-all duration-300 relative overflow-hidden ${isHovered
+                      className={`h-full flex flex-col justify-between rounded-xl sm:rounded-[2rem] border bg-white p-3 sm:p-6 lg:p-7 shadow-xs sm:shadow-sm transition-all duration-300 relative overflow-hidden ${
+                        isHovered
                           ? `${pillar.borderGlow} shadow-md -translate-y-0.5`
                           : "border-slate-200/80 hover:border-slate-300"
-                        }`}
+                      }`}
                     >
                       {/* Card Content Area */}
                       <div className="space-y-2.5 sm:space-y-5">
@@ -324,7 +333,10 @@ export function LearningMatrixSection() {
                         {/* Features List */}
                         <div className="space-y-1 sm:space-y-2 pt-2 border-t border-slate-100">
                           {pillar.features.map((feat) => (
-                            <div key={feat} className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-xs font-semibold text-slate-700">
+                            <div
+                              key={feat}
+                              className="flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-xs font-semibold text-slate-700"
+                            >
                               <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-500 shrink-0" />
                               <span className="truncate sm:whitespace-normal">{feat}</span>
                             </div>
@@ -357,4 +369,3 @@ export function LearningMatrixSection() {
     </section>
   );
 }
-

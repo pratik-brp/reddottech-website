@@ -34,17 +34,16 @@ async function createSession(email) {
   await run("DELETE FROM admin_sessions WHERE email = ? OR expires_at < NOW()", [email]);
   await run(
     "INSERT INTO admin_sessions (token, email, expires_at, created_at) VALUES (?, ?, ?, NOW())",
-    [token, email, expiresAt]
+    [token, email, expiresAt],
   );
   return token;
 }
 
 async function getUserForToken(token) {
   if (!token) return null;
-  const row = await get(
-    "SELECT token, email, expires_at FROM admin_sessions WHERE token = ?",
-    [token]
-  );
+  const row = await get("SELECT token, email, expires_at FROM admin_sessions WHERE token = ?", [
+    token,
+  ]);
   if (!row) return null;
   if (new Date(row.expires_at).getTime() < Date.now()) {
     await run("DELETE FROM admin_sessions WHERE token = ?", [token]);
@@ -60,7 +59,6 @@ function extractToken(req) {
   if (req.cookies && req.cookies.admin_token) return String(req.cookies.admin_token);
   return null;
 }
-
 
 export async function requireAuth(req, res, next) {
   try {
@@ -113,16 +111,19 @@ export const authHandlers = {
 
       const user = await get(
         "SELECT email, name, password_hash, password_salt FROM admin_users WHERE email = ?",
-        [normalizedEmail]
+        [normalizedEmail],
       );
 
       if (!user) {
         // Run dummy scrypt computation to match execution time of existing user and prevent timing attacks
-        await verifyPassword(password, "0123456789abcdef0123456789abcdef", "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+        await verifyPassword(
+          password,
+          "0123456789abcdef0123456789abcdef",
+          "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        );
         recordFailedAttempt(key);
         return res.status(401).json({ success: false, error: "Invalid email or password." });
       }
-
 
       const passwordMatch = await verifyPassword(password, user.password_salt, user.password_hash);
       if (!passwordMatch) {
@@ -190,27 +191,32 @@ export const authHandlers = {
 
       const admin = await get(
         "SELECT email, password_hash, password_salt FROM admin_users WHERE email = ?",
-        [user.email]
+        [user.email],
       );
       if (!admin) {
         return res.status(404).json({ success: false, error: "Admin account not found." });
       }
-      const currentValid = await verifyPassword(currentPassword, admin.password_salt, admin.password_hash);
+      const currentValid = await verifyPassword(
+        currentPassword,
+        admin.password_salt,
+        admin.password_hash,
+      );
       if (!currentValid) {
         return res.status(401).json({ success: false, error: "Current password is incorrect." });
       }
 
       const { salt, hash } = await hashPassword(newPassword);
-      await run(
-        "UPDATE admin_users SET password_hash = ?, password_salt = ? WHERE email = ?",
-        [hash, salt, admin.email]
-      );
+      await run("UPDATE admin_users SET password_hash = ?, password_salt = ? WHERE email = ?", [
+        hash,
+        salt,
+        admin.email,
+      ]);
 
       // Revoke all other sessions so the new password takes effect immediately
-      await run(
-        "DELETE FROM admin_sessions WHERE email = ? AND token <> ?",
-        [admin.email, extractToken(req)]
-      );
+      await run("DELETE FROM admin_sessions WHERE email = ? AND token <> ?", [
+        admin.email,
+        extractToken(req),
+      ]);
 
       return res.json({ success: true, message: "Password updated successfully." });
     } catch (err) {
@@ -247,18 +253,24 @@ export const authHandlers = {
 
       const admin = await get(
         "SELECT email, password_hash, password_salt FROM admin_users WHERE email = ?",
-        [user.email]
+        [user.email],
       );
       if (!admin) {
         return res.status(404).json({ success: false, error: "Admin account not found." });
       }
-      const currentValid = await verifyPassword(currentPassword, admin.password_salt, admin.password_hash);
+      const currentValid = await verifyPassword(
+        currentPassword,
+        admin.password_salt,
+        admin.password_hash,
+      );
       if (!currentValid) {
         return res.status(401).json({ success: false, error: "Current password is incorrect." });
       }
 
       // Check if new email is already taken
-      const existing = await get("SELECT email FROM admin_users WHERE email = ?", [normalizedNewEmail]);
+      const existing = await get("SELECT email FROM admin_users WHERE email = ?", [
+        normalizedNewEmail,
+      ]);
       if (existing) {
         return res
           .status(409)
@@ -266,10 +278,16 @@ export const authHandlers = {
       }
 
       // Update email in admin_users table
-      await run("UPDATE admin_users SET email = ? WHERE email = ?", [normalizedNewEmail, admin.email]);
+      await run("UPDATE admin_users SET email = ? WHERE email = ?", [
+        normalizedNewEmail,
+        admin.email,
+      ]);
 
       // Update email in active admin_sessions table
-      await run("UPDATE admin_sessions SET email = ? WHERE email = ?", [normalizedNewEmail, admin.email]);
+      await run("UPDATE admin_sessions SET email = ? WHERE email = ?", [
+        normalizedNewEmail,
+        admin.email,
+      ]);
 
       return res.json({
         success: true,
@@ -281,7 +299,113 @@ export const authHandlers = {
       return res.status(500).json({ success: false, error: "Email change failed." });
     }
   },
+
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body || {};
+      if (!email) {
+        return res.status(400).json({ success: false, error: "Email address is required." });
+      }
+
+      const normalizedEmail = String(email).toLowerCase().trim();
+      const user = await get("SELECT email, name FROM admin_users WHERE email = ?", [
+        normalizedEmail,
+      ]);
+
+      if (!user) {
+        // Prevent email enumeration
+        return res.json({
+          success: true,
+          message: "If this email is registered, a password reset token has been issued.",
+        });
+      }
+
+      // Generate a secure 32-character hex reset token
+      const resetToken = crypto.randomBytes(16).toString("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+      // Clean up old reset tokens
+      await run("DELETE FROM password_reset_tokens WHERE email = ? OR expires_at < NOW()", [
+        normalizedEmail,
+      ]);
+      await run(
+        "INSERT INTO password_reset_tokens (token, email, expires_at, created_at) VALUES (?, ?, ?, NOW())",
+        [resetToken, normalizedEmail, expiresAt],
+      );
+
+      console.log(
+        `[Password Reset] 🔑 Reset token for ${normalizedEmail}: ${resetToken} (expires in 1 hour)`,
+      );
+
+      return res.json({
+        success: true,
+        message: "Password reset token generated. Please enter your reset token and new password.",
+        // For developer convenience on local instances, include token in response
+        resetToken: process.env.NODE_ENV !== "production" ? resetToken : undefined,
+      });
+    } catch (err) {
+      console.error("[ForgotPassword Error]:", err);
+      return res
+        .status(500)
+        .json({ success: false, error: "Failed to process password reset request." });
+    }
+  },
+
+  async resetPasswordWithToken(req, res) {
+    try {
+      const { token, newPassword } = req.body || {};
+      if (!token || !newPassword) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Reset token and new password are required." });
+      }
+
+      if (String(newPassword).length < 8) {
+        return res
+          .status(400)
+          .json({ success: false, error: "New password must be at least 8 characters." });
+      }
+
+      const cleanToken = String(token).trim();
+      const record = await get(
+        "SELECT token, email, expires_at FROM password_reset_tokens WHERE token = ?",
+        [cleanToken],
+      );
+
+      if (!record) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid or unrecognized reset token." });
+      }
+
+      if (new Date(record.expires_at).getTime() < Date.now()) {
+        await run("DELETE FROM password_reset_tokens WHERE token = ?", [cleanToken]);
+        return res.status(400).json({
+          success: false,
+          error: "Password reset token has expired. Please request a new one.",
+        });
+      }
+
+      const { salt, hash } = await hashPassword(newPassword);
+      await run("UPDATE admin_users SET password_hash = ?, password_salt = ? WHERE email = ?", [
+        hash,
+        salt,
+        record.email,
+      ]);
+
+      // Revoke all existing sessions and delete token
+      await run("DELETE FROM admin_sessions WHERE email = ?", [record.email]);
+      await run("DELETE FROM password_reset_tokens WHERE email = ?", [record.email]);
+
+      return res.json({
+        success: true,
+        message: "Password reset successfully. You can now sign in with your new password.",
+      });
+    } catch (err) {
+      console.error("[ResetPassword Error]:", err);
+      return res.status(500).json({ success: false, error: "Failed to reset password." });
+    }
+  },
 };
 
 export { hashPassword, createSession, getUserForToken, extractToken };
-

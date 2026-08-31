@@ -164,7 +164,9 @@ CREATE TABLE \`subscriptions\` (
   const subs = await query("SELECT * FROM subscriptions ORDER BY id ASC");
   if (subs.length > 0) {
     sql += `INSERT INTO \`subscriptions\` (\`id\`, \`email\`, \`created_at\`) VALUES\n`;
-    const subValues = subs.map((s) => `(${s.id}, ${escapeSql(s.email)}, ${escapeSql(s.created_at)})`);
+    const subValues = subs.map(
+      (s) => `(${s.id}, ${escapeSql(s.email)}, ${escapeSql(s.created_at)})`,
+    );
     sql += subValues.join(",\n") + ";\n\n";
   }
 
@@ -207,7 +209,10 @@ CREATE TABLE \`admin_users\` (
   const admins = await query("SELECT * FROM admin_users ORDER BY email ASC");
   if (admins.length > 0) {
     sql += `INSERT INTO \`admin_users\` (\`email\`, \`name\`, \`password_hash\`, \`password_salt\`, \`created_at\`) VALUES\n`;
-    const adminValues = admins.map((a) => `(${escapeSql(a.email)}, ${escapeSql(a.name)}, ${escapeSql(a.password_hash)}, ${escapeSql(a.password_salt)}, ${escapeSql(a.created_at)})`);
+    const adminValues = admins.map(
+      (a) =>
+        `(${escapeSql(a.email)}, ${escapeSql(a.name)}, ${escapeSql(a.password_hash)}, ${escapeSql(a.password_salt)}, ${escapeSql(a.created_at)})`,
+    );
     sql += adminValues.join(",\n") + ";\n\n";
   }
 
@@ -248,7 +253,10 @@ CREATE TABLE \`ai_leads\` (
   const leads = await query("SELECT * FROM ai_leads ORDER BY created_at DESC");
   if (leads.length > 0) {
     sql += `INSERT INTO \`ai_leads\` (\`id\`, \`name\`, \`email\`, \`org\`, \`track\`, \`txn\`, \`status\`, \`access_code\`, \`notes\`, \`email_sent\`, \`email_sent_at\`, \`created_at\`) VALUES\n`;
-    const leadValues = leads.map((l) => `(${escapeSql(l.id)}, ${escapeSql(l.name)}, ${escapeSql(l.email)}, ${escapeSql(l.org)}, ${escapeSql(l.track)}, ${escapeSql(l.txn)}, ${escapeSql(l.status)}, ${escapeSql(l.access_code)}, ${escapeSql(l.notes)}, ${l.email_sent ? 1 : 0}, ${escapeSql(l.email_sent_at)}, ${escapeSql(l.created_at)})`);
+    const leadValues = leads.map(
+      (l) =>
+        `(${escapeSql(l.id)}, ${escapeSql(l.name)}, ${escapeSql(l.email)}, ${escapeSql(l.org)}, ${escapeSql(l.track)}, ${escapeSql(l.txn)}, ${escapeSql(l.status)}, ${escapeSql(l.access_code)}, ${escapeSql(l.notes)}, ${l.email_sent ? 1 : 0}, ${escapeSql(l.email_sent_at)}, ${escapeSql(l.created_at)})`,
+    );
     sql += leadValues.join(",\n") + ";\n\n";
   }
 

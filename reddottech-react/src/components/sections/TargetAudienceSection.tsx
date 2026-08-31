@@ -61,12 +61,7 @@ export function TargetAudienceSection() {
         {/* 3 Audience Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           {targetAudiences.map((aud, idx) => (
-            <ScrollReveal
-              key={aud.title}
-              direction="up"
-              delay={idx * 0.1}
-              className="h-full"
-            >
+            <ScrollReveal key={aud.title} direction="up" delay={idx * 0.1} className="h-full">
               <div className="group relative h-full flex flex-col justify-between overflow-hidden rounded-[2.25rem] border border-slate-200/90 bg-white shadow-xl transition-all duration-500 hover:-translate-y-2 hover:border-brand-red/40 hover:shadow-2xl">
                 {/* Top Accent Gradient Border */}
                 <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-brand-red via-rose-500 to-amber-500 opacity-80 group-hover:opacity-100 transition-opacity z-20" />

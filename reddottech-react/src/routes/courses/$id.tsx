@@ -1,13 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Clock,
-  BookOpen,
-  CheckCircle,
-  ArrowLeft,
-  Globe,
-  Layers,
-  Signal,
-} from "lucide-react";
+import { Clock, BookOpen, CheckCircle, ArrowLeft, Globe, Layers, Signal } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { fetchApi } from "@/lib/api";
@@ -40,11 +32,17 @@ export const Route = createFileRoute("/courses/$id")({
         { name: "description", content: desc.slice(0, 160) },
         { property: "og:title", content: title },
         { property: "og:description", content: desc.slice(0, 200) },
-        { property: "og:image", content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}` },
+        {
+          property: "og:image",
+          content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}`,
+        },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: desc.slice(0, 200) },
-        { name: "twitter:image", content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}` },
+        {
+          name: "twitter:image",
+          content: banner.startsWith("http") ? banner : `https://reddottech.com.np${banner}`,
+        },
       ],
     };
   },
@@ -78,7 +76,6 @@ function CourseDetailPage() {
       setLoading(false);
     }
   }, [id]);
-
 
   const tabs = [
     { key: "overview" as const, label: "Overview" },

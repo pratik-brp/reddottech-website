@@ -17,6 +17,12 @@ vendor/
 .env
 .env.*
 !.env.example
+storage/receipts/
+storage/receipts/*
+!storage/receipts/.gitkeep
+reddottech-react/storage/receipts/
+reddottech-react/storage/receipts/*
+!reddottech-react/storage/receipts/.gitkeep
 
 # Logs
 *.log

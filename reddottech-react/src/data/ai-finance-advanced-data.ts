@@ -2,367 +2,362 @@ import type { Lesson } from "./ai-healthcare-data";
 
 export const financeAdvancedLessons: Lesson[] = [
   {
-    "id": "a1",
-    "tag": "Module 1",
-    "time": "45 min",
-    "title": "From Practitioner to Architect: The Advanced Landscape",
-    "summary": "Where the industry actually stands, and the execution gap",
-    "objectives": [
+    id: "a1",
+    tag: "Module 1",
+    time: "45 min",
+    title: "From Practitioner to Architect: The Advanced Landscape",
+    summary: "Where the industry actually stands, and the execution gap",
+    objectives: [
       "Position yourself accurately against global adoption benchmarks rather than vendor narrative",
       "Understand the 'execution and business integration gap' and why it defines the current phase",
       "Interpret the AI maturity ladder — Exploring, Piloting, Scaling, Transforming — and locate your institution honestly",
       "Understand why emerging-market institutions are outperforming advanced-economy peers on deployment",
       "Distinguish efficiency-led adoption from business-model reinvention",
-      "Frame the strategic question this programme is designed to answer"
+      "Frame the strategic question this programme is designed to answer",
     ],
-    "sections": [
+    sections: [
       {
-        "h": "What this programme assumes, and where it goes",
-        "html": "\n        <p>This programme assumes you have completed <strong>AI for Financial Professionals</strong> or possess equivalent working knowledge: you can distinguish machine learning from generative AI, read a Gini coefficient, recognise data leakage, explain why NRB's guidelines place accountability with the board, and structure a prompt properly.</p>\n        <p>We now move from <em>using</em> AI to <strong>architecting, governing and leading it</strong>. The orientation shifts from the individual practitioner to the institution: model risk frameworks, capability stacks, agentic systems, systemic risk, target operating models, and the economics of value realisation. Where the first programme taught you to be a competent user, this one prepares you to sit on the committee that decides.</p>"
+        h: "What this programme assumes, and where it goes",
+        html: "\n        <p>This programme assumes you have completed <strong>AI for Financial Professionals</strong> or possess equivalent working knowledge: you can distinguish machine learning from generative AI, read a Gini coefficient, recognise data leakage, explain why NRB's guidelines place accountability with the board, and structure a prompt properly.</p>\n        <p>We now move from <em>using</em> AI to <strong>architecting, governing and leading it</strong>. The orientation shifts from the individual practitioner to the institution: model risk frameworks, capability stacks, agentic systems, systemic risk, target operating models, and the economics of value realisation. Where the first programme taught you to be a competent user, this one prepares you to sit on the committee that decides.</p>",
       },
       {
-        "h": "The honest benchmark: where the industry actually is",
-        "html": "\n        <p>Strategy begins with an accurate baseline. The <strong>2026 Global AI in Financial Services Report</strong> from the Cambridge Centre for Alternative Finance — surveying <strong>628 organisations across 151 jurisdictions</strong>, including 149 traditional financial institutions, 203 fintechs, 146 vendors and 130 central banks and regulators — provides the most credible picture currently available.</p>\n        <ul class=\"body\">\n          <li><strong>81% of surveyed financial services firms are adopting AI at some level</strong>, with 40% reporting advanced adoption (Scaling or Transforming).</li>\n          <li>Regulators lag: only <strong>20% report advanced adoption</strong>, and 48% remain in Exploring or are not engaged with AI at all.</li>\n          <li>Fintechs lead incumbents on advanced adoption by <strong>47% to 30%</strong>, and at the Transforming stage by <strong>19% to 6%</strong>.</li>\n        </ul>\n        <p>That final comparison is the strategic threat for an incumbent bank. The gap is not primarily technological — the report identifies <strong>workforce preparedness and investment levels</strong> as the key differentiators between fintechs and incumbents. Both are choices, not constraints.</p>"
+        h: "The honest benchmark: where the industry actually is",
+        html: '\n        <p>Strategy begins with an accurate baseline. The <strong>2026 Global AI in Financial Services Report</strong> from the Cambridge Centre for Alternative Finance — surveying <strong>628 organisations across 151 jurisdictions</strong>, including 149 traditional financial institutions, 203 fintechs, 146 vendors and 130 central banks and regulators — provides the most credible picture currently available.</p>\n        <ul class="body">\n          <li><strong>81% of surveyed financial services firms are adopting AI at some level</strong>, with 40% reporting advanced adoption (Scaling or Transforming).</li>\n          <li>Regulators lag: only <strong>20% report advanced adoption</strong>, and 48% remain in Exploring or are not engaged with AI at all.</li>\n          <li>Fintechs lead incumbents on advanced adoption by <strong>47% to 30%</strong>, and at the Transforming stage by <strong>19% to 6%</strong>.</li>\n        </ul>\n        <p>That final comparison is the strategic threat for an incumbent bank. The gap is not primarily technological — the report identifies <strong>workforce preparedness and investment levels</strong> as the key differentiators between fintechs and incumbents. Both are choices, not constraints.</p>',
       },
       {
-        "h": "The execution gap — the defining finding",
-        "html": "\n        <p>One statistic in the Cambridge study deserves more attention than any other:</p>\n        <p><strong>Only 14% of industry respondents currently see AI as transformational to their organisational strategy and competitive advantage.</strong></p>\n        <p>Eighty-one percent are adopting. Fourteen percent consider it strategically transformational. The report names this directly as <em>\"a potentially significant execution and business integration gap.\"</em></p>\n        <p>Read carefully, this says most institutions have successfully installed AI into existing processes without changing what the institution <em>is</em>. That is not failure — process improvement is real value — but it is a ceiling. And it explains why board-level enthusiasm so often fails to convert into competitive position.</p>\n        <div class=\"callout note\"><h4>Deeper dive: why the gap persists</h4><p style=\"margin:0\">Efficiency gains accrue inside existing organisational boundaries and require no structural change. Business-model reinvention requires redesigning products, pricing, channels, risk appetite and incentives simultaneously — which requires the board, not the innovation team. Institutions that cross this gap do so because leadership treated AI as a strategy question rather than a technology programme. Every subsequent module in this course is, ultimately, about crossing it.</p></div>"
+        h: "The execution gap — the defining finding",
+        html: '\n        <p>One statistic in the Cambridge study deserves more attention than any other:</p>\n        <p><strong>Only 14% of industry respondents currently see AI as transformational to their organisational strategy and competitive advantage.</strong></p>\n        <p>Eighty-one percent are adopting. Fourteen percent consider it strategically transformational. The report names this directly as <em>"a potentially significant execution and business integration gap."</em></p>\n        <p>Read carefully, this says most institutions have successfully installed AI into existing processes without changing what the institution <em>is</em>. That is not failure — process improvement is real value — but it is a ceiling. And it explains why board-level enthusiasm so often fails to convert into competitive position.</p>\n        <div class="callout note"><h4>Deeper dive: why the gap persists</h4><p style="margin:0">Efficiency gains accrue inside existing organisational boundaries and require no structural change. Business-model reinvention requires redesigning products, pricing, channels, risk appetite and incentives simultaneously — which requires the board, not the innovation team. Institutions that cross this gap do so because leadership treated AI as a strategy question rather than a technology programme. Every subsequent module in this course is, ultimately, about crossing it.</p></div>',
       },
       {
-        "h": "Adoption is concentrated in the back office",
-        "html": "\n        <p>The Cambridge data shows precisely where deployment sits today. <strong>Four of the top five financial-services use cases are back-office functions:</strong></p>\n        <ul class=\"body\">\n          <li>Process automation — <strong>79%</strong> at pilot stage or beyond</li>\n          <li>Data visualisation — <strong>75%</strong></li>\n          <li>Software engineering — <strong>75%</strong></li>\n          <li>Data and knowledge management — <strong>69%</strong></li>\n          <li>AI-powered customer support — <strong>74%</strong> (the leading front-office use case; fintechs 82% versus incumbents 67%)</li>\n        </ul>\n        <p>In risk and compliance, <strong>fraud detection leads at 57%</strong> and <strong>credit risk modelling at 54%</strong>.</p>\n        <p>The report's conclusion is blunt: AI is currently being used <em>\"to improve execution rather than to fundamentally reconfigure business models.\"</em> Encouragingly, <strong>51% of more mature adopters are piloting or deploying new AI-powered financial products, versus 28% among less mature institutions</strong> — evidence that maturity does eventually convert into product innovation.</p>"
+        h: "Adoption is concentrated in the back office",
+        html: '\n        <p>The Cambridge data shows precisely where deployment sits today. <strong>Four of the top five financial-services use cases are back-office functions:</strong></p>\n        <ul class="body">\n          <li>Process automation — <strong>79%</strong> at pilot stage or beyond</li>\n          <li>Data visualisation — <strong>75%</strong></li>\n          <li>Software engineering — <strong>75%</strong></li>\n          <li>Data and knowledge management — <strong>69%</strong></li>\n          <li>AI-powered customer support — <strong>74%</strong> (the leading front-office use case; fintechs 82% versus incumbents 67%)</li>\n        </ul>\n        <p>In risk and compliance, <strong>fraud detection leads at 57%</strong> and <strong>credit risk modelling at 54%</strong>.</p>\n        <p>The report\'s conclusion is blunt: AI is currently being used <em>"to improve execution rather than to fundamentally reconfigure business models."</em> Encouragingly, <strong>51% of more mature adopters are piloting or deploying new AI-powered financial products, versus 28% among less mature institutions</strong> — evidence that maturity does eventually convert into product innovation.</p>',
       },
       {
-        "h": "The maturity ladder, used honestly",
-        "html": "\n        <p>The framework used throughout this programme has four stages. Locate your institution without flattery:</p>\n        <ol class=\"body\">\n          <li><strong>Exploring.</strong> Interest, discussion, perhaps an unapproved tool in use somewhere. No governance, no owned use case.</li>\n          <li><strong>Piloting.</strong> One or more defined use cases in controlled testing, with owners and some measurement. Value not yet proven at scale.</li>\n          <li><strong>Scaling.</strong> Proven use cases extended across business lines, supported by shared platforms, reusable components and a governance framework.</li>\n          <li><strong>Transforming.</strong> AI materially changes products, propositions or the operating model. Strategy and AI capability are inseparable.</li>\n        </ol>\n        <p>Most Nepali institutions today sit between Exploring and Piloting. That is neither shameful nor unusual — 48% of the world's regulators are in the same position. What matters is whether the trajectory is deliberate.</p>"
+        h: "The maturity ladder, used honestly",
+        html: '\n        <p>The framework used throughout this programme has four stages. Locate your institution without flattery:</p>\n        <ol class="body">\n          <li><strong>Exploring.</strong> Interest, discussion, perhaps an unapproved tool in use somewhere. No governance, no owned use case.</li>\n          <li><strong>Piloting.</strong> One or more defined use cases in controlled testing, with owners and some measurement. Value not yet proven at scale.</li>\n          <li><strong>Scaling.</strong> Proven use cases extended across business lines, supported by shared platforms, reusable components and a governance framework.</li>\n          <li><strong>Transforming.</strong> AI materially changes products, propositions or the operating model. Strategy and AI capability are inseparable.</li>\n        </ol>\n        <p>Most Nepali institutions today sit between Exploring and Piloting. That is neither shameful nor unusual — 48% of the world\'s regulators are in the same position. What matters is whether the trajectory is deliberate.</p>',
       },
       {
-        "h": "The emerging-market finding that should change your thinking",
-        "html": "\n        <p>A result from the Cambridge study runs against conventional expectation and is directly relevant to Nepal:</p>\n        <p><strong>Industry respondents in emerging markets and developing economies report higher levels of deployment — Scaling and Transforming — than firms in advanced economies.</strong></p>\n        <p>Related, and equally striking: <strong>53% of surveyed industry respondents spend under USD 100,000 annually on AI, yet still report high maturity in generative and agentic AI.</strong></p>\n        <p>Two implications follow. First, capital is not the binding constraint it is often claimed to be — foundation models have collapsed the cost of entry, and institutions building on external models rather than training their own can reach real capability at modest spend. Second, the absence of entrenched legacy systems and legacy processes can be an advantage rather than a handicap. An institution without thirty years of accumulated technical debt has fewer things to unpick.</p>\n        <p>This does not mean Nepal's banks are ahead. It means the excuse that they cannot compete because they lack scale is empirically weak.</p>"
+        h: "The emerging-market finding that should change your thinking",
+        html: "\n        <p>A result from the Cambridge study runs against conventional expectation and is directly relevant to Nepal:</p>\n        <p><strong>Industry respondents in emerging markets and developing economies report higher levels of deployment — Scaling and Transforming — than firms in advanced economies.</strong></p>\n        <p>Related, and equally striking: <strong>53% of surveyed industry respondents spend under USD 100,000 annually on AI, yet still report high maturity in generative and agentic AI.</strong></p>\n        <p>Two implications follow. First, capital is not the binding constraint it is often claimed to be — foundation models have collapsed the cost of entry, and institutions building on external models rather than training their own can reach real capability at modest spend. Second, the absence of entrenched legacy systems and legacy processes can be an advantage rather than a handicap. An institution without thirty years of accumulated technical debt has fewer things to unpick.</p>\n        <p>This does not mean Nepal's banks are ahead. It means the excuse that they cannot compete because they lack scale is empirically weak.</p>",
       },
       {
-        "h": "The value at stake, and the scepticism it deserves",
-        "html": "\n        <p>McKinsey's widely cited estimate is that AI technologies could deliver <strong>up to USD 1 trillion of additional value annually to global banking</strong>. PwC's Strategy& analysis concludes that institutions fully embracing AI could achieve up to a <strong>15-percentage-point improvement in their efficiency ratio</strong> — a figure that, if realised, would reset shareholder expectations for the sector.</p>\n        <div class=\"callout note\"><h4>Industry evidence: World Economic Forum &amp; Accenture</h4><p style=\"margin:0 0 8px\">The WEF's <i>Artificial Intelligence in Financial Services</i> (January 2025), drawing on roundtables with over 100 financial services executives, quantifies the exposure differently: research indicates that <b>32–39% of the work performed across capital markets, insurance and banking has high potential to be fully automated</b>, with a further <b>34–37% holding high augmentation potential</b>.</p><p style=\"margin:0 0 8px\">Investment is following. Financial services firms spent <b>USD 35 billion on AI in 2023</b>, with projected investment across banking, insurance, capital markets and payments expected to reach <b>USD 97 billion by 2027</b> — making financial services one of the most heavily AI-invested industries.</p><p style=\"margin:0\">Notably, executive attention is shifting: approximately <b>70% of financial services executives believe AI will directly contribute to revenue growth</b> in the coming years, rather than efficiency alone.</p></div>\n        <p>Treat these as directional rather than predictive. They describe a theoretical maximum under full execution, and the Cambridge data shows almost nobody is executing fully. The professionally useful reading is not \"we will capture this\" but rather: <em>the gap between the theoretical value and current realisation is the size of the execution problem</em> — which is precisely the problem this programme addresses.</p>"
+        h: "The value at stake, and the scepticism it deserves",
+        html: '\n        <p>McKinsey\'s widely cited estimate is that AI technologies could deliver <strong>up to USD 1 trillion of additional value annually to global banking</strong>. PwC\'s Strategy& analysis concludes that institutions fully embracing AI could achieve up to a <strong>15-percentage-point improvement in their efficiency ratio</strong> — a figure that, if realised, would reset shareholder expectations for the sector.</p>\n        <div class="callout note"><h4>Industry evidence: World Economic Forum &amp; Accenture</h4><p style="margin:0 0 8px">The WEF\'s <i>Artificial Intelligence in Financial Services</i> (January 2025), drawing on roundtables with over 100 financial services executives, quantifies the exposure differently: research indicates that <b>32–39% of the work performed across capital markets, insurance and banking has high potential to be fully automated</b>, with a further <b>34–37% holding high augmentation potential</b>.</p><p style="margin:0 0 8px">Investment is following. Financial services firms spent <b>USD 35 billion on AI in 2023</b>, with projected investment across banking, insurance, capital markets and payments expected to reach <b>USD 97 billion by 2027</b> — making financial services one of the most heavily AI-invested industries.</p><p style="margin:0">Notably, executive attention is shifting: approximately <b>70% of financial services executives believe AI will directly contribute to revenue growth</b> in the coming years, rather than efficiency alone.</p></div>\n        <p>Treat these as directional rather than predictive. They describe a theoretical maximum under full execution, and the Cambridge data shows almost nobody is executing fully. The professionally useful reading is not "we will capture this" but rather: <em>the gap between the theoretical value and current realisation is the size of the execution problem</em> — which is precisely the problem this programme addresses.</p>',
       },
       {
-        "h": "How this programme is structured",
-        "html": "\n        <p>Twelve modules, arranged as a progression from technical depth to institutional leadership:</p>\n        <ul class=\"body\">\n          <li><strong>Modules 2–3</strong> build the architectural and risk foundations: the AI capability stack, and advanced model risk management.</li>\n          <li><strong>Modules 4–6</strong> address the hard technical frontier: explainability in depth, foundation models and the modern AI stack, and agentic AI.</li>\n          <li><strong>Modules 7–8</strong> apply this to the two highest-value domains: advanced credit risk and capital, and financial crime at network scale.</li>\n          <li><strong>Modules 9–10</strong> move to the institution and the system: enterprise governance and target operating model, then systemic risk and the regulatory frontier.</li>\n          <li><strong>Modules 11–12</strong> close on execution: value realisation, and leading transformation in a Nepali institution — concluding with your capstone enterprise AI strategy.</li>\n        </ul>"
-      }
+        h: "How this programme is structured",
+        html: '\n        <p>Twelve modules, arranged as a progression from technical depth to institutional leadership:</p>\n        <ul class="body">\n          <li><strong>Modules 2–3</strong> build the architectural and risk foundations: the AI capability stack, and advanced model risk management.</li>\n          <li><strong>Modules 4–6</strong> address the hard technical frontier: explainability in depth, foundation models and the modern AI stack, and agentic AI.</li>\n          <li><strong>Modules 7–8</strong> apply this to the two highest-value domains: advanced credit risk and capital, and financial crime at network scale.</li>\n          <li><strong>Modules 9–10</strong> move to the institution and the system: enterprise governance and target operating model, then systemic risk and the regulatory frontier.</li>\n          <li><strong>Modules 11–12</strong> close on execution: value realisation, and leading transformation in a Nepali institution — concluding with your capstone enterprise AI strategy.</li>\n        </ul>',
+      },
     ],
-    "practitioner": {
-      "title": "Practitioner's note: benchmark before you strategise",
-      "text": "Before your next AI steering discussion, place your institution on the four-stage ladder in writing and circulate it. Institutions consistently overstate their maturity because pilots are visible and scaling is not. A written, evidenced position — <em>\"we have three pilots, none scaled, no model inventory, no independent validation\"</em> — is uncomfortable and immediately clarifying. Strategy built on a flattering self-assessment fails predictably."
+    practitioner: {
+      title: "Practitioner's note: benchmark before you strategise",
+      text: 'Before your next AI steering discussion, place your institution on the four-stage ladder in writing and circulate it. Institutions consistently overstate their maturity because pilots are visible and scaling is not. A written, evidenced position — <em>"we have three pilots, none scaled, no model inventory, no independent validation"</em> — is uncomfortable and immediately clarifying. Strategy built on a flattering self-assessment fails predictably.',
     },
-    "activity": {
-      "title": "Workplace application",
-      "text": "Assess your institution against the Cambridge benchmarks. For each of the five leading use cases (process automation, data visualisation, software engineering, data and knowledge management, customer support), plus fraud detection and credit risk modelling, mark your stage: Not engaged, Exploring, Piloting, Scaling or Transforming. Then answer one question honestly: <strong>of everything we have deployed, has any of it changed a product, a price, or a customer proposition?</strong> If the answer is no, you are in the 86%, and you now know what the work is."
+    activity: {
+      title: "Workplace application",
+      text: "Assess your institution against the Cambridge benchmarks. For each of the five leading use cases (process automation, data visualisation, software engineering, data and knowledge management, customer support), plus fraud detection and credit risk modelling, mark your stage: Not engaged, Exploring, Piloting, Scaling or Transforming. Then answer one question honestly: <strong>of everything we have deployed, has any of it changed a product, a price, or a customer proposition?</strong> If the answer is no, you are in the 86%, and you now know what the work is.",
     },
-    "takeaways": [
+    takeaways: [
       "81% of financial firms are adopting AI, but only 14% consider it transformational — the execution gap defines this phase",
       "Fintechs lead incumbents 47% to 30% on advanced adoption; workforce preparedness and investment are the differentiators",
       "Four of the top five use cases remain back-office; AI is improving execution rather than reconfiguring business models",
       "EMDE institutions report higher deployment than advanced-economy peers — scale is not the binding constraint",
       "53% spend under USD 100,000 annually yet report high GenAI and agentic maturity",
-      "The $1 trillion and 15-point efficiency figures describe a theoretical maximum; the gap to realisation is the execution problem"
+      "The $1 trillion and 15-point efficiency figures describe a theoretical maximum; the gap to realisation is the execution problem",
     ],
-    "quiz": [
+    quiz: [
       {
-        "q": "The Cambridge Centre for Alternative Finance found that 81% of financial firms are adopting AI, yet only 14% see it as transformational to strategy. This is best described as:",
-        "opts": [
+        q: "The Cambridge Centre for Alternative Finance found that 81% of financial firms are adopting AI, yet only 14% see it as transformational to strategy. This is best described as:",
+        opts: [
           "An execution and business integration gap — adoption without structural change",
           "Proof that regulators are blocking adoption",
           "A statistical error in the survey",
-          "Evidence that AI does not work in finance"
+          "Evidence that AI does not work in finance",
         ],
-        "a": 0,
-        "fb": "Most institutions have installed AI into existing processes without changing what the institution is. Crossing that gap requires board-level strategy, not more pilots."
+        a: 0,
+        fb: "Most institutions have installed AI into existing processes without changing what the institution is. Crossing that gap requires board-level strategy, not more pilots.",
       },
       {
-        "q": "On advanced AI adoption, the Cambridge study found fintechs lead traditional financial institutions by:",
-        "opts": [
-          "10% to 9%",
-          "47% to 30%",
-          "They are equal",
-          "95% to 5%"
-        ],
-        "a": 1,
-        "fb": "Fintechs lead 47% to 30% on advanced adoption and 19% to 6% at the Transforming stage, with workforce preparedness and investment as key differentiators."
+        q: "On advanced AI adoption, the Cambridge study found fintechs lead traditional financial institutions by:",
+        opts: ["10% to 9%", "47% to 30%", "They are equal", "95% to 5%"],
+        a: 1,
+        fb: "Fintechs lead 47% to 30% on advanced adoption and 19% to 6% at the Transforming stage, with workforce preparedness and investment as key differentiators.",
       },
       {
-        "q": "Which finding most directly challenges the argument that Nepali banks cannot compete on AI because of scale?",
-        "opts": [
+        q: "Which finding most directly challenges the argument that Nepali banks cannot compete on AI because of scale?",
+        opts: [
           "Fintechs are growing quickly",
           "Regulators are slow to adopt",
           "EMDE respondents report higher deployment than advanced economies, and 53% spend under USD 100,000 annually while reporting high GenAI maturity",
-          "AI is mostly used in the back office"
+          "AI is mostly used in the back office",
         ],
-        "a": 2,
-        "fb": "Foundation models have collapsed the cost of entry, and the absence of legacy technical debt can be an advantage rather than a handicap."
+        a: 2,
+        fb: "Foundation models have collapsed the cost of entry, and the absence of legacy technical debt can be an advantage rather than a handicap.",
       },
       {
-        "q": "Four of the top five financial services AI use cases are:",
-        "opts": [
+        q: "Four of the top five financial services AI use cases are:",
+        opts: [
           "Regulatory reporting only",
           "Customer-facing lending products",
           "Trading strategies",
-          "Back-office functions such as process automation and data management"
+          "Back-office functions such as process automation and data management",
         ],
-        "a": 3,
-        "fb": "Process automation (79%), data visualisation (75%), software engineering (75%) and data/knowledge management (69%) dominate — execution improvement rather than business-model change."
+        a: 3,
+        fb: "Process automation (79%), data visualisation (75%), software engineering (75%) and data/knowledge management (69%) dominate — execution improvement rather than business-model change.",
       },
       {
-        "q": "PwC's estimate that full AI adoption could improve a bank's efficiency ratio by up to 15 percentage points should be interpreted as:",
-        "opts": [
+        q: "PwC's estimate that full AI adoption could improve a bank's efficiency ratio by up to 15 percentage points should be interpreted as:",
+        opts: [
           "A theoretical maximum under full execution — the gap to realisation is the size of the execution problem",
           "An estimate that applies only to fintechs",
           "A regulatory requirement",
-          "A guaranteed outcome for any bank that buys AI software"
+          "A guaranteed outcome for any bank that buys AI software",
         ],
-        "a": 0,
-        "fb": "Such figures describe the ceiling under complete execution. The Cambridge data shows almost no institution is executing fully."
-      }
-    ]
+        a: 0,
+        fb: "Such figures describe the ceiling under complete execution. The Cambridge data shows almost no institution is executing fully.",
+      },
+    ],
   },
   {
-    "id": "a2",
-    "tag": "Module 2",
-    "time": "55 min",
-    "title": "The AI Capability Stack",
-    "summary": "The four-layer architecture of an AI-first bank",
-    "objectives": [
+    id: "a2",
+    tag: "Module 2",
+    time: "55 min",
+    title: "The AI Capability Stack",
+    summary: "The four-layer architecture of an AI-first bank",
+    objectives: [
       "Describe the four layers of the AI capability stack and how they interact",
       "Understand why weakness in any single layer caps the entire institution",
       "Evaluate the engagement layer: personalisation, omnichannel journeys and embedded finance",
       "Understand the decisioning layer and the components a credible decisioning capability requires",
       "Assess core technology and data infrastructure requirements realistically",
-      "Understand the platform operating model and why it is the layer most institutions neglect"
+      "Understand the platform operating model and why it is the layer most institutions neglect",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a3",
-    "tag": "Module 3",
-    "time": "55 min",
-    "title": "Advanced Model Risk Management & Validation",
-    "summary": "Building a validation function a supervisor would respect",
-    "objectives": [
+    id: "a3",
+    tag: "Module 3",
+    time: "55 min",
+    title: "Advanced Model Risk Management & Validation",
+    summary: "Building a validation function a supervisor would respect",
+    objectives: [
       "Apply model risk management principles at institutional rather than individual model level",
       "Design a model inventory with risk tiering that drives proportionate control",
       "Conduct or commission genuine independent validation — conceptual soundness, outcomes analysis, benchmarking",
       "Understand backtesting, stability testing and the treatment of overlays",
       "Design ongoing monitoring that detects drift before it becomes a supervisory finding",
-      "Understand how model risk management extends to generative and third-party models"
+      "Understand how model risk management extends to generative and third-party models",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a4",
-    "tag": "Module 4",
-    "time": "55 min",
-    "title": "Explainable AI in Depth",
-    "summary": "Why XAI fails in practice, and how to make it work",
-    "objectives": [
+    id: "a4",
+    tag: "Module 4",
+    time: "55 min",
+    title: "Explainable AI in Depth",
+    summary: "Why XAI fails in practice, and how to make it work",
+    objectives: [
       "Understand the accuracy–interpretability trade-off and when it is real versus assumed",
       "Distinguish interpretable models from post-hoc explanation, and know when each is appropriate",
       "Apply SHAP, LIME and counterfactual explanations, and understand their limitations",
       "Recognise the 'explaining the explanation' problem",
       "Design stakeholder-specific explanations for customers, front-line staff, validators and supervisors",
-      "Understand why XAI implementation fails for organisational rather than technical reasons"
+      "Understand why XAI implementation fails for organisational rather than technical reasons",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a5",
-    "tag": "Module 5",
-    "time": "55 min",
-    "title": "Foundation Models, LLMOps & the Modern AI Stack",
-    "summary": "Building on external models without losing control",
-    "objectives": [
+    id: "a5",
+    tag: "Module 5",
+    time: "55 min",
+    title: "Foundation Models, LLMOps & the Modern AI Stack",
+    summary: "Building on external models without losing control",
+    objectives: [
       "Distinguish foundation models from large language models and understand what pre-training implies",
       "Evaluate build, buy, customise and fine-tune as strategic options",
       "Understand the modern generative AI stack and how it differs from the predictive AI stack",
       "Design evaluation harnesses and guardrails appropriate to a regulated institution",
       "Manage foundation-model dependency, vendor concentration and version risk",
-      "Understand the economics of inference and where cost actually accumulates"
+      "Understand the economics of inference and where cost actually accumulates",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a6",
-    "tag": "Module 6",
-    "time": "55 min",
-    "title": "Agentic AI in Banking",
-    "summary": "Systems that act, and the controls they demand",
-    "objectives": [
+    id: "a6",
+    tag: "Module 6",
+    time: "55 min",
+    title: "Agentic AI in Banking",
+    summary: "Systems that act, and the controls they demand",
+    objectives: [
       "Define agentic AI precisely and distinguish it from assistants and automation",
       "Understand adoption trajectory and why agentic AI is the clearest growth frontier",
       "Describe agent architecture: planning, tools, memory and orchestration",
       "Apply a levels-of-autonomy framework to banking processes",
       "Identify agent-specific failure modes and design controls for them",
-      "Determine which banking processes are suitable for agentic treatment and which are not"
+      "Determine which banking processes are suitable for agentic treatment and which are not",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a7",
-    "tag": "Module 7",
-    "time": "55 min",
-    "title": "Advanced Credit Risk & Capital",
-    "summary": "IFRS 9, stress testing, fairness and the regulated credit model",
-    "objectives": [
+    id: "a7",
+    tag: "Module 7",
+    time: "55 min",
+    title: "Advanced Credit Risk & Capital",
+    summary: "IFRS 9, stress testing, fairness and the regulated credit model",
+    objectives: [
       "Apply AI across the credit risk parameter set: PD, LGD and EAD",
       "Understand IFRS 9 expected credit loss and where machine learning legitimately contributes",
       "Understand the role of models in stress testing and scenario analysis",
       "Design champion–challenger programmes that generate defensible evidence",
       "Conduct rigorous fairness testing appropriate to a regulated lender",
-      "Understand reject inference, through-the-cycle versus point-in-time, and other advanced modelling considerations"
+      "Understand reject inference, through-the-cycle versus point-in-time, and other advanced modelling considerations",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a8",
-    "tag": "Module 8",
-    "time": "50 min",
-    "title": "Financial Crime at Scale: Graph & Network Intelligence",
-    "summary": "Entity resolution, network analytics and privacy-preserving collaboration",
-    "objectives": [
+    id: "a8",
+    tag: "Module 8",
+    time: "50 min",
+    title: "Financial Crime at Scale: Graph & Network Intelligence",
+    summary: "Entity resolution, network analytics and privacy-preserving collaboration",
+    objectives: [
       "Apply graph analytics to financial crime beyond transaction-level monitoring",
       "Understand entity resolution and why it determines detection capability",
       "Understand typology discovery and unsupervised detection of unknown patterns",
       "Evaluate privacy-enhancing technologies for cross-institution collaboration",
       "Design a target financial crime architecture appropriate to a Nepali institution",
-      "Understand model risk considerations specific to financial crime systems"
+      "Understand model risk considerations specific to financial crime systems",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a9",
-    "tag": "Module 9",
-    "time": "55 min",
-    "title": "Enterprise Governance & the Target Operating Model",
-    "summary": "Structures, decision rights and the organisation AI requires",
-    "objectives": [
+    id: "a9",
+    tag: "Module 9",
+    time: "55 min",
+    title: "Enterprise Governance & the Target Operating Model",
+    summary: "Structures, decision rights and the organisation AI requires",
+    objectives: [
       "Design an AI governance structure with unambiguous decision rights",
       "Apply the three lines of defence to AI without duplicating existing risk functions",
       "Choose between centralised, federated and hub-and-spoke operating models",
       "Build the policy stack a supervisor would expect to see",
       "Understand talent composition, capability building and the Centre of Excellence",
-      "Address the cultural barriers that defeat well-designed frameworks"
+      "Address the cultural barriers that defeat well-designed frameworks",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a10",
-    "tag": "Module 10",
-    "time": "55 min",
-    "title": "Systemic Risk, Financial Stability & the Regulatory Frontier",
-    "summary": "What AI means for the financial system, and how regulation is responding",
-    "objectives": [
+    id: "a10",
+    tag: "Module 10",
+    time: "55 min",
+    title: "Systemic Risk, Financial Stability & the Regulatory Frontier",
+    summary: "What AI means for the financial system, and how regulation is responding",
+    objectives: [
       "Understand AI's implications for financial stability at system rather than firm level",
       "Explain model herding, uniformity and network connectedness as stability risks",
       "Understand third-party and foundation-model concentration as a systemic exposure",
       "Compare emerging regulatory models internationally",
       "Understand how supervisors themselves are adopting AI, and what that implies",
-      "Apply this system-level perspective to Nepal's context and NRB's framework"
+      "Apply this system-level perspective to Nepal's context and NRB's framework",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a11",
-    "tag": "Module 11",
-    "time": "50 min",
-    "title": "Value Realisation: From Pilots to P&L",
-    "summary": "Measuring, capturing and defending the economics of AI",
-    "objectives": [
+    id: "a11",
+    tag: "Module 11",
+    time: "50 min",
+    title: "Value Realisation: From Pilots to P&L",
+    summary: "Measuring, capturing and defending the economics of AI",
+    objectives: [
       "Understand why most institutions struggle to evidence AI value",
       "Build a value measurement framework linking AI activity to financial outcomes",
       "Use the efficiency ratio as a forward-looking indicator of AI maturity",
       "Understand the investment threshold effect and what it implies for budgeting",
       "Manage AI as a portfolio rather than a set of projects",
-      "Avoid the efficiency trap and the double-counting of benefits"
+      "Avoid the efficiency trap and the double-counting of benefits",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "a12",
-    "tag": "Module 12",
-    "time": "55 min",
-    "title": "Leading the AI Transformation in a Nepali Institution",
-    "summary": "Strategy, sequencing and your capstone",
-    "objectives": [
+    id: "a12",
+    tag: "Module 12",
+    time: "55 min",
+    title: "Leading the AI Transformation in a Nepali Institution",
+    summary: "Strategy, sequencing and your capstone",
+    objectives: [
       "Synthesise the programme into a coherent institutional strategy",
       "Apply the emerging-market advantage realistically rather than aspirationally",
       "Sequence a credible three-horizon roadmap",
       "Anticipate the specific obstacles Nepali institutions encounter",
       "Understand the leadership behaviours that determine whether transformation succeeds",
-      "Complete a defensible enterprise AI strategy for your own institution"
+      "Complete a defensible enterprise AI strategy for your own institution",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
-  }
+    takeaways: [],
+    quiz: [],
+  },
 ];

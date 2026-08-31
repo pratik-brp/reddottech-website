@@ -23,17 +23,8 @@ import {
 import { toast } from "sonner";
 import { requireAdminRoute, getToken } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
-import {
-  getAiLeads,
-  createAiLead,
-  updateAiLead,
-  deleteAiLead,
-} from "@/lib/api";
-import {
-  TRACK_CONFIGS,
-  generateAccessCode,
-  validateAccessCode,
-} from "@/lib/ai-course-utils";
+import { getAiLeads, createAiLead, updateAiLead, deleteAiLead } from "@/lib/api";
+import { TRACK_CONFIGS, generateAccessCode, validateAccessCode } from "@/lib/ai-course-utils";
 
 function getResolvedReceiptUrl(rawUrl?: string): string {
   if (!rawUrl) return "";
@@ -67,7 +58,6 @@ export const Route = createFileRoute("/admin/ai-unlocked")({
   component: AdminAiUnlockedPage,
 });
 
-
 export interface AiPaymentLead {
   id: string;
   name: string;
@@ -90,14 +80,14 @@ export interface AiPaymentLead {
  */
 export async function sendAccessCodeEmailViaFormSubmit(
   lead: AiPaymentLead,
-  code: string
+  code: string,
 ): Promise<{ success: boolean; error?: string }> {
   const trackName =
     lead.track === "healthcare"
       ? "AI for Healthcare Professionals (Clinical Track)"
       : lead.track === "finance-advanced"
-      ? "Advanced AI for Finance Professionals (Level 2 Architecture Track)"
-      : "AI for Financial Professionals (Banking Track)";
+        ? "Advanced AI for Finance Professionals (Level 2 Architecture Track)"
+        : "AI for Financial Professionals (Banking Track)";
   const activationUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
 
   const payload = {
@@ -169,9 +159,11 @@ function AdminAiUnlockedPage() {
   }, []);
 
   // ── Code Generator State ──
-  const [genTrack, setGenTrack] = useState<"healthcare" | "finance" | "finance-advanced">("healthcare");
+  const [genTrack, setGenTrack] = useState<"healthcare" | "finance" | "finance-advanced">(
+    "healthcare",
+  );
   const [generatedCode, setGeneratedCode] = useState(() =>
-    generateAccessCode(TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026")
+    generateAccessCode(TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"),
   );
   const [codeCopied, setCodeCopied] = useState(false);
 
@@ -192,13 +184,17 @@ function AdminAiUnlockedPage() {
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newOrg, setNewOrg] = useState("");
-  const [newTrack, setNewTrack] = useState<"healthcare" | "finance" | "finance-advanced">("healthcare");
+  const [newTrack, setNewTrack] = useState<"healthcare" | "finance" | "finance-advanced">(
+    "healthcare",
+  );
   const [newTxn, setNewTxn] = useState("");
   const [autoEmailManual, setAutoEmailManual] = useState(true);
 
   // ── Filters ──
   const [searchQuery, setSearchQuery] = useState("");
-  const [trackFilter, setTrackFilter] = useState<"all" | "healthcare" | "finance" | "finance-advanced">("all");
+  const [trackFilter, setTrackFilter] = useState<
+    "all" | "healthcare" | "finance" | "finance-advanced"
+  >("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "verified">("all");
 
   const filteredLeads = useMemo(() => {
@@ -223,8 +219,8 @@ function AdminAiUnlockedPage() {
       track === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
         : track === "finance-advanced"
-        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-        : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
+          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
+          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
     setGeneratedCode(generateAccessCode(salt));
     setCodeCopied(false);
   };
@@ -249,8 +245,8 @@ function AdminAiUnlockedPage() {
       lead.track === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
         : lead.track === "finance-advanced"
-        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-        : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
+          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
+          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const newCode = lead.accessCode || generateAccessCode(salt);
 
@@ -258,8 +254,8 @@ function AdminAiUnlockedPage() {
       lead.track === "healthcare"
         ? "AI for Healthcare Professionals"
         : lead.track === "finance-advanced"
-        ? "Advanced AI for Finance Professionals (Level 2)"
-        : "AI for Financial Professionals";
+          ? "Advanced AI for Finance Professionals (Level 2)"
+          : "AI for Financial Professionals";
 
     const courseUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
     const messageTemplate = `Dear ${lead.name},\n\nYour payment for ${trackName} (Txn Ref: ${lead.txn || "Confirmed"}) has been verified!\n\nYour Access Code: ${newCode}\n\nTo activate your course, visit:\n${courseUrl}\nand enter your code under Step 3 (Instant Access Code Unlock).\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.\nKathmandu, Nepal`;
@@ -289,7 +285,7 @@ function AdminAiUnlockedPage() {
           };
         }
         return l;
-      })
+      }),
     );
 
     setSendingEmailMap((prev) => ({ ...prev, [lead.id]: false }));
@@ -298,7 +294,7 @@ function AdminAiUnlockedPage() {
       toast.success(`Access code ${newCode} dispatched to ${lead.email}`);
     } else {
       toast.warning(
-        `Payment verified & code generated (${newCode}). Automated email failed, but dispatch text was copied to your clipboard.`
+        `Payment verified & code generated (${newCode}). Automated email failed, but dispatch text was copied to your clipboard.`,
       );
     }
   };
@@ -322,9 +318,7 @@ function AdminAiUnlockedPage() {
       }).catch(() => {});
 
       setLeads((prev) =>
-        prev.map((l) =>
-          l.id === lead.id ? { ...l, emailSent: true, emailSentAt: nowIso } : l
-        )
+        prev.map((l) => (l.id === lead.id ? { ...l, emailSent: true, emailSentAt: nowIso } : l)),
       );
       toast.success(`Access code resent to ${lead.email}`);
     } else {
@@ -350,21 +344,15 @@ function AdminAiUnlockedPage() {
     const clean = testCode.trim().toUpperCase();
     if (!clean) return;
 
-    const isHealth = validateAccessCode(
-      clean,
-      TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
-    );
-    const isFin = validateAccessCode(
-      clean,
-      TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026"
-    );
+    const isHealth = validateAccessCode(clean, TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026");
+    const isFin = validateAccessCode(clean, TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026");
     const isFinAdv = validateAccessCode(
       clean,
-      TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
+      TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026",
     );
 
     const matchingLead = leads.find(
-      (l) => l.accessCode?.trim().toUpperCase() === clean && l.status === "verified"
+      (l) => l.accessCode?.trim().toUpperCase() === clean && l.status === "verified",
     );
 
     if (isHealth) {
@@ -410,8 +398,8 @@ function AdminAiUnlockedPage() {
       newTrack === "healthcare"
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
         : newTrack === "finance-advanced"
-        ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-        : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
+          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
+          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const generated = generateAccessCode(salt);
 
@@ -535,24 +523,20 @@ function AdminAiUnlockedPage() {
               <div className="flex items-center gap-2 pb-3 border-b border-slate-100 justify-between">
                 <div className="flex items-center gap-2">
                   <KeyRound className="h-4 w-4 text-slate-700" />
-                  <h3 className="font-semibold text-sm text-slate-900">
-                    Generate Access Token
-                  </h3>
+                  <h3 className="font-semibold text-sm text-slate-900">Generate Access Token</h3>
                 </div>
                 <span className="text-[11px] text-slate-400 font-mono">
                   {genTrack === "healthcare"
                     ? "Salt: AIHP"
                     : genTrack === "finance-advanced"
-                    ? "Salt: AIFA (L2)"
-                    : "Salt: AIFP (L1)"}
+                      ? "Salt: AIFA (L2)"
+                      : "Salt: AIFP (L1)"}
                 </span>
               </div>
 
               <div className="mt-4 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                  <label className="text-xs font-medium text-slate-600">
-                    Target Track
-                  </label>
+                  <label className="text-xs font-medium text-slate-600">Target Track</label>
                   {/* Segmented Control */}
                   <div className="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-[11px]">
                     <button
@@ -665,8 +649,8 @@ function AdminAiUnlockedPage() {
                     genTrack === "healthcare"
                       ? "AI for Healthcare"
                       : genTrack === "finance-advanced"
-                      ? "Advanced AI for Finance (Level 2)"
-                      : "AI for Finance";
+                        ? "Advanced AI for Finance (Level 2)"
+                        : "AI for Finance";
                   const msg = `Dear Learner,\n\nYour payment for ${trackLabel} has been verified.\n\nYour Access Code: ${generatedCode}\n\nUnlock here: https://reddottech.com.np/ai-unlocked?track=${genTrack}&view=pay\n\nBest regards,\nRed Dot Technologies`;
                   navigator.clipboard.writeText(msg);
                   toast.success("Ready dispatch message copied");
@@ -684,9 +668,7 @@ function AdminAiUnlockedPage() {
             <div>
               <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
                 <ShieldCheck className="h-4 w-4 text-slate-700" />
-                <h3 className="font-semibold text-sm text-slate-900">
-                  Token Verification
-                </h3>
+                <h3 className="font-semibold text-sm text-slate-900">Token Verification</h3>
               </div>
 
               <form onSubmit={handleTestCode} className="mt-4 space-y-3">
@@ -729,11 +711,13 @@ function AdminAiUnlockedPage() {
                           </p>
                           {validationResult.isEnrolled ? (
                             <p className="text-[10px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded inline-block mt-1">
-                              ✓ Active Enrolment: {validationResult.studentName} ({validationResult.studentEmail})
+                              ✓ Active Enrolment: {validationResult.studentName} (
+                              {validationResult.studentEmail})
                             </p>
                           ) : (
                             <p className="text-[10px] text-slate-500 italic mt-0.5">
-                              Cryptographically valid, not yet assigned to an active student in queue.
+                              Cryptographically valid, not yet assigned to an active student in
+                              queue.
                             </p>
                           )}
                         </div>
@@ -755,7 +739,8 @@ function AdminAiUnlockedPage() {
             </div>
 
             <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-              Validates cryptographic signature against active course salts and cross-references database enrolments.
+              Validates cryptographic signature against active course salts and cross-references
+              database enrolments.
             </p>
           </div>
         </div>
@@ -765,9 +750,7 @@ function AdminAiUnlockedPage() {
           {/* Header & Controls Toolbar */}
           <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-sm text-slate-900">
-                Payment Verification Queue
-              </h3>
+              <h3 className="font-semibold text-sm text-slate-900">Payment Verification Queue</h3>
               <p className="text-xs text-slate-500 mt-0.5">
                 {filteredLeads.length} {filteredLeads.length === 1 ? "record" : "records"} found
               </p>
@@ -962,9 +945,7 @@ function AdminAiUnlockedPage() {
                               )}
                             </div>
                           ) : isVerified ? (
-                            <span className="text-[11px] text-amber-600 font-medium">
-                              Not sent
-                            </span>
+                            <span className="text-[11px] text-amber-600 font-medium">Not sent</span>
                           ) : (
                             <span className="text-[11px] text-slate-400">—</span>
                           )}
@@ -1026,9 +1007,9 @@ function AdminAiUnlockedPage() {
                                       lead.track === "healthcare"
                                         ? "AI for Healthcare Professionals"
                                         : "AI for Financial Professionals"
-                                    } — Red Dot Technologies`
+                                    } — Red Dot Technologies`,
                                   )}&body=${encodeURIComponent(
-                                    `Dear ${lead.name},\n\nYour payment has been verified!\n\nYour Access Code: ${lead.accessCode}\n\nActivate course: https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.`
+                                    `Dear ${lead.name},\n\nYour payment has been verified!\n\nYour Access Code: ${lead.accessCode}\n\nActivate course: https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.`,
                                   )}`}
                                   className="p-1.5 rounded-md border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer"
                                   title="Open in email client"
@@ -1119,7 +1100,9 @@ function AdminAiUnlockedPage() {
                         ) : (
                           <Send className="h-3.5 w-3.5" />
                         )}
-                        <span>{sendingEmailMap[lead.id] ? "Processing..." : "Approve & Dispatch"}</span>
+                        <span>
+                          {sendingEmailMap[lead.id] ? "Processing..." : "Approve & Dispatch"}
+                        </span>
                       </button>
                     ) : (
                       <>
@@ -1163,9 +1146,7 @@ function AdminAiUnlockedPage() {
           <div className="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-xl p-6 space-y-4 animate-fade-in-up">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-semibold text-base text-slate-900">
-                  New Student Enrolment
-                </h3>
+                <h3 className="font-semibold text-base text-slate-900">New Student Enrolment</h3>
                 <p className="text-xs text-slate-500">
                   Register offline or corporate-sponsored participants
                 </p>
@@ -1181,9 +1162,7 @@ function AdminAiUnlockedPage() {
 
             <form onSubmit={handleCreateManualLead} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Full Name *
-                </label>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Full Name *</label>
                 <input
                   type="text"
                   value={newName}
@@ -1231,8 +1210,12 @@ function AdminAiUnlockedPage() {
                   className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
                 >
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
-                  <option value="finance">AI for Financial Professionals — Level 1 (8 Modules)</option>
-                  <option value="finance-advanced">Advanced AI for Finance Professionals — Level 2 (12 Modules)</option>
+                  <option value="finance">
+                    AI for Financial Professionals — Level 1 (8 Modules)
+                  </option>
+                  <option value="finance-advanced">
+                    Advanced AI for Finance Professionals — Level 2 (12 Modules)
+                  </option>
                 </select>
               </div>
 
@@ -1257,10 +1240,7 @@ function AdminAiUnlockedPage() {
                   onChange={(e) => setAutoEmailManual(e.target.checked)}
                   className="rounded border-slate-300 text-brand-red focus:ring-brand-red h-4 w-4 cursor-pointer"
                 />
-                <label
-                  htmlFor="autoEmailManual"
-                  className="text-xs text-slate-600 cursor-pointer"
-                >
+                <label htmlFor="autoEmailManual" className="text-xs text-slate-600 cursor-pointer">
                   Automatically dispatch access token to student's email
                 </label>
               </div>
@@ -1286,115 +1266,118 @@ function AdminAiUnlockedPage() {
       )}
 
       {/* ── Receipt Lightbox Modal ── */}
-      {selectedReceiptLead && (() => {
-        const rawReceipt = selectedReceiptLead.receiptUrl || selectedReceiptLead.receipt_url || "";
-        const resolvedUrl = getResolvedReceiptUrl(rawReceipt);
-        const isPdf = resolvedUrl.toLowerCase().includes(".pdf");
+      {selectedReceiptLead &&
+        (() => {
+          const rawReceipt =
+            selectedReceiptLead.receiptUrl || selectedReceiptLead.receipt_url || "";
+          const resolvedUrl = getResolvedReceiptUrl(rawReceipt);
+          const isPdf = resolvedUrl.toLowerCase().includes(".pdf");
 
-        return (
-          <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-sm text-slate-900">
-                    Payment Slip Preview
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    {selectedReceiptLead.name} · Ref: {selectedReceiptLead.txn || "—"}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedReceiptLead(null)}
-                  className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-50/50">
-                {isPdf ? (
-                  <div className="w-full h-[55vh] rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white">
-                    <iframe
-                      src={resolvedUrl}
-                      title="Payment Slip PDF"
-                      className="w-full h-full border-0"
-                    />
+          return (
+            <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up">
+                <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-sm text-slate-900">Payment Slip Preview</h3>
+                    <p className="text-[11px] text-slate-500">
+                      {selectedReceiptLead.name} · Ref: {selectedReceiptLead.txn || "—"}
+                    </p>
                   </div>
-                ) : (
-                  <div className="relative max-w-full rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white flex flex-col items-center justify-center min-h-[220px] p-2">
-                    <img
-                      src={resolvedUrl}
-                      alt="Payment Slip"
-                      className="max-h-[55vh] object-contain w-auto rounded"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        const fallback = e.currentTarget.parentElement?.querySelector(".img-error-fallback");
-                        if (fallback) (fallback as HTMLElement).style.display = "flex";
-                      }}
-                    />
-                    <div className="img-error-fallback hidden flex-col items-center justify-center p-8 text-center">
-                      <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
-                      <p className="text-xs font-semibold text-slate-800">Preview Could Not Be Rendered Directly</p>
-                      <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
-                        The file may be in a format that requires opening directly in a new browser tab.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-3 mt-3">
-                  <a
-                    href={resolvedUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span>Open in New Tab</span>
-                  </a>
-                  <a
-                    href={resolvedUrl}
-                    download={`receipt_${selectedReceiptLead.txn || selectedReceiptLead.id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    <span>Download File</span>
-                  </a>
-                </div>
-              </div>
-
-              <div className="p-4 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedReceiptLead(null)}
-                  className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs px-3.5 py-2 cursor-pointer"
-                >
-                  Close
-                </button>
-                {selectedReceiptLead.status === "pending" && (
                   <button
                     type="button"
-                    onClick={async () => {
-                      const target = selectedReceiptLead;
-                      setSelectedReceiptLead(null);
-                      await handleVerifyLead(target);
-                    }}
-                    disabled={sendingEmailMap[selectedReceiptLead.id]}
-                    className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium text-xs px-4 py-2 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    onClick={() => setSelectedReceiptLead(null)}
+                    className="rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
                   >
-                    <Send className="h-3 w-3" />
-                    <span>Approve &amp; Dispatch Token</span>
+                    <X className="h-4 w-4" />
                   </button>
-                )}
+                </div>
+
+                <div className="p-4 overflow-y-auto flex-1 flex flex-col items-center justify-center bg-slate-50/50">
+                  {isPdf ? (
+                    <div className="w-full h-[55vh] rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white">
+                      <iframe
+                        src={resolvedUrl}
+                        title="Payment Slip PDF"
+                        className="w-full h-full border-0"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative max-w-full rounded-lg overflow-hidden border border-slate-200 shadow-xs bg-white flex flex-col items-center justify-center min-h-[220px] p-2">
+                      <img
+                        src={resolvedUrl}
+                        alt="Payment Slip"
+                        className="max-h-[55vh] object-contain w-auto rounded"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                          const fallback =
+                            e.currentTarget.parentElement?.querySelector(".img-error-fallback");
+                          if (fallback) (fallback as HTMLElement).style.display = "flex";
+                        }}
+                      />
+                      <div className="img-error-fallback hidden flex-col items-center justify-center p-8 text-center">
+                        <AlertCircle className="h-8 w-8 text-amber-500 mb-2" />
+                        <p className="text-xs font-semibold text-slate-800">
+                          Preview Could Not Be Rendered Directly
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1 max-w-sm">
+                          The file may be in a format that requires opening directly in a new
+                          browser tab.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3 mt-3">
+                    <a
+                      href={resolvedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      <span>Open in New Tab</span>
+                    </a>
+                    <a
+                      href={resolvedUrl}
+                      download={`receipt_${selectedReceiptLead.txn || selectedReceiptLead.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-brand-red bg-white border border-slate-200 px-3.5 py-1.5 rounded-lg shadow-2xs transition-colors"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      <span>Download File</span>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="p-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReceiptLead(null)}
+                    className="rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs px-3.5 py-2 cursor-pointer"
+                  >
+                    Close
+                  </button>
+                  {selectedReceiptLead.status === "pending" && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const target = selectedReceiptLead;
+                        setSelectedReceiptLead(null);
+                        await handleVerifyLead(target);
+                      }}
+                      disabled={sendingEmailMap[selectedReceiptLead.id]}
+                      className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium text-xs px-4 py-2 shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Send className="h-3 w-3" />
+                      <span>Approve &amp; Dispatch Token</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })()}
-
+          );
+        })()}
     </AdminLayout>
   );
 }

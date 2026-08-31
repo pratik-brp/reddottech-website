@@ -65,13 +65,16 @@ function AdminCoursesIndexPage() {
       const matchesSearch =
         !searchQuery ||
         (course.name && course.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (course.instructor_name && course.instructor_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (course.instructorName && course.instructorName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (course.instructor_name &&
+          course.instructor_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (course.instructorName &&
+          course.instructorName.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (course.category && course.category.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const courseCategory = course.category || "Professional Certification";
       const matchesCategory =
-        selectedCategory === "all" || courseCategory.toLowerCase() === selectedCategory.toLowerCase();
+        selectedCategory === "all" ||
+        courseCategory.toLowerCase() === selectedCategory.toLowerCase();
 
       const courseStatus = course.status || "published";
       const matchesStatus =
@@ -141,8 +144,14 @@ function AdminCoursesIndexPage() {
         certification: editingCourse.certification,
         status: editingCourse.status,
         thumbnail: editingCourse.thumbnail !== undefined ? editingCourse.thumbnail : "",
-        bannerImage: editingCourse.bannerImage !== undefined ? editingCourse.bannerImage : (editingCourse.banner_image || ""),
-        instructorImage: editingCourse.instructorImage !== undefined ? editingCourse.instructorImage : (editingCourse.instructor_image || ""),
+        bannerImage:
+          editingCourse.bannerImage !== undefined
+            ? editingCourse.bannerImage
+            : editingCourse.banner_image || "",
+        instructorImage:
+          editingCourse.instructorImage !== undefined
+            ? editingCourse.instructorImage
+            : editingCourse.instructor_image || "",
         description: editingCourse.description,
         requirements: editingCourse.requirements,
         curriculum: editingCourse.curriculum,
@@ -310,7 +319,9 @@ function AdminCoursesIndexPage() {
                             }`}
                             title="Click to toggle status"
                           >
-                            <span className={`h-1.5 w-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`} />
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`}
+                            />
                             <span className="capitalize">{course.status || "published"}</span>
                           </button>
                         </div>
@@ -337,7 +348,9 @@ function AdminCoursesIndexPage() {
                         <span className="text-xs sm:text-base font-extrabold text-slate-900">
                           ${course.price || "250.00"}
                         </span>
-                        <span className="block text-[8px] sm:text-[9px] text-slate-400 font-mono">tuition</span>
+                        <span className="block text-[8px] sm:text-[9px] text-slate-400 font-mono">
+                          tuition
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-1.5">
@@ -437,10 +450,12 @@ function AdminCoursesIndexPage() {
 
                         <div className="flex flex-wrap items-center gap-1 sm:gap-2 pt-0.5 text-[9px] sm:text-[11px] text-slate-500">
                           <span className="inline-flex items-center gap-0.5 bg-slate-100 px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
-                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {course.duration || "6w"}
+                            <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />{" "}
+                            {course.duration || "6w"}
                           </span>
                           <span className="inline-flex items-center gap-0.5 bg-slate-100 px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] capitalize">
-                            <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> {course.delivery || "online"}
+                            <Globe className="h-2.5 w-2.5 sm:h-3 sm:w-3" />{" "}
+                            {course.delivery || "online"}
                           </span>
                         </div>
                       </div>
@@ -500,7 +515,9 @@ function AdminCoursesIndexPage() {
                   <Edit className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-extrabold text-slate-900 text-lg sm:text-xl">Edit Course Studio</h3>
+                  <h3 className="font-extrabold text-slate-900 text-lg sm:text-xl">
+                    Edit Course Studio
+                  </h3>
                   <p className="text-xs text-slate-500 font-medium">
                     Modify curriculum, instructor bio, requirements, media, and enrollment metadata.
                   </p>
@@ -530,7 +547,10 @@ function AdminCoursesIndexPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   <div className="sm:col-span-2">
-                    <label htmlFor="course_name" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_name"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Course Name <span className="text-brand-red">*</span>
                     </label>
                     <input
@@ -539,16 +559,17 @@ function AdminCoursesIndexPage() {
                       type="text"
                       required
                       value={editingCourse.name || ""}
-                      onChange={(e) =>
-                        setEditingCourse({ ...editingCourse, name: e.target.value })
-                      }
+                      onChange={(e) => setEditingCourse({ ...editingCourse, name: e.target.value })}
                       placeholder="e.g. Executive Artificial Intelligence"
                       className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="course_category" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_category"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Category
                     </label>
                     <input
@@ -565,7 +586,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="instructor_name" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="instructor_name"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Instructor Name
                     </label>
                     <input
@@ -586,7 +610,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="instructor_title" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="instructor_title"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Instructor Title
                     </label>
                     <input
@@ -607,7 +634,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_price" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_price"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Price ($ USD / NPR)
                     </label>
                     <input
@@ -625,7 +655,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_start_date" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_start_date"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Start Date
                     </label>
                     <input
@@ -646,7 +679,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_duration" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_duration"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Duration
                     </label>
                     <input
@@ -673,7 +709,10 @@ function AdminCoursesIndexPage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3.5">
                   <div>
-                    <label htmlFor="course_delivery" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_delivery"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Delivery Mode
                     </label>
                     <select
@@ -691,7 +730,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_mode" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_mode"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Mode
                     </label>
                     <input
@@ -699,16 +741,17 @@ function AdminCoursesIndexPage() {
                       name="course_mode"
                       type="text"
                       value={editingCourse.mode || "Instructor-led"}
-                      onChange={(e) =>
-                        setEditingCourse({ ...editingCourse, mode: e.target.value })
-                      }
+                      onChange={(e) => setEditingCourse({ ...editingCourse, mode: e.target.value })}
                       placeholder="e.g. Instructor-led"
                       className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="course_language" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_language"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Language
                     </label>
                     <input
@@ -725,7 +768,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_skill_level" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_skill_level"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Skill Level
                     </label>
                     <select
@@ -748,7 +794,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_certification" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_certification"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Certification
                     </label>
                     <input
@@ -765,7 +814,10 @@ function AdminCoursesIndexPage() {
                   </div>
 
                   <div>
-                    <label htmlFor="course_status" className="block text-xs font-bold text-slate-700 mb-1.5">
+                    <label
+                      htmlFor="course_status"
+                      className="block text-xs font-bold text-slate-700 mb-1.5"
+                    >
                       Status
                     </label>
                     <select
@@ -811,7 +863,7 @@ function AdminCoursesIndexPage() {
                     value={
                       editingCourse.bannerImage !== undefined
                         ? editingCourse.bannerImage
-                        : (editingCourse.banner_image || "")
+                        : editingCourse.banner_image || ""
                     }
                     onChange={(url) =>
                       setEditingCourse({
@@ -830,7 +882,7 @@ function AdminCoursesIndexPage() {
                     value={
                       editingCourse.instructorImage !== undefined
                         ? editingCourse.instructorImage
-                        : (editingCourse.instructor_image || "")
+                        : editingCourse.instructor_image || ""
                     }
                     onChange={(url) =>
                       setEditingCourse({
@@ -857,9 +909,7 @@ function AdminCoursesIndexPage() {
                 <RichTextEditor
                   label="Description"
                   value={editingCourse.description || ""}
-                  onChange={(val) =>
-                    setEditingCourse({ ...editingCourse, description: val })
-                  }
+                  onChange={(val) => setEditingCourse({ ...editingCourse, description: val })}
                   placeholder="Give yourself an employment advantage by developing analytical skills..."
                   minHeight="140px"
                 />
@@ -883,9 +933,7 @@ function AdminCoursesIndexPage() {
                 <RichTextEditor
                   label="Requirements"
                   value={editingCourse.requirements || ""}
-                  onChange={(val) =>
-                    setEditingCourse({ ...editingCourse, requirements: val })
-                  }
+                  onChange={(val) => setEditingCourse({ ...editingCourse, requirements: val })}
                   placeholder="Hardware Requirements:&#10;→This course can be taken on either a PC, Mac, or Chromebook..."
                   minHeight="180px"
                 />
@@ -894,9 +942,7 @@ function AdminCoursesIndexPage() {
                 <RichTextEditor
                   label="Curriculum"
                   value={editingCourse.curriculum || ""}
-                  onChange={(val) =>
-                    setEditingCourse({ ...editingCourse, curriculum: val })
-                  }
+                  onChange={(val) => setEditingCourse({ ...editingCourse, curriculum: val })}
                   placeholder="Lesson 1 – Problem Solving and Decision-Making: ...&#10;Lesson 2 – Introduction to Probability: ..."
                   minHeight="220px"
                 />

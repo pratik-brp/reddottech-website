@@ -100,12 +100,29 @@ export async function changeAdminEmail(newEmail: string, currentPassword: string
   if (result && result.email) {
     setAdminEmail(result.email);
     if (typeof window !== "undefined") {
-      window.dispatchEvent(
-        new CustomEvent("rdt_admin_email_updated", { detail: result.email })
-      );
+      window.dispatchEvent(new CustomEvent("rdt_admin_email_updated", { detail: result.email }));
     }
   }
   return result;
+}
+
+export async function requestPasswordReset(email: string) {
+  return await fetchApi<{ success: boolean; message: string; resetToken?: string }>(
+    "/auth/forgot-password",
+    {
+      method: "POST",
+      body: JSON.stringify({ email }),
+      throwOnError: true,
+    },
+  );
+}
+
+export async function resetPasswordWithToken(token: string, newPassword: string) {
+  return await fetchApi<{ success: boolean; message: string }>("/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ token, newPassword }),
+    throwOnError: true,
+  });
 }
 
 // Image File Upload Helper (Admin)
@@ -173,7 +190,6 @@ export async function uploadPaymentReceipt(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
-
 
 // 1. Dashboard Stats
 export async function getDashboardStats() {
@@ -441,7 +457,6 @@ export async function getAiLeads(): Promise<any[]> {
   return [];
 }
 
-
 export async function createAiLead(lead: any) {
   try {
     if (typeof window !== "undefined") {
@@ -449,7 +464,7 @@ export async function createAiLead(lead: any) {
       const existing = raw ? JSON.parse(raw) : [];
       localStorage.setItem(
         "rdt_ai_payment_leads",
-        JSON.stringify([lead, ...existing.filter((l: any) => l.id !== lead.id)])
+        JSON.stringify([lead, ...existing.filter((l: any) => l.id !== lead.id)]),
       );
     }
   } catch {}
@@ -481,7 +496,7 @@ export async function deleteAiLead(id: string) {
       const existing = raw ? JSON.parse(raw) : [];
       localStorage.setItem(
         "rdt_ai_payment_leads",
-        JSON.stringify(existing.filter((l: any) => l.id !== id))
+        JSON.stringify(existing.filter((l: any) => l.id !== id)),
       );
     }
   } catch {}
@@ -491,7 +506,10 @@ export async function deleteAiLead(id: string) {
 }
 
 // 8. AI Course Access Verification & Live Status Check
-export async function verifyAiAccessCode(track: string, code: string): Promise<{
+export async function verifyAiAccessCode(
+  track: string,
+  code: string,
+): Promise<{
   success: boolean;
   valid: boolean;
   lead?: {
@@ -523,7 +541,10 @@ export async function verifyAiAccessCode(track: string, code: string): Promise<{
   }
 }
 
-export async function checkAiAccessStatus(track: string, code: string): Promise<{
+export async function checkAiAccessStatus(
+  track: string,
+  code: string,
+): Promise<{
   success: boolean;
   active: boolean;
   lead?: {
@@ -541,7 +562,9 @@ export async function checkAiAccessStatus(track: string, code: string): Promise<
       active: boolean;
       lead?: any;
       message?: string;
-    }>(`/ai-access/check-status?track=${encodeURIComponent(track)}&code=${encodeURIComponent(code)}`);
+    }>(
+      `/ai-access/check-status?track=${encodeURIComponent(track)}&code=${encodeURIComponent(code)}`,
+    );
     return res || { success: false, active: false, message: "Empty response from server." };
   } catch (err: any) {
     return {
@@ -556,7 +579,7 @@ export async function checkAiAccessStatus(track: string, code: string): Promise<
 export async function fetchAiLesson(
   track: string,
   lessonId: string,
-  accessCode?: string
+  accessCode?: string,
 ): Promise<{
   success: boolean;
   isFree?: boolean;
@@ -586,7 +609,7 @@ export async function fetchAiLesson(
 
 export async function fetchAiTrack(
   track: string,
-  accessCode?: string
+  accessCode?: string,
 ): Promise<{
   success: boolean;
   unlocked: boolean;
@@ -606,5 +629,3 @@ export async function fetchAiTrack(
     error?: string;
   }>(`/ai-courses/track?${params.toString()}`);
 }
-
-

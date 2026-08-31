@@ -58,7 +58,10 @@ function cleanText(val) {
   cleaned = cleaned.replace(/PMI\s*\?{2,3}/g, "PMI®");
   cleaned = cleaned.replace(/Quality\s*\?{2,3}/g, "Quality®");
   cleaned = cleaned.replace(/\?{2,3}scoping\?{2,3}/g, "“scoping”");
-  cleaned = cleaned.replace(/\?{2,3}the highest-paying certification\?{2,3}/g, "“the highest-paying certification”");
+  cleaned = cleaned.replace(
+    /\?{2,3}the highest-paying certification\?{2,3}/g,
+    "“the highest-paying certification”",
+  );
   cleaned = cleaned.replace(/\?{2,3}learn\?{2,3}/g, "“learn”");
   cleaned = cleaned.replace(/\?{2,3}soft skills\?{2,3}/g, "“soft skills”");
   cleaned = cleaned.replace(/\?{2,3}speaks the language\?{2,3}/g, "“speaks the language”");
@@ -88,7 +91,9 @@ async function migrate() {
     const shortDesc = plainDesc.length > 180 ? plainDesc.slice(0, 180).trim() + "..." : plainDesc;
 
     const thumbnail = c.thumbnail?.startsWith("/") ? c.thumbnail : `/storage/${c.thumbnail}`;
-    const bannerImage = c.banner_image?.startsWith("/") ? c.banner_image : `/storage/${c.banner_image}`;
+    const bannerImage = c.banner_image?.startsWith("/")
+      ? c.banner_image
+      : `/storage/${c.banner_image}`;
 
     const cleanedName = cleanText(c.name);
     const cleanedInstructorName = cleanText(c.instructor_name || "Faculty Specialist");
@@ -153,7 +158,7 @@ async function migrate() {
         cleanedCurriculum,
         c.status || "published",
         c.created_at || new Date().toISOString(),
-      ]
+      ],
     );
     console.log(`  ✓ Migrated course: [${c.id}] ${cleanedName}`);
   }
@@ -174,7 +179,7 @@ async function migrate() {
           cleanText(cert.school || null),
           cert.completed_at || null,
           cert.created_at || new Date().toISOString(),
-        ]
+        ],
       );
     }
   } catch (e) {
@@ -199,7 +204,7 @@ async function migrate() {
           cleanText(con.subject || "General Inquiry"),
           cleanText(con.message),
           con.created_at || new Date().toISOString(),
-        ]
+        ],
       );
     }
   } catch (e) {
@@ -215,7 +220,7 @@ async function migrate() {
         `INSERT INTO subscriptions (id, email, created_at)
          VALUES (?, ?, ?)
          ON DUPLICATE KEY UPDATE email = VALUES(email)`,
-        [s.id, cleanText(s.email), s.created_at || new Date().toISOString()]
+        [s.id, cleanText(s.email), s.created_at || new Date().toISOString()],
       );
     }
   } catch (e) {
@@ -229,7 +234,7 @@ async function migrate() {
     for (const s of settings) {
       await run(
         "INSERT INTO settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)",
-        [cleanText(s.key), cleanText(s.value)]
+        [cleanText(s.key), cleanText(s.value)],
       );
     }
   } catch (e) {

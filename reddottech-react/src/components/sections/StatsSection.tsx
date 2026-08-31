@@ -131,7 +131,9 @@ export function StatsSection() {
                       />
                     </p>
 
-                    <h3 className="mt-1.5 sm:mt-2 text-xs sm:text-base font-bold text-slate-900 leading-tight">{s.label}</h3>
+                    <h3 className="mt-1.5 sm:mt-2 text-xs sm:text-base font-bold text-slate-900 leading-tight">
+                      {s.label}
+                    </h3>
                   </div>
 
                   <p className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs font-medium text-slate-500 leading-snug line-clamp-2 sm:line-clamp-none">

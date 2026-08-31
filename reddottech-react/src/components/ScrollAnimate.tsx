@@ -8,4 +8,3 @@ interface ScrollAnimateProps {
 export function ScrollAnimate({ children, className }: ScrollAnimateProps) {
   return <div className={className}>{children}</div>;
 }
-

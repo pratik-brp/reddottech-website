@@ -1,4 +1,13 @@
-import { Award, ShieldCheck, Building2, Globe2, Quote, Star, CheckCircle2, UserCheck } from "lucide-react";
+import {
+  Award,
+  ShieldCheck,
+  Building2,
+  Globe2,
+  Quote,
+  Star,
+  CheckCircle2,
+  UserCheck,
+} from "lucide-react";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Link } from "@tanstack/react-router";
 
@@ -31,7 +40,6 @@ const trustPillars = [
     text: "A thriving community of Nepalese professionals upskilling toward high-impact, globally competitive careers.",
     highlight: "High Completion Rate",
   },
-
 ];
 
 const alumniReviews = [
@@ -90,10 +98,12 @@ export function TestimonialsSection() {
             </span>
           </span>
           <h2 className="display-font text-xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
-            Recognized by Professionals &amp; <span className="gradient-text">Backed by Institutions</span>
+            Recognized by Professionals &amp;{" "}
+            <span className="gradient-text">Backed by Institutions</span>
           </h2>
           <p className="text-xs sm:text-base text-slate-600 font-medium">
-            Our credentials are built on global academic partnerships and industry-recognized standards — verified proof of quality.
+            Our credentials are built on global academic partnerships and industry-recognized
+            standards — verified proof of quality.
           </p>
         </div>
 
@@ -120,9 +130,7 @@ export function TestimonialsSection() {
                     {item.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    {item.text}
-                  </p>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{item.text}</p>
                 </div>
 
                 <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100 flex items-center gap-2 text-[10px] sm:text-[11px] font-extrabold text-slate-500">
@@ -156,7 +164,6 @@ export function TestimonialsSection() {
                 ))}
               </div>
               <span>4.9 / 5.0 from 1,000+ Learners</span>
-
             </div>
           </div>
 
@@ -171,7 +178,10 @@ export function TestimonialsSection() {
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-1 text-amber-400">
                     {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-amber-400 stroke-none" />
+                      <Star
+                        key={i}
+                        className="h-3 w-3 sm:h-3.5 sm:w-3.5 fill-amber-400 stroke-none"
+                      />
                     ))}
                   </div>
 
@@ -209,10 +219,14 @@ export function TestimonialsSection() {
 
           <div className="mt-6 sm:mt-10 pt-4 sm:pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left relative z-10">
             <p className="text-[11px] sm:text-xs text-slate-400 font-medium">
-              Join Nepal&apos;s fastest growing community of certified corporate leaders &amp; engineers.
+              Join Nepal&apos;s fastest growing community of certified corporate leaders &amp;
+              engineers.
             </p>
             <Magnetic>
-              <Link to="/courses" className="btn-primary text-xs py-2.5 sm:py-3 px-5 sm:px-6 w-full sm:w-auto text-center justify-center">
+              <Link
+                to="/courses"
+                className="btn-primary text-xs py-2.5 sm:py-3 px-5 sm:px-6 w-full sm:w-auto text-center justify-center"
+              >
                 <span>View All Certified Programs</span>
               </Link>
             </Magnetic>
@@ -222,4 +236,3 @@ export function TestimonialsSection() {
     </section>
   );
 }
-

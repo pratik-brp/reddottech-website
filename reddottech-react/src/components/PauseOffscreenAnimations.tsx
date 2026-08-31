@@ -7,4 +7,3 @@
 export function PauseOffscreenAnimations() {
   return null;
 }
-

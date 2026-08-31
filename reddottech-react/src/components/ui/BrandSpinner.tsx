@@ -96,16 +96,14 @@ export function BrandSpinner({ size = "md", message, className }: BrandSpinnerPr
           <span
             className={cn(
               "rounded-full bg-brand-red shadow-[0_0_8px_rgba(200,16,46,0.8)] animate-pulse",
-              dimensions.dot
+              dimensions.dot,
             )}
           />
         </div>
       </div>
 
       {message && (
-        <span className="text-xs font-semibold text-slate-600 tracking-tight">
-          {message}
-        </span>
+        <span className="text-xs font-semibold text-slate-600 tracking-tight">{message}</span>
       )}
     </div>
   );

@@ -2,272 +2,272 @@ import type { Lesson } from "./ai-healthcare-data";
 
 export const financeLessons: Lesson[] = [
   {
-    "id": "m1",
-    "tag": "Module 1",
-    "time": "40 min",
-    "title": "AI Foundations for Banking",
-    "summary": "The concepts and vocabulary every banker now needs",
-    "objectives": [
+    id: "m1",
+    tag: "Module 1",
+    time: "40 min",
+    title: "AI Foundations for Banking",
+    summary: "The concepts and vocabulary every banker now needs",
+    objectives: [
       "Distinguish artificial intelligence, machine learning, deep learning and generative AI — and know which matters where in a bank",
       "Explain supervised, unsupervised and reinforcement learning using banking examples",
       "Understand how a machine-learning model differs from the statistical scorecards banks have used for decades",
       "Read and interpret the core performance metrics used to judge financial models: accuracy, precision, recall, AUC and the Gini coefficient",
-      "Speak credibly with vendors, IT teams and regulators using correct terminology"
+      "Speak credibly with vendors, IT teams and regulators using correct terminology",
     ],
-    "sections": [
+    sections: [
       {
-        "h": "Why this matters now, and to you",
-        "html": "\n        <p>Artificial intelligence has moved from a technology conversation to a governance conversation. Nepal Rastra Bank has issued Artificial Intelligence Guidelines covering licensed institutions — Class A through D, along with payment system operators and payment service providers — and those guidelines place ultimate accountability for AI outcomes on the <strong>board and senior management</strong>, not on the IT department.</p>\n        <p>That single fact changes who needs to understand this material. A credit officer approving a model-assisted decision, a compliance officer signing off on transaction monitoring, a branch manager explaining a declined loan to a customer — each is now operating inside an AI-governed process. This module builds the vocabulary and the mental models that make the rest of the programme possible.</p>\n        <div class=\"evid\"><div class=\"src\"><span class=\"tag\">Industry evidence · SAS / Juniper</span></div><p>This is not a distant trend. Juniper Research projects that AI spending in the banking industry will reach <b>US$85 billion by 2030</b>, implying a compound annual growth rate of around 55%. SAS research finds that <b>60% of banking organisations have already deployed generative AI use cases</b>, with a further 38% expecting to do so within two years.</p><p class=\"quote\">“Trust is earned in drops and lost in buckets.”<br><span class=\"who\">— SAS, <i>From Algorithms to Impact: Banking's AI Future</i></span></p></div>"
+        h: "Why this matters now, and to you",
+        html: '\n        <p>Artificial intelligence has moved from a technology conversation to a governance conversation. Nepal Rastra Bank has issued Artificial Intelligence Guidelines covering licensed institutions — Class A through D, along with payment system operators and payment service providers — and those guidelines place ultimate accountability for AI outcomes on the <strong>board and senior management</strong>, not on the IT department.</p>\n        <p>That single fact changes who needs to understand this material. A credit officer approving a model-assisted decision, a compliance officer signing off on transaction monitoring, a branch manager explaining a declined loan to a customer — each is now operating inside an AI-governed process. This module builds the vocabulary and the mental models that make the rest of the programme possible.</p>\n        <div class="evid"><div class="src"><span class="tag">Industry evidence · SAS / Juniper</span></div><p>This is not a distant trend. Juniper Research projects that AI spending in the banking industry will reach <b>US$85 billion by 2030</b>, implying a compound annual growth rate of around 55%. SAS research finds that <b>60% of banking organisations have already deployed generative AI use cases</b>, with a further 38% expecting to do so within two years.</p><p class="quote">“Trust is earned in drops and lost in buckets.”<br><span class="who">— SAS, <i>From Algorithms to Impact: Banking\'s AI Future</i></span></p></div>',
       },
       {
-        "h": "The four terms, correctly used",
-        "html": "\n        <p>These words are used loosely in vendor presentations. Precision protects you.</p>\n        <ul class=\"body\">\n          <li><strong>Artificial Intelligence (AI)</strong> — the broad field of systems performing tasks that normally require human intelligence. A rules-based fraud engine is AI, even without learning.</li>\n          <li><strong>Machine Learning (ML)</strong> — systems that learn patterns from historical data rather than following rules a person wrote. This is what powers modern credit scoring and fraud detection.</li>\n          <li><strong>Deep Learning</strong> — ML using multi-layered <span class=\"term\">neural networks</span>. Strong on unstructured data: images, documents, voice, natural language.</li>\n          <li><strong>Generative AI</strong> — models that produce new content: text, summaries, code, images. This is the large-language-model wave now entering banking operations (Module 5).</li>\n        </ul>\n        <p>A practical translation: most <em>decisioning</em> in banks (credit, fraud, pricing) is machine learning. Most <em>productivity</em> use (drafting, summarising, searching policy) is generative AI. They carry different risks and different regulatory expectations.</p>\n        <div class=\"evid\"><div class=\"src\"><span class=\"tag\">Industry evidence · FIS</span></div><p>FIS draws the same three-way distinction in <i>AI Alchemy</i>: <b>machine learning</b> develops algorithms that find patterns in data; <b>predictive AI</b> forecasts future outcomes and underpins process automation; and <b>generative AI</b> creates new content from prompts using large language models. Machine learning is the broader concept that contains both of the others — precision in these terms is what allows you to ask a vendor the right question.</p></div>"
+        h: "The four terms, correctly used",
+        html: '\n        <p>These words are used loosely in vendor presentations. Precision protects you.</p>\n        <ul class="body">\n          <li><strong>Artificial Intelligence (AI)</strong> — the broad field of systems performing tasks that normally require human intelligence. A rules-based fraud engine is AI, even without learning.</li>\n          <li><strong>Machine Learning (ML)</strong> — systems that learn patterns from historical data rather than following rules a person wrote. This is what powers modern credit scoring and fraud detection.</li>\n          <li><strong>Deep Learning</strong> — ML using multi-layered <span class="term">neural networks</span>. Strong on unstructured data: images, documents, voice, natural language.</li>\n          <li><strong>Generative AI</strong> — models that produce new content: text, summaries, code, images. This is the large-language-model wave now entering banking operations (Module 5).</li>\n        </ul>\n        <p>A practical translation: most <em>decisioning</em> in banks (credit, fraud, pricing) is machine learning. Most <em>productivity</em> use (drafting, summarising, searching policy) is generative AI. They carry different risks and different regulatory expectations.</p>\n        <div class="evid"><div class="src"><span class="tag">Industry evidence · FIS</span></div><p>FIS draws the same three-way distinction in <i>AI Alchemy</i>: <b>machine learning</b> develops algorithms that find patterns in data; <b>predictive AI</b> forecasts future outcomes and underpins process automation; and <b>generative AI</b> creates new content from prompts using large language models. Machine learning is the broader concept that contains both of the others — precision in these terms is what allows you to ask a vendor the right question.</p></div>',
       },
       {
-        "h": "Three ways a model learns — with banking examples",
-        "html": "\n        <ul class=\"body\">\n          <li><strong>Supervised learning</strong> — learns from labelled historical outcomes. You show it thousands of past loans marked \"defaulted\" or \"repaid\", and it learns to estimate default probability on new applications. Nearly all credit and fraud models are supervised.</li>\n          <li><strong>Unsupervised learning</strong> — finds structure without labels. Used to segment customers into behavioural groups, or to flag transactions that simply do not resemble anything normal — valuable in AML where you do not know every fraud pattern in advance.</li>\n          <li><strong>Reinforcement learning</strong> — learns by trial, error and reward. Used in areas like collections strategy optimisation, dynamic pricing and algorithmic execution. Rare in Nepali banks today, but relevant as sophistication grows.</li>\n        </ul>"
+        h: "Three ways a model learns — with banking examples",
+        html: '\n        <ul class="body">\n          <li><strong>Supervised learning</strong> — learns from labelled historical outcomes. You show it thousands of past loans marked "defaulted" or "repaid", and it learns to estimate default probability on new applications. Nearly all credit and fraud models are supervised.</li>\n          <li><strong>Unsupervised learning</strong> — finds structure without labels. Used to segment customers into behavioural groups, or to flag transactions that simply do not resemble anything normal — valuable in AML where you do not know every fraud pattern in advance.</li>\n          <li><strong>Reinforcement learning</strong> — learns by trial, error and reward. Used in areas like collections strategy optimisation, dynamic pricing and algorithmic execution. Rare in Nepali banks today, but relevant as sophistication grows.</li>\n        </ul>',
       },
       {
-        "h": "How this differs from the scorecard you already know",
-        "html": "\n        <p>Banks have used statistical models for decades. A traditional <span class=\"term\">credit scorecard</span> is typically a logistic regression: a modest number of variables, each with a transparent weight, producing points that sum to a score. Its great virtue is that it is <em>interpretable</em> — you can tell an applicant exactly which factors counted against them.</p>\n        <p>A modern machine-learning model may consider hundreds of variables and capture non-linear interactions a scorecard cannot. It typically predicts better. Its weakness is opacity: the reasoning is distributed across the model rather than readable from a table.</p>\n        <p>This is the central trade-off of AI in regulated finance, and you will meet it repeatedly in this programme: <strong>predictive power versus explainability</strong>. NRB's guidelines require AI applications to be transparent, explainable, fair and accountable — which means the more powerful model is not automatically the permissible one.</p>\n        <div class=\"callout note\"><h4>Deeper dive: why \"the model is more accurate\" is an incomplete argument</h4><p style=\"margin:0\">A vendor demonstrating a two-point Gini improvement is describing a benefit. The relevant questions are: can we explain individual decisions to customers and supervisors; can we evidence that it does not discriminate; can we monitor it for drift; and who is accountable when it errs. A model that cannot satisfy those is a liability regardless of its accuracy.</p></div>"
+        h: "How this differs from the scorecard you already know",
+        html: '\n        <p>Banks have used statistical models for decades. A traditional <span class="term">credit scorecard</span> is typically a logistic regression: a modest number of variables, each with a transparent weight, producing points that sum to a score. Its great virtue is that it is <em>interpretable</em> — you can tell an applicant exactly which factors counted against them.</p>\n        <p>A modern machine-learning model may consider hundreds of variables and capture non-linear interactions a scorecard cannot. It typically predicts better. Its weakness is opacity: the reasoning is distributed across the model rather than readable from a table.</p>\n        <p>This is the central trade-off of AI in regulated finance, and you will meet it repeatedly in this programme: <strong>predictive power versus explainability</strong>. NRB\'s guidelines require AI applications to be transparent, explainable, fair and accountable — which means the more powerful model is not automatically the permissible one.</p>\n        <div class="callout note"><h4>Deeper dive: why "the model is more accurate" is an incomplete argument</h4><p style="margin:0">A vendor demonstrating a two-point Gini improvement is describing a benefit. The relevant questions are: can we explain individual decisions to customers and supervisors; can we evidence that it does not discriminate; can we monitor it for drift; and who is accountable when it errs. A model that cannot satisfy those is a liability regardless of its accuracy.</p></div>',
       },
       {
-        "h": "Reading model performance like a banker",
-        "html": "\n        <p>You do not need to build models, but you must be able to challenge the numbers put in front of you.</p>\n        <ul class=\"body\">\n          <li><strong>Accuracy</strong> — share of all predictions that were correct. Dangerously misleading for rare events: if 0.5% of transactions are fraudulent, a model that approves everything is 99.5% \"accurate\" and catches nothing.</li>\n          <li><strong>Precision</strong> — of the cases the model flagged, how many were genuine. Low precision means your investigation team drowns in false positives.</li>\n          <li><strong>Recall (sensitivity)</strong> — of all genuine cases, how many the model caught. Low recall means real fraud or real defaults slipping through.</li>\n          <li><strong>AUC / ROC</strong> — a single measure (0.5 = random, 1.0 = perfect) of how well the model separates good from bad across all thresholds.</li>\n          <li><strong>Gini coefficient</strong> — the credit industry's preferred cousin of AUC (Gini = 2 × AUC − 1). A retail scorecard with a Gini around 0.4–0.6 is typically considered workable, though this varies by portfolio and market.</li>\n        </ul>\n        <p>Precision and recall pull against each other. Tightening a fraud model to catch more crime inevitably inconveniences more honest customers. That balance is a <strong>business decision, not a technical one</strong> — and it belongs to you, not to the data scientist.</p>"
+        h: "Reading model performance like a banker",
+        html: '\n        <p>You do not need to build models, but you must be able to challenge the numbers put in front of you.</p>\n        <ul class="body">\n          <li><strong>Accuracy</strong> — share of all predictions that were correct. Dangerously misleading for rare events: if 0.5% of transactions are fraudulent, a model that approves everything is 99.5% "accurate" and catches nothing.</li>\n          <li><strong>Precision</strong> — of the cases the model flagged, how many were genuine. Low precision means your investigation team drowns in false positives.</li>\n          <li><strong>Recall (sensitivity)</strong> — of all genuine cases, how many the model caught. Low recall means real fraud or real defaults slipping through.</li>\n          <li><strong>AUC / ROC</strong> — a single measure (0.5 = random, 1.0 = perfect) of how well the model separates good from bad across all thresholds.</li>\n          <li><strong>Gini coefficient</strong> — the credit industry\'s preferred cousin of AUC (Gini = 2 × AUC − 1). A retail scorecard with a Gini around 0.4–0.6 is typically considered workable, though this varies by portfolio and market.</li>\n        </ul>\n        <p>Precision and recall pull against each other. Tightening a fraud model to catch more crime inevitably inconveniences more honest customers. That balance is a <strong>business decision, not a technical one</strong> — and it belongs to you, not to the data scientist.</p>',
       },
       {
-        "h": "Structured and unstructured data",
-        "html": "\n        <p><span class=\"term\">Structured data</span> sits in neat rows and columns: account balances, transaction amounts, repayment histories, demographics. It is what core banking systems produce and what traditional models consume.</p>\n        <p><span class=\"term\">Unstructured data</span> is everything else: scanned loan files, letters of credit, KYC documents, call recordings, emails, customer complaints. Industry estimates commonly put the majority of institutional data in this category, and until recently banks could not use it at scale. Deep learning and generative AI change that — which is precisely why document-heavy Nepali banking processes are such fertile ground for automation.</p>"
+        h: "Structured and unstructured data",
+        html: '\n        <p><span class="term">Structured data</span> sits in neat rows and columns: account balances, transaction amounts, repayment histories, demographics. It is what core banking systems produce and what traditional models consume.</p>\n        <p><span class="term">Unstructured data</span> is everything else: scanned loan files, letters of credit, KYC documents, call recordings, emails, customer complaints. Industry estimates commonly put the majority of institutional data in this category, and until recently banks could not use it at scale. Deep learning and generative AI change that — which is precisely why document-heavy Nepali banking processes are such fertile ground for automation.</p>',
       },
       {
-        "h": "What AI is not",
-        "html": "\n        <p>Three corrections worth carrying into every vendor meeting:</p>\n        <ul class=\"body\">\n          <li><strong>It is not reasoning like a human.</strong> It is high-dimensional pattern recognition. It has no understanding of your credit policy unless that policy is represented in its data or instructions.</li>\n          <li><strong>It is not objective.</strong> A model trained on your historical decisions inherits your historical preferences, including the ones you would not defend publicly.</li>\n          <li><strong>It is not self-maintaining.</strong> Economies shift, customer behaviour shifts, fraud typologies shift. A model left unmonitored degrades — a phenomenon called <span class=\"term\">drift</span>, covered in Module 8.</li>\n        </ul>"
-      }
+        h: "What AI is not",
+        html: '\n        <p>Three corrections worth carrying into every vendor meeting:</p>\n        <ul class="body">\n          <li><strong>It is not reasoning like a human.</strong> It is high-dimensional pattern recognition. It has no understanding of your credit policy unless that policy is represented in its data or instructions.</li>\n          <li><strong>It is not objective.</strong> A model trained on your historical decisions inherits your historical preferences, including the ones you would not defend publicly.</li>\n          <li><strong>It is not self-maintaining.</strong> Economies shift, customer behaviour shifts, fraud typologies shift. A model left unmonitored degrades — a phenomenon called <span class="term">drift</span>, covered in Module 8.</li>\n        </ul>',
+      },
     ],
-    "practitioner": {
-      "title": "Practitioner's note: the question that reframes a vendor pitch",
-      "text": "When a vendor presents an AI solution, ask: <em>\"What data was this model trained on, and how similar is that population to our customers?\"</em> A fraud model trained on urban card transactions in another market may perform poorly on remittance-driven, mobile-first Nepali customers. Model performance is not portable — it is a property of the data it learned from."
+    practitioner: {
+      title: "Practitioner's note: the question that reframes a vendor pitch",
+      text: 'When a vendor presents an AI solution, ask: <em>"What data was this model trained on, and how similar is that population to our customers?"</em> A fraud model trained on urban card transactions in another market may perform poorly on remittance-driven, mobile-first Nepali customers. Model performance is not portable — it is a property of the data it learned from.',
     },
-    "activity": {
-      "title": "Workplace application",
-      "text": "Identify one decision in your own department that currently relies on judgement or a simple rule — a limit approval, a flag for review, a customer segmentation. Write down: (a) what outcome you would want a model to predict, (b) what historical data would be needed to train it, and (c) whether a wrong prediction would be more costly as a false positive or a false negative. You have just written the opening of a model specification."
+    activity: {
+      title: "Workplace application",
+      text: "Identify one decision in your own department that currently relies on judgement or a simple rule — a limit approval, a flag for review, a customer segmentation. Write down: (a) what outcome you would want a model to predict, (b) what historical data would be needed to train it, and (c) whether a wrong prediction would be more costly as a false positive or a false negative. You have just written the opening of a model specification.",
     },
-    "takeaways": [
+    takeaways: [
       "AI is the field, ML learns from data, deep learning handles unstructured data, generative AI creates content — each carries different risk",
       "Supervised learning dominates credit and fraud; unsupervised learning finds unknown patterns in AML",
       "Machine learning usually predicts better than scorecards but is harder to explain — and NRB requires explainability",
       "Accuracy is misleading for rare events; precision, recall, AUC and Gini are the meaningful measures",
-      "The precision–recall trade-off is a business decision owned by the business, not by the data team"
+      "The precision–recall trade-off is a business decision owned by the business, not by the data team",
     ],
-    "quiz": [
+    quiz: [
       {
-        "q": "A fraud model reports 99.4% accuracy on a portfolio where 0.6% of transactions are fraudulent. What should your first reaction be?",
-        "opts": [
+        q: "A fraud model reports 99.4% accuracy on a portfolio where 0.6% of transactions are fraudulent. What should your first reaction be?",
+        opts: [
           "Accuracy is misleading here; ask for precision and recall",
           "Accuracy is the only metric that matters",
           "Ask them to raise accuracy to 100%",
-          "Excellent — approve deployment"
+          "Excellent — approve deployment",
         ],
-        "a": 0,
-        "fb": "With rare events, a model that flags nothing still scores ~99.4%. Precision and recall reveal whether it actually catches fraud."
+        a: 0,
+        fb: "With rare events, a model that flags nothing still scores ~99.4%. Precision and recall reveal whether it actually catches fraud.",
       },
       {
-        "q": "Which learning type is best suited to detecting entirely new, previously unseen money-laundering patterns?",
-        "opts": [
+        q: "Which learning type is best suited to detecting entirely new, previously unseen money-laundering patterns?",
+        opts: [
           "Supervised learning on labelled past cases",
           "Unsupervised learning that flags abnormal behaviour",
           "No AI can assist here",
-          "Reinforcement learning"
+          "Reinforcement learning",
         ],
-        "a": 1,
-        "fb": "Unsupervised methods find what does not fit normal patterns — valuable when you cannot label typologies you have never seen."
+        a: 1,
+        fb: "Unsupervised methods find what does not fit normal patterns — valuable when you cannot label typologies you have never seen.",
       },
       {
-        "q": "The central trade-off when replacing a logistic-regression scorecard with a complex ML model is…",
-        "opts": [
+        q: "The central trade-off when replacing a logistic-regression scorecard with a complex ML model is…",
+        opts: [
           "Speed versus cost",
           "Onshore versus offshore hosting",
           "Predictive power versus explainability",
-          "Retail versus corporate"
+          "Retail versus corporate",
         ],
-        "a": 2,
-        "fb": "ML often predicts better but is harder to explain — and NRB's guidelines require transparency, explainability, fairness and accountability."
+        a: 2,
+        fb: "ML often predicts better but is harder to explain — and NRB's guidelines require transparency, explainability, fairness and accountability.",
       },
       {
-        "q": "Under NRB's AI Guidelines, ultimate accountability for outcomes produced by a bank's AI systems rests with…",
-        "opts": [
+        q: "Under NRB's AI Guidelines, ultimate accountability for outcomes produced by a bank's AI systems rests with…",
+        opts: [
           "The individual customer",
           "The IT department",
           "The software vendor",
-          "The board of directors and senior management"
+          "The board of directors and senior management",
         ],
-        "a": 3,
-        "fb": "Accountability sits with the board and senior management — which is why business leaders, not just technologists, must understand these systems."
+        a: 3,
+        fb: "Accountability sits with the board and senior management — which is why business leaders, not just technologists, must understand these systems.",
       },
       {
-        "q": "'Recall' in a credit or fraud model measures…",
-        "opts": [
+        q: "'Recall' in a credit or fraud model measures…",
+        opts: [
           "What proportion of genuine cases the model successfully caught",
           "How much memory it uses",
           "How fast the model runs",
-          "How many flagged cases were genuine"
+          "How many flagged cases were genuine",
         ],
-        "a": 0,
-        "fb": "Recall = of all true cases, how many were caught. Precision = of those flagged, how many were true. Low recall means real losses slipping through."
-      }
-    ]
+        a: 0,
+        fb: "Recall = of all true cases, how many were caught. Precision = of those flagged, how many were true. Low recall means real losses slipping through.",
+      },
+    ],
   },
   {
-    "id": "m2",
-    "tag": "Module 2",
-    "time": "45 min",
-    "title": "The Data Foundation: Why Most Bank AI Projects Fail",
-    "summary": "Data readiness, quality and the traps that sink models",
-    "objectives": [
+    id: "m2",
+    tag: "Module 2",
+    time: "45 min",
+    title: "The Data Foundation: Why Most Bank AI Projects Fail",
+    summary: "Data readiness, quality and the traps that sink models",
+    objectives: [
       "Explain why data quality — not algorithm choice — determines the success of most banking AI projects",
       "Identify the principal data problems in Nepali banking: silos, legacy core systems, paper records and inconsistent KYC",
       "Understand training, validation and test splits, and why they protect the bank",
       "Recognise the two most damaging technical traps: data leakage and class imbalance",
-      "Assess whether a proposed use case is realistically supported by the data your institution actually holds"
+      "Assess whether a proposed use case is realistically supported by the data your institution actually holds",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m3",
-    "tag": "Module 3",
-    "time": "50 min",
-    "title": "AI in Credit Risk & Lending",
-    "summary": "Scoring, alternative data, early warning and fair lending",
-    "objectives": [
+    id: "m3",
+    tag: "Module 3",
+    time: "50 min",
+    title: "AI in Credit Risk & Lending",
+    summary: "Scoring, alternative data, early warning and fair lending",
+    objectives: [
       "Map where AI is applied across the full credit lifecycle, from origination to collections",
       "Compare traditional scorecards with machine-learning approaches on the dimensions that matter to a credit committee",
       "Evaluate alternative data responsibly, including its financial-inclusion promise and its fairness risks",
       "Understand explainability techniques that make model decisions defensible to customers and supervisors",
       "Recognise and test for discriminatory outcomes, including proxy discrimination",
-      "Understand how AI strengthens early-warning systems and portfolio monitoring"
+      "Understand how AI strengthens early-warning systems and portfolio monitoring",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m4",
-    "tag": "Module 4",
-    "time": "50 min",
-    "title": "AI in Fraud, AML & Financial Crime",
-    "summary": "Detection, false positives, networks and the new AI-enabled threats",
-    "objectives": [
+    id: "m4",
+    tag: "Module 4",
+    time: "50 min",
+    title: "AI in Fraud, AML & Financial Crime",
+    summary: "Detection, false positives, networks and the new AI-enabled threats",
+    objectives: [
       "Explain how machine learning improves on rules-based transaction monitoring — and why rules still matter",
       "Address the false-positive burden that dominates AML operations",
       "Understand network and graph analytics for detecting mule accounts and layering",
       "Apply AI appropriately to sanctions screening, name matching and eKYC",
       "Recognise AI-enabled attacks against banks: deepfake authorisation fraud, voice cloning, synthetic identity and adversarial evasion",
-      "Design a defensible hybrid monitoring architecture"
+      "Design a defensible hybrid monitoring architecture",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m5",
-    "tag": "Module 5",
-    "time": "55 min",
-    "title": "Generative AI in Banking Operations",
-    "summary": "Large language models, document automation and safe professional use",
-    "objectives": [
+    id: "m5",
+    tag: "Module 5",
+    time: "55 min",
+    title: "Generative AI in Banking Operations",
+    summary: "Large language models, document automation and safe professional use",
+    objectives: [
       "Understand what a large language model is, how it differs from a predictive model, and where it belongs in a bank",
       "Identify high-value generative AI use cases in banking operations, credit and compliance",
       "Explain retrieval-augmented generation (RAG) and why it is the preferred pattern for regulated institutions",
       "Apply professional-grade prompting techniques to banking tasks",
       "Know precisely what must never be entered into a public AI tool",
-      "Design human-in-the-loop review appropriate to the risk of each use case"
+      "Design human-in-the-loop review appropriate to the risk of each use case",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m6",
-    "tag": "Module 6",
-    "time": "60 min",
-    "title": "The Dangers: AI Risk in the Banking Sector",
-    "summary": "Model risk, bias, privacy, concentration and systemic exposure",
-    "objectives": [
+    id: "m6",
+    tag: "Module 6",
+    time: "60 min",
+    title: "The Dangers: AI Risk in the Banking Sector",
+    summary: "Model risk, bias, privacy, concentration and systemic exposure",
+    objectives: [
       "Apply a structured taxonomy of AI risk specific to financial institutions",
       "Understand model risk and why it is a recognised category of banking risk in its own right",
       "Assess discriminatory, privacy, cyber, third-party and concentration exposures",
       "Recognise systemic dangers: herding, procyclicality and correlated model failure",
       "Understand the human risks — over-reliance, automation bias and skill erosion",
-      "Understand the legal, regulatory and reputational consequences of AI failure in a supervised institution"
+      "Understand the legal, regulatory and reputational consequences of AI failure in a supervised institution",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m7",
-    "tag": "Module 7",
-    "time": "60 min",
-    "title": "The Possibilities: Where AI Creates Value in Finance",
-    "summary": "Revenue, efficiency, risk and financial inclusion in the Nepali market",
-    "objectives": [
+    id: "m7",
+    tag: "Module 7",
+    time: "60 min",
+    title: "The Possibilities: Where AI Creates Value in Finance",
+    summary: "Revenue, efficiency, risk and financial inclusion in the Nepali market",
+    objectives: [
       "Map AI value across four levers: revenue growth, cost efficiency, risk reduction and customer experience",
       "Identify the opportunities most specific to Nepal — remittances, MSME credit, financial inclusion and Nepali-language service",
       "Understand emerging models: hyper-personalisation, embedded finance, conversational banking and agentic automation",
       "Build a credible business case with realistic value estimation and a defined baseline",
       "Sequence adoption sensibly, from quick wins to transformational initiatives",
-      "Understand NRB's regulatory sandbox as a route to supervised innovation"
+      "Understand NRB's regulatory sandbox as a route to supervised innovation",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
+    takeaways: [],
+    quiz: [],
   },
   {
-    "id": "m8",
-    "tag": "Module 8",
-    "time": "65 min",
-    "title": "Governance, Compliance & Implementation",
-    "summary": "NRB requirements, model risk management and leading adoption",
-    "objectives": [
+    id: "m8",
+    tag: "Module 8",
+    time: "65 min",
+    title: "Governance, Compliance & Implementation",
+    summary: "NRB requirements, model risk management and leading adoption",
+    objectives: [
       "Apply the core requirements of NRB's Artificial Intelligence Guidelines to a proposed use case",
       "Build an AI governance structure with clear board, management and operational accountability",
       "Understand the model risk management lifecycle: development, independent validation, approval, monitoring and retirement",
       "Conduct meaningful vendor due diligence and negotiate the contractual terms that matter",
       "Design a controlled pilot with defined success criteria and a stopping rule",
-      "Lead adoption through the human and cultural obstacles that determine success"
+      "Lead adoption through the human and cultural obstacles that determine success",
     ],
-    "sections": [],
-    "activity": {
-      "title": "",
-      "text": ""
+    sections: [],
+    activity: {
+      title: "",
+      text: "",
     },
-    "takeaways": [],
-    "quiz": []
-  }
+    takeaways: [],
+    quiz: [],
+  },
 ];

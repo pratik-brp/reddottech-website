@@ -113,8 +113,15 @@ function AdminSubscriptionsPage() {
       return;
     }
     const headers = ["ID", "Email", "Subscribed Date", "Status"];
-    const rows = subs.map((s) => [s.id, `"${s.email || ""}"`, `"${s.created_at || s.date || ""}"`, '"Active"']);
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const rows = subs.map((s) => [
+      s.id,
+      `"${s.email || ""}"`,
+      `"${s.created_at || s.date || ""}"`,
+      '"Active"',
+    ]);
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -135,15 +142,21 @@ function AdminSubscriptionsPage() {
       toast.error("No emails to copy.");
       return;
     }
-    const allEmails = filteredSubs.map((s) => s.email).filter(Boolean).join(", ");
+    const allEmails = filteredSubs
+      .map((s) => s.email)
+      .filter(Boolean)
+      .join(", ");
     navigator.clipboard.writeText(allEmails);
     toast.success(`Copied ${filteredSubs.length} email addresses to clipboard`);
   };
 
   const broadcastUrl = useMemo(() => {
-    const emails = filteredSubs.map((s) => s.email).filter(Boolean).join(",");
+    const emails = filteredSubs
+      .map((s) => s.email)
+      .filter(Boolean)
+      .join(",");
     return `mailto:info@reddottech.com.np?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(
-      "Red Dot Technologies Update"
+      "Red Dot Technologies Update",
     )}`;
   }, [filteredSubs]);
 
@@ -227,9 +240,7 @@ function AdminSubscriptionsPage() {
             <div>
               <p className="text-xs font-medium text-slate-500">Audience Quality</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold tracking-tight text-slate-900">
-                  100%
-                </span>
+                <span className="text-2xl font-bold tracking-tight text-slate-900">100%</span>
                 <span className="inline-flex items-center text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
                   Opt-In Verified
                 </span>
@@ -245,11 +256,10 @@ function AdminSubscriptionsPage() {
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
           <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-sm text-slate-900">
-                Audience Directory
-              </h3>
+              <h3 className="font-semibold text-sm text-slate-900">Audience Directory</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                {filteredSubs.length} {filteredSubs.length === 1 ? "subscriber" : "subscribers"} found
+                {filteredSubs.length} {filteredSubs.length === 1 ? "subscriber" : "subscribers"}{" "}
+                found
               </p>
             </div>
 
@@ -381,9 +391,7 @@ function AdminSubscriptionsPage() {
                 <BrandSpinner size="sm" message="Loading..." />
               </div>
             ) : filteredSubs.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-400">
-                No subscribers found.
-              </div>
+              <div className="p-6 text-center text-xs text-slate-400">No subscribers found.</div>
             ) : (
               filteredSubs.map((sub) => (
                 <div key={sub.id} className="p-4 flex items-center justify-between gap-3 bg-white">
@@ -433,9 +441,7 @@ function AdminSubscriptionsPage() {
           <div className="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-xl p-6 space-y-4 animate-fade-in-up">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-semibold text-base text-slate-900">
-                  Add Subscriber
-                </h3>
+                <h3 className="font-semibold text-base text-slate-900">Add Subscriber</h3>
                 <p className="text-xs text-slate-500">Insert verified audience email address</p>
               </div>
               <button
@@ -447,9 +453,15 @@ function AdminSubscriptionsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleAddSubscriber} className="space-y-4 text-xs font-medium text-slate-700">
+            <form
+              onSubmit={handleAddSubscriber}
+              className="space-y-4 text-xs font-medium text-slate-700"
+            >
               <div>
-                <label htmlFor="subscriber_email" className="block text-xs font-medium text-slate-700 mb-1">
+                <label
+                  htmlFor="subscriber_email"
+                  className="block text-xs font-medium text-slate-700 mb-1"
+                >
                   Subscriber Email *
                 </label>
                 <input

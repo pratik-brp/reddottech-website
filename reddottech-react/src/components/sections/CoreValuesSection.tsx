@@ -29,7 +29,9 @@ export function CoreValuesSection() {
 
   useEffect(() => {
     startTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [startTimer]);
 
   // Reset timer on manual click
@@ -55,10 +57,14 @@ export function CoreValuesSection() {
       glowBg: "bg-brand-red/10 border-brand-red/20",
       pillars: [
         { title: "Curriculum Rigor", desc: "Built alongside USC Upstate academic benchmarks." },
-        { title: "Expert Faculty", desc: "Led by industry practitioners & patented professionals." },
+        {
+          title: "Expert Faculty",
+          desc: "Led by industry practitioners & patented professionals.",
+        },
         { title: "Quality Audits", desc: "100% course evaluation & verifiable credentials." },
       ],
-      quote: "Excellence is not an act, but a habit embedded in every lab, module, and certification we issue.",
+      quote:
+        "Excellence is not an act, but a habit embedded in every lab, module, and certification we issue.",
     },
     {
       id: "innovation",
@@ -75,11 +81,21 @@ export function CoreValuesSection() {
       badgeStyle: "bg-amber-50 text-amber-700 border-amber-200/80",
       glowBg: "bg-amber-500/10 border-amber-500/20",
       pillars: [
-        { title: "AI Integration", desc: "Generative & Machine Learning modules embedded in courses." },
-        { title: "Live Capstone Labs", desc: "Real corporate scenario simulations instead of pure theory." },
-        { title: "Agile Curriculum", desc: "Quarterly updates matching global technology standards." },
+        {
+          title: "AI Integration",
+          desc: "Generative & Machine Learning modules embedded in courses.",
+        },
+        {
+          title: "Live Capstone Labs",
+          desc: "Real corporate scenario simulations instead of pure theory.",
+        },
+        {
+          title: "Agile Curriculum",
+          desc: "Quarterly updates matching global technology standards.",
+        },
       ],
-      quote: "We don't teach yesterday's methods; we prepare our learners for tomorrow's tech landscape.",
+      quote:
+        "We don't teach yesterday's methods; we prepare our learners for tomorrow's tech landscape.",
     },
     {
       id: "accessibility",
@@ -96,11 +112,21 @@ export function CoreValuesSection() {
       badgeStyle: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
       glowBg: "bg-emerald-500/10 border-emerald-500/20",
       pillars: [
-        { title: "Hybrid Learning", desc: "Live weekend masterclasses & flexible self-paced video modules." },
-        { title: "Affordable Tuition", desc: "Premium international certification at local Nepalese rates." },
-        { title: "Kathmandu HQ", desc: "Modern physical learning center & nationwide online reach." },
+        {
+          title: "Hybrid Learning",
+          desc: "Live weekend masterclasses & flexible self-paced video modules.",
+        },
+        {
+          title: "Affordable Tuition",
+          desc: "Premium international certification at local Nepalese rates.",
+        },
+        {
+          title: "Kathmandu HQ",
+          desc: "Modern physical learning center & nationwide online reach.",
+        },
       ],
-      quote: "Global credentials, delivered locally—empowering Nepalese professionals right here at home.",
+      quote:
+        "Global credentials, delivered locally—empowering Nepalese professionals right here at home.",
     },
     {
       id: "growth",
@@ -118,10 +144,17 @@ export function CoreValuesSection() {
       glowBg: "bg-blue-500/10 border-blue-500/20",
       pillars: [
         { title: "Career Referrals", desc: "Direct placement pipeline to 40+ corporate partners." },
-        { title: "Leadership Focus", desc: "Management frameworks, DMAIC Six Sigma, & soft skills." },
-        { title: "Verifiable Badges", desc: "Sharable digital credentials for LinkedIn & corporate recruiters." },
+        {
+          title: "Leadership Focus",
+          desc: "Management frameworks, DMAIC Six Sigma, & soft skills.",
+        },
+        {
+          title: "Verifiable Badges",
+          desc: "Sharable digital credentials for LinkedIn & corporate recruiters.",
+        },
       ],
-      quote: "Our success is measured exclusively by the promotions and breakthroughs of our alumni.",
+      quote:
+        "Our success is measured exclusively by the promotions and breakthroughs of our alumni.",
     },
     {
       id: "community",
@@ -139,11 +172,21 @@ export function CoreValuesSection() {
       badgeStyle: "bg-purple-50 text-purple-700 border-purple-200/80",
       glowBg: "bg-purple-500/10 border-purple-500/20",
       pillars: [
-        { title: "1k+ Alumni Network", desc: "Connect with certified professionals across tech and business." },
-        { title: "Peer Masterclasses", desc: "Guest lectures, alumni roundtables, and networking events." },
-        { title: "Lifelong Access", desc: "Permanent access to course updates and alumni privileges." },
+        {
+          title: "1k+ Alumni Network",
+          desc: "Connect with certified professionals across tech and business.",
+        },
+        {
+          title: "Peer Masterclasses",
+          desc: "Guest lectures, alumni roundtables, and networking events.",
+        },
+        {
+          title: "Lifelong Access",
+          desc: "Permanent access to course updates and alumni privileges.",
+        },
       ],
-      quote: "You enter as a learner, and remain forever part of Nepal's premier certified professional network.",
+      quote:
+        "You enter as a learner, and remain forever part of Nepal's premier certified professional network.",
     },
   ];
 
@@ -159,9 +202,15 @@ export function CoreValuesSection() {
   };
 
   return (
-    <section id="core-values" className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80">
+    <section
+      id="core-values"
+      className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80"
+    >
       {/* Background Texture & Ambient Radial Glows */}
-      <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-30"
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full opacity-20 blur-3xl"
@@ -173,7 +222,6 @@ export function CoreValuesSection() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
         {/* Section Header */}
         <div className="mb-6 sm:mb-14 text-center mx-auto max-w-3xl space-y-2 sm:space-y-4">
           <ScrollReveal direction="up">
@@ -193,7 +241,8 @@ export function CoreValuesSection() {
 
           <ScrollReveal direction="up" delay={0.2}>
             <p className="text-xs sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-              Explore the 5 foundational pillars that guide our training programs, quality benchmarks, and learner community across Nepal.
+              Explore the 5 foundational pillars that guide our training programs, quality
+              benchmarks, and learner community across Nepal.
             </p>
           </ScrollReveal>
         </div>
@@ -208,30 +257,34 @@ export function CoreValuesSection() {
               <button
                 key={v.id}
                 onClick={() => handleSelect(idx)}
-                className={`group flex-1 min-w-[105px] sm:min-w-[140px] text-center rounded-xl sm:rounded-2xl p-2.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-1.5 sm:gap-2 ${isActive
+                className={`group flex-1 min-w-[105px] sm:min-w-[140px] text-center rounded-xl sm:rounded-2xl p-2.5 sm:p-4 transition-all duration-300 border flex flex-col items-center gap-1.5 sm:gap-2 ${
+                  isActive
                     ? "bg-white border-2 border-brand-red/50 shadow-md scale-[1.02]"
                     : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 shadow-xs"
-                  }`}
+                }`}
               >
                 <div
-                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl font-extrabold text-xs transition-all duration-300 ${isActive
+                  className={`flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl font-extrabold text-xs transition-all duration-300 ${
+                    isActive
                       ? `${v.themeBg} text-white shadow-xs scale-105`
                       : "bg-slate-100 text-slate-600 group-hover:bg-slate-200"
-                    }`}
+                  }`}
                 >
                   <Icon className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                 </div>
 
                 <div>
                   <span
-                    className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest block ${isActive ? v.themeColor : "text-slate-400"
-                      }`}
+                    className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest block ${
+                      isActive ? v.themeColor : "text-slate-400"
+                    }`}
                   >
                     {v.number} • {v.badge}
                   </span>
                   <h4
-                    className={`text-[11px] sm:text-sm font-extrabold tracking-tight transition-colors ${isActive ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"
-                      }`}
+                    className={`text-[11px] sm:text-sm font-extrabold tracking-tight transition-colors ${
+                      isActive ? "text-brand-ink" : "text-slate-700 group-hover:text-brand-ink"
+                    }`}
                   >
                     {v.title}
                   </h4>
@@ -243,7 +296,6 @@ export function CoreValuesSection() {
 
         {/* Main Stage Showcase Box */}
         <div className="relative rounded-2xl sm:rounded-[2.25rem] border border-slate-200/90 bg-white p-4 sm:p-10 shadow-lg sm:shadow-2xl overflow-hidden">
-
           {/* Top Accent Bar */}
           <div
             className={`absolute inset-x-0 top-0 h-1.5 sm:h-2 bg-gradient-to-r ${current.accentGradient} transition-all duration-500`}
@@ -292,15 +344,20 @@ export function CoreValuesSection() {
 
             {/* Right Column: Detailed Info & Deliverables Grid (7 Cols) */}
             <div className="lg:col-span-7 space-y-4 sm:space-y-6">
-
               {/* Header Row */}
               <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex items-center gap-2.5 sm:gap-3">
-                  <div className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border ${current.glowBg} shadow-xs shrink-0`}>
-                    <CurrentIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${current.themeColor} stroke-[2.2]`} />
+                  <div
+                    className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border ${current.glowBg} shadow-xs shrink-0`}
+                  >
+                    <CurrentIcon
+                      className={`h-5 w-5 sm:h-6 sm:w-6 ${current.themeColor} stroke-[2.2]`}
+                    />
                   </div>
                   <div>
-                    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider ${current.badgeStyle}`}>
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider ${current.badgeStyle}`}
+                    >
                       {current.badge}
                     </span>
                     <h3 className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink tracking-tight mt-0.5">
@@ -309,7 +366,9 @@ export function CoreValuesSection() {
                   </div>
                 </div>
 
-                <h4 className={`text-xs sm:text-sm font-extrabold tracking-wide ${current.themeColor} pt-1`}>
+                <h4
+                  className={`text-xs sm:text-sm font-extrabold tracking-wide ${current.themeColor} pt-1`}
+                >
                   {current.tagline}
                 </h4>
                 <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed">
@@ -328,7 +387,9 @@ export function CoreValuesSection() {
                       <CheckCircle2 className={`h-4 w-4 ${current.themeColor} shrink-0`} />
                       <h5 className="text-xs font-extrabold text-brand-ink">{p.title}</h5>
                     </div>
-                    <p className="text-[11px] text-slate-500 font-medium leading-normal pt-0.5">{p.desc}</p>
+                    <p className="text-[11px] text-slate-500 font-medium leading-normal pt-0.5">
+                      {p.desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -360,13 +421,9 @@ export function CoreValuesSection() {
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
     </section>
   );

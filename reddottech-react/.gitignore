@@ -34,6 +34,14 @@ dist-ssr
 .env*
 !.env.example
 
+# Sensitive storage & uploads
+storage/receipts/*
+!storage/receipts/.gitkeep
+storage/
+!storage/
+!storage/receipts/
+
 # SQLite WAL/SHM
 *.sqlite-wal
 *.sqlite-shm
+

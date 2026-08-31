@@ -62,9 +62,7 @@ export function Reveal({
       className={`transition-all will-change-transform ${className}`}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible
-          ? "translate3d(0, 0, 0)"
-          : `translate3d(${x}px, ${y}px, 0)`,
+        transform: isVisible ? "translate3d(0, 0, 0)" : `translate3d(${x}px, ${y}px, 0)`,
         filter: blur ? (isVisible ? "blur(0px)" : "blur(6px)") : "none",
         transitionDuration: `${duration}s`,
         transitionDelay: `${delay}s`,
@@ -75,4 +73,3 @@ export function Reveal({
     </div>
   );
 }
-

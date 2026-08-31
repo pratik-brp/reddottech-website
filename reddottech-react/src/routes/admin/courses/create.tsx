@@ -90,7 +90,10 @@ function AdminCreateCoursePage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-7 text-xs font-semibold text-slate-700">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5 sm:space-y-7 text-xs font-semibold text-slate-700"
+        >
           {/* 1. General Info */}
           <div className="space-y-4">
             <h4 className="text-xs font-black uppercase tracking-wider text-brand-red flex items-center gap-2">
@@ -100,7 +103,10 @@ function AdminCreateCoursePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <label htmlFor="create_course_name" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_course_name"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Course Name <span className="text-brand-red">*</span>
                 </label>
                 <input
@@ -116,7 +122,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_course_category" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_course_category"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Category
                 </label>
                 <input
@@ -131,7 +140,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_instructor_name" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_instructor_name"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Instructor Name
                 </label>
                 <input
@@ -146,7 +158,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_instructor_title" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_instructor_title"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Instructor Title
                 </label>
                 <input
@@ -161,7 +176,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_course_price" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_course_price"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Price ($ USD / NPR)
                 </label>
                 <input
@@ -177,7 +195,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_start_date" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_start_date"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Start Date
                 </label>
                 <input
@@ -192,7 +213,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_duration" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_duration"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Duration
                 </label>
                 <input
@@ -217,7 +241,10 @@ function AdminCreateCoursePage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3.5">
               <div>
-                <label htmlFor="create_delivery" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_delivery"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Delivery Mode
                 </label>
                 <select
@@ -233,7 +260,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_mode" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_mode"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Mode
                 </label>
                 <input
@@ -248,7 +278,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_language" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_language"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Language
                 </label>
                 <input
@@ -263,7 +296,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_skill_level" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_skill_level"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Skill Level
                 </label>
                 <select
@@ -280,7 +316,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_certification" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_certification"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Certification
                 </label>
                 <input
@@ -295,7 +334,10 @@ function AdminCreateCoursePage() {
               </div>
 
               <div>
-                <label htmlFor="create_status" className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label
+                  htmlFor="create_status"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
                   Status
                 </label>
                 <select

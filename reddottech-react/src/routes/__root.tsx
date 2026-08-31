@@ -124,16 +124,48 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
-
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const jsonLdOrg = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: "Red Dot Technologies",
+    url: "https://reddottech.com.np",
+    logo: "https://reddottech.com.np/images/common/reddot-logo.svg",
+    description:
+      "Nepal's premier ICT certification and applied learning hub, partnered with the University of South Carolina Upstate (USA).",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Baluwatar-04",
+      addressLocality: "Kathmandu",
+      addressRegion: "Bagmati",
+      addressCountry: "NP",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+977-1-4535691",
+      contactType: "admissions",
+      email: "info@reddottech.com.np",
+    },
+    sameAs: [
+      "https://www.facebook.com/profile.php?id=61576029361697",
+      "https://www.instagram.com/reddot.tech/",
+      "https://www.linkedin.com/company/red-dot-technologies-nepal/",
+      "https://www.tiktok.com/@reddot.tech",
+    ],
+  };
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Scripts />
       </body>

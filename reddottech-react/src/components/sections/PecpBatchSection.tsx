@@ -1,13 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Globe2,
-  Sparkles,
-  Clock,
-  Award,
-  Users,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Globe2, Sparkles, Clock, Award, Users } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { useState, useEffect } from "react";
@@ -29,17 +21,11 @@ const cohortDetails = [
 
 export function PecpBatchSection() {
   const cached = getCachedSettings();
-  const [subtitle, setSubtitle] = useState(
-    cached?.batch_banner_subtitle || ""
-  );
+  const [subtitle, setSubtitle] = useState(cached?.batch_banner_subtitle || "");
   const [title, setTitle] = useState(
-    cached?.batch_banner_title
-      ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n")
-      : ""
+    cached?.batch_banner_title ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n") : "",
   );
-  const [buttonText, setButtonText] = useState(
-    cached?.batch_banner_button_text || "Enroll Now"
-  );
+  const [buttonText, setButtonText] = useState(cached?.batch_banner_button_text || "Enroll Now");
   const [isLoading, setIsLoading] = useState(!cached);
 
   useEffect(() => {
@@ -47,7 +33,8 @@ export function PecpBatchSection() {
       .then((data) => {
         if (data) {
           if (data.batch_banner_subtitle) setSubtitle(data.batch_banner_subtitle);
-          if (data.batch_banner_title) setTitle(data.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
+          if (data.batch_banner_title)
+            setTitle(data.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
           if (data.batch_banner_button_text) setButtonText(data.batch_banner_button_text);
         }
       })
@@ -61,8 +48,10 @@ export function PecpBatchSection() {
       if (customEvent.detail) {
         const data = customEvent.detail;
         if (data.batch_banner_subtitle !== undefined) setSubtitle(data.batch_banner_subtitle);
-        if (data.batch_banner_title !== undefined) setTitle(data.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
-        if (data.batch_banner_button_text !== undefined) setButtonText(data.batch_banner_button_text);
+        if (data.batch_banner_title !== undefined)
+          setTitle(data.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
+        if (data.batch_banner_button_text !== undefined)
+          setButtonText(data.batch_banner_button_text);
       }
     };
 
@@ -71,7 +60,10 @@ export function PecpBatchSection() {
   }, []);
 
   return (
-    <section id="batches" className="relative overflow-hidden py-12 sm:py-16 lg:py-24 px-3.5 sm:px-6">
+    <section
+      id="batches"
+      className="relative overflow-hidden py-12 sm:py-16 lg:py-24 px-3.5 sm:px-6"
+    >
       <div className="mx-auto max-w-7xl">
         <Reveal y={30}>
           <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 lg:p-16 text-white shadow-2xl border border-white/15">
@@ -182,7 +174,9 @@ export function PecpBatchSection() {
                       <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-300">
                         {item.label}
                       </div>
-                      <div className="mt-0.5 sm:mt-1 text-xs sm:text-sm font-bold text-white leading-tight">{item.value}</div>
+                      <div className="mt-0.5 sm:mt-1 text-xs sm:text-sm font-bold text-white leading-tight">
+                        {item.value}
+                      </div>
                     </div>
                   );
                 })}

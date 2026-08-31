@@ -1,126 +1,133 @@
-# 🚀 Complete cPanel Deployment Master Guide & Troubleshooting Blueprint
+# 🚀 Complete cPanel Deployment Guide for Red Dot Technologies
 
-This guide document provides the exact end-to-end steps to deploy full-stack Node.js / React SSR applications on **cPanel (CloudLinux / LiteSpeed)**, along with a complete post-mortem of every issue encountered and how to prevent them in future projects.
-
----
-
-## 📑 Table of Contents
-1. [End-to-End Deployment Walkthrough](#-end-to-end-deployment-walkthrough)
-2. [Post-Mortem & Troubleshooting Handbook](#-post-mortem--troubleshooting-handbook)
-3. [The Golden Rules for Future Deployments](#-the-golden-rules-for-future-deployments)
+This guide walks you through deploying the full-stack **Red Dot Technologies** website (React SSR + Express API + MySQL Database) on **cPanel** from scratch.
 
 ---
 
-## 🛠️ End-to-End Deployment Walkthrough
+## 📦 What is Inside the Deployment Package?
 
-### STEP 1: Create Database in cPanel
-1. In cPanel, open **MySQL® Database Wizard**.
-2. **Database Name**: e.g., `reddot_db` &rarr; Full name will be `youruser_reddot_db`.
-3. **Database User**: e.g., `reddot_user` &rarr; Full user will be `youruser_reddot_user`.
-4. **Password**: Generate and copy a strong password.
-5. **Privileges**: Check **ALL PRIVILEGES** &rarr; click **Make Changes**.
-6. Note down the full credentials:
-   - Database Name: `youruser_reddot_db`
-   - Database User: `youruser_reddot_user`
-   - Password: `yourpassword`
+We have already packaged the complete application for you into:
+📍 **`cpanel-deploy.tar.gz`** _(Recommended)_ & **`cpanel-deploy.zip`** (Located in: `reddottech-react/`)
 
-### STEP 2: Import Database Schema (phpMyAdmin)
-1. In cPanel, open **phpMyAdmin**.
-2. Click your database in the left sidebar (`youruser_reddot_db`).
-3. Click the **Import** tab &rarr; Choose `server/schema.sql` &rarr; click **Import**.
+> [!TIP]
+> **Why use `cpanel-deploy.tar.gz`?**
+> Some cPanel servers have an antivirus rule called `Sanesecurity.Foxhole.JS_Zip` that blocks `.zip` files containing `.js` code files. **`cpanel-deploy.tar.gz`** is natively supported by cPanel File Manager and completely bypasses this false-positive rule!
 
-### STEP 3: Point Domain Document Root (cPanel Domains)
-1. In cPanel, open **Domains**.
-2. Click **Manage** next to your domain (`reddottech.com.np`).
-3. Set **Document Root** to your application folder:
-   👉 `reddottech` *(Do NOT add `/public` unless it is a PHP site)*.
-4. Click **Update**.
+Whenever you make future code updates, you can re-generate the package in 1 click by running in your terminal:
 
-### STEP 4: Package & Upload Application
-1. In your local project, run the packager:
-   ```bash
-   npm run package:cpanel
-   ```
-2. In cPanel **File Manager**, create a folder `/home/youruser/reddottech`.
-3. Upload **`cpanel-deploy.tar.gz`** (never `.zip` to avoid antivirus false positives).
-4. Right-click **`cpanel-deploy.tar.gz`** &rarr; **Extract** &rarr; **Extract File(s)**.
+```bash
+npm run package:cpanel
+```
 
-### STEP 5: Setup Node.js App in cPanel
-1. In cPanel, open **Setup Node.js App** (Node.js Selector) &rarr; **Create Application**.
-2. Configure fields:
-   - **Node.js Version**: `20.x` (e.g., `20.20.2`)
-   - **Application Mode**: `Production`
-   - **Application Root**: `reddottech`
-   - **Application URL**: Select `reddottech.com.np` from the dropdown and **LEAVE THE SUBPATH BOX EMPTY**.
-   - **Application Startup File**: `server/prod-entry.js`
-3. Add **Environment Variables**:
+---
+
+## 📋 Step-by-Step Deployment Instructions
+
+### STEP 1: Create the MySQL Database & User in cPanel
+
+1. Log in to your **cPanel Dashboard**.
+2. Under the **Databases** section, click **MySQL® Database Wizard**.
+3. **Step 1: Create A Database**:
+   - Enter a database name (e.g., `reddot_db`).
+   - Click **Next Step**.
+4. **Step 2: Create Database Users**:
+   - Enter a username (e.g., `reddot_user`).
+   - Click **Password Generator** to create a strong password. **Copy and save this password!**
+   - Click **Create User**.
+5. **Step 3: Add User to the Database**:
+   - Check the box **ALL PRIVILEGES**.
+   - Click **Make Changes** / **Next Step**.
+6. _Note down your full Database Name, Username, and Password._ (e.g., `cpaneluser_reddot_db`, `cpaneluser_reddot_user`).
+   databasename : reddot_db
+   username: reddot_user
+   password: Database_user
+
+---
+
+### STEP 2: Import the Database Schema into phpMyAdmin
+
+1. Back on the main cPanel dashboard, click **phpMyAdmin** (under Databases).
+2. In the left sidebar, click on your newly created database (e.g., `cpaneluser_reddot_db`).
+3. Click the **Import** tab in the top navigation bar.
+4. Under **File to import**, click **Choose File** and select `server/schema.sql`.
+5. Scroll to the bottom and click **Import** (or **Go**).
+6. ✅ All 8 tables (`courses`, `certificates`, `leads`, `contacts`, `subscriptions`, `admins`, `settings`, `migrations`) and all initial authentic data will be loaded!
+
+---
+
+### STEP 3: Upload the Files to cPanel
+
+1. In cPanel, click **File Manager** (under Files).
+2. In the left panel, click on your home directory (e.g. `/home/username/`).
+3. Click **+ Folder** in the top toolbar to create a new folder named:
+   📁 **`reddottech`**
+4. Double-click to open the `reddottech` folder.
+5. Click **Upload** in the top toolbar.
+6. Drag and drop **`cpanel-deploy.tar.gz`** and wait until the progress bar turns green (100%).
+7. Go back to File Manager, right-click on `cpanel-deploy.tar.gz` and select **Extract** -> **Extract Files**.
+8. You will now see:
+   - `dist/`
+   - `server/`
+   - `public/`
+   - `package.json`
+   - `package-lock.json`
+   - `.env.example`
+
+---
+
+### STEP 4: Setup the Node.js Application in cPanel
+
+1. In cPanel, search for **Setup Node.js App** (sometimes called **Node.js Selector**) and click it.
+2. Click the blue **Create Application** button.
+3. Fill out the application settings:
+   - **Node.js version**: Select **`20.x`** (or `18.x`).
+   - **Application mode**: Select **`Production`**.
+   - **Application root**: Enter **`reddottech`** (the folder you created in Step 3).
+   - **Application URL**: Select your domain (e.g., `reddottech.com.np` or `www.reddottech.com.np`).
+   - **Application startup file**: Enter **`server/prod-entry.js`**.![alt text](image.png)
+4. In the **Environment variables** section, click **Add Variable** and add the following keys:
    - `NODE_ENV` = `production`
    - `PORT` = `5000`
    - `DB_HOST` = `localhost`
    - `DB_PORT` = `3306`
-   - `DB_NAME` = `youruser_reddot_db` *(Must include cPanel prefix)*
-   - `DB_USER` = `youruser_reddot_user` *(Must include cPanel prefix)*
-   - `DB_PASSWORD` = `yourpassword`
-   - `JWT_SECRET` = `your_strong_jwt_key`
+   - `DB_NAME` = _Your cPanel Database Name from Step 1_
+   - `DB_USER` = _Your cPanel Database User from Step 1_
+   - `DB_PASSWORD` = _Your cPanel Database Password from Step 1_
+   - `JWT_SECRET` = `reddot_jwt_super_secure_key_2026`
    - `CORS_ORIGINS` = `https://reddottech.com.np,https://www.reddottech.com.np`
-4. Click **Create** / **Save**.
-
-### STEP 6: Install Modules & Start
-1. Open cPanel &rarr; **Terminal**.
-2. Run the environment command + install:
-   ```bash
-   source /home/youruser/nodevenv/reddottech/20/bin/activate && cd /home/youruser/reddottech && npm install
-   ```
-3. Return to **Setup Node.js App** &rarr; click **🔄 RESTART**.
-4. Visit `https://yourdomain.com`!
+5. Click **Create** in the top-right corner.
 
 ---
 
-## 🔍 Post-Mortem & Troubleshooting Handbook
+Run these 3 lines one by one (press Enter after each):
 
-Here is a summary of all 7 issues resolved during this deployment:
+bash
+source /home/brpgroup/nodevenv/reddottech/20/bin/activate
+bash
+cd /home/brpgroup/reddottech
+bash
+npm install
 
-### 1. Antivirus False Positive (`Sanesecurity.Foxhole.JS_Zip_13`)
-- **Symptom**: cPanel File Manager cancels `.zip` upload with a virus warning.
-- **Cause**: ClamAV Sanesecurity rules block any `.zip` containing `.js` files (antispam heuristic).
-- **Prevention**: Always package as **`.tar.gz`**. ClamAV only scans `.zip` archives. cPanel extracts `.tar.gz` natively.
+### STEP 5: Install Dependencies & Launch
 
-### 2. Misconfigured Application URL Subpath
-- **Symptom**: `Web application is inaccessible by its address "http://domain.com/domain.com"`.
-- **Cause**: Typing the domain name into the subpath text input next to the domain dropdown.
-- **Prevention**: Select the domain in the dropdown and **leave the text box completely empty**.
-
-### 3. LiteSpeed CommonJS Require vs Top-Level Await (`ERR_REQUIRE_ASYNC_MODULE`)
-- **Symptom**: Server crashes with `require() cannot be used on an ESM graph with top-level await`.
-- **Cause**: LiteSpeed's `lsnode.js` loads the startup file using `require()`. In Node 20+, `require()` supports ESM only if there is no top-level `await`.
-- **Prevention**: In `server/prod-entry.js`, load SSR handlers lazily inside functions via dynamic `import().then(...)` instead of top-level `const x = await import(...)`.
-
-### 4. CloudLinux Selector Missing `.htaccess` (`FileNotFoundError: .htaccess`)
-- **Symptom**: Node.js Selector errors when stopping/restarting with `FileNotFoundError: .htaccess`.
-- **Cause**: CloudLinux `cl_selector.py` manages Passenger by writing directives into `/home/user/app/.htaccess`.
-- **Prevention**: Ensure an empty `.htaccess` is included in the deployment package or run `touch .htaccess`.
-
-### 5. Missing Database Prefix (`Access denied for user 'reddot_user'@'localhost'`)
-- **Symptom**: Backend fails to initialize MySQL connection.
-- **Cause**: cPanel automatically prefixes MySQL users and database names with the cPanel account username.
-- **Prevention**: Always use `cpanelusername_dbname` and `cpanelusername_dbuser`.
-
-### 6. Old Website Files Loading (`mysqli_sql_exception`)
-- **Symptom**: Domain displays old PHP errors instead of Node.js app.
-- **Cause**: cPanel Domains had Document Root set to old `/domain/public` directory.
-- **Prevention**: Update Document Root in cPanel **Domains** &rarr; **Manage** to point to the Node application root folder.
-
-### 7. TanStack Router/Start Mismatch (`TypeError: matchedRoutes is not iterable`)
-- **Symptom**: SSR returns 500 error on route matching.
-- **Cause**: `@tanstack/react-router` 1.170 returns `[matchedRoutes, rawParams, foundRoute]` as a tuple, but older `@tanstack/react-start` 1.168 tried to destructure `{ matchedRoutes }`.
-- **Prevention**: Always keep all `@tanstack/*` packages aligned to matching major/minor versions.
+1. Once the application is created, you will see a button named **"Run NPM Install"** (or **"NPM Install"**). Click it and wait 1-2 minutes for the packages to install.
+   _(Alternative: Copy the virtual environment command shown at the top of the Node.js app page, open cPanel **Terminal**, paste the command, and run `npm install --omit=dev`)_.
+2. Click **Start Application** (or **Restart Application** if it's already started).
+3. Visit **`https://reddottech.com.np`** in your browser!
 
 ---
 
-## 🏆 The Golden Rules for Future Deployments
+## 🔐 Default Admin Login
 
-1. **Always use `.tar.gz` archives** for cPanel File Manager uploads.
-2. **Never use top-level `await`** in your Node.js entry point file when deploying on LiteSpeed (`lsnode`).
-3. **Always include cPanel username prefix** in MySQL database environment variables (`cpaneluser_db`).
-4. **Keep an empty `.htaccess`** in your Node root folder for CloudLinux.
-5. **Use cPanel Terminal** to run `npm install` inside the virtual environment for 100% reliable module installations.
+Once deployed, you can access the admin dashboard at:
+
+- **URL**: `https://reddottech.com.np/admin/login`
+- **Default Username / Email**: `admin@reddottech.com.np`
+- **Default Password**: `admin123` _(Be sure to change this password in Admin Settings after your first login!)_
+
+---
+
+## 💡 Helpful Tips
+
+- **SSL Certificate**: Make sure **Let's Encrypt SSL** / **AutoSSL** is enabled under cPanel -> **SSL/TLS Status** for `https://` padlock.
+- **Troubleshooting**: If you ever see a 503 error, open cPanel -> **Setup Node.js App** -> click the edit pencil icon next to your app -> click **Restart**, or check the error log file located inside `/home/username/reddottech/stderr.log`.

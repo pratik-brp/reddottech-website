@@ -379,10 +379,7 @@ export const Navbar = memo(function Navbar() {
       }
     };
     const handleClickOutside = (e: MouseEvent) => {
-      if (
-        navContainerRef.current &&
-        !navContainerRef.current.contains(e.target as Node)
-      ) {
+      if (navContainerRef.current && !navContainerRef.current.contains(e.target as Node)) {
         setActiveMegaMenu(null);
       }
     };
@@ -478,7 +475,6 @@ export const Navbar = memo(function Navbar() {
     setActiveMegaMenu(null);
     setMobileOpen(false);
 
-
     const scrollToHero = () => {
       const lenis = (window as any).__lenis;
       const heroEl = document.getElementById("hero");
@@ -562,12 +558,8 @@ export const Navbar = memo(function Navbar() {
             <span>Home</span>
           </Link>
 
-
           {/* About Us Dropdown Trigger */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMouseEnter("about")}
-          >
+          <div className="relative" onMouseEnter={() => handleMouseEnter("about")}>
             <Link
               to="/about"
               className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
@@ -584,10 +576,7 @@ export const Navbar = memo(function Navbar() {
           </div>
 
           {/* PECP Dropdown Trigger */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMouseEnter("pecp")}
-          >
+          <div className="relative" onMouseEnter={() => handleMouseEnter("pecp")}>
             <Link
               to="/pecp"
               className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
@@ -604,10 +593,7 @@ export const Navbar = memo(function Navbar() {
           </div>
 
           {/* Courses Dropdown Trigger */}
-          <div
-            className="relative"
-            onMouseEnter={() => handleMouseEnter("courses")}
-          >
+          <div className="relative" onMouseEnter={() => handleMouseEnter("courses")}>
             <Link
               to="/courses"
               className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
@@ -779,7 +765,10 @@ export const Navbar = memo(function Navbar() {
                     {MEGA_MENUS[activeMegaMenu].featured.highlights && (
                       <div className="space-y-1 pt-1 border-t border-white/10">
                         {MEGA_MENUS[activeMegaMenu].featured.highlights.map((hl, hIdx) => (
-                          <div key={hIdx} className="flex items-center gap-1.5 text-[10.5px] font-bold text-slate-200">
+                          <div
+                            key={hIdx}
+                            className="flex items-center gap-1.5 text-[10.5px] font-bold text-slate-200"
+                          >
                             <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
                             <span>{hl}</span>
                           </div>
@@ -791,7 +780,9 @@ export const Navbar = memo(function Navbar() {
                   <div className="relative z-10 pt-4">
                     <Link
                       to={MEGA_MENUS[activeMegaMenu].featured.href as any}
-                      onClick={(e) => handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].featured.href)}
+                      onClick={(e) =>
+                        handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].featured.href)
+                      }
                       className="inline-flex items-center justify-between w-full rounded-xl bg-white text-slate-900 hover:bg-brand-red hover:text-white font-extrabold text-xs px-3.5 py-2.5 transition-all shadow-md group-hover:translate-x-0.5 cursor-pointer"
                     >
                       <span>{MEGA_MENUS[activeMegaMenu].featured.ctaText}</span>
@@ -810,7 +801,9 @@ export const Navbar = memo(function Navbar() {
                 </span>
                 <Link
                   to={MEGA_MENUS[activeMegaMenu].bottomBar?.href as any}
-                  onClick={(e) => handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].bottomBar?.href || "")}
+                  onClick={(e) =>
+                    handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].bottomBar?.href || "")
+                  }
                   className="font-bold text-brand-red hover:underline flex items-center gap-1"
                 >
                   <span>{MEGA_MENUS[activeMegaMenu].bottomBar?.ctaText}</span>
@@ -887,7 +880,6 @@ export const Navbar = memo(function Navbar() {
               <ChevronRight className="h-4 w-4 text-slate-300" />
             </Link>
 
-
             {/* 2. About Us Accordion */}
             <div className="rounded-2xl border border-slate-100 overflow-hidden bg-slate-50/40">
               <div className="flex items-center justify-between px-4 py-2.5">
@@ -915,39 +907,41 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.about && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.about.sections.flatMap((s) => s.items).map((item, idx) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={idx}
-                        to={item.href as any}
-                        onClick={(e) => handleItemNavigation(e, item.href)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
-                      >
-                        <div
-                          className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
-                            item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
-                          }`}
+                  {MEGA_MENUS.about.sections
+                    .flatMap((s) => s.items)
+                    .map((item, idx) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={idx}
+                          to={item.href as any}
+                          onClick={(e) => handleItemNavigation(e, item.href)}
+                          className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
                         >
-                          <Icon className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="truncate">{item.title}</span>
-                            {item.badge && (
-                              <span
-                                className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
-                                  item.badgeColor || "bg-red-50 text-brand-red border-red-200"
-                                }`}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
+                          <div
+                            className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
+                              item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="truncate">{item.title}</span>
+                              {item.badge && (
+                                <span
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                    item.badgeColor || "bg-red-50 text-brand-red border-red-200"
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                 </div>
               )}
             </div>
@@ -979,39 +973,41 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.pecp && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.pecp.sections.flatMap((s) => s.items).map((item, idx) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={idx}
-                        to={item.href as any}
-                        onClick={(e) => handleItemNavigation(e, item.href)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
-                      >
-                        <div
-                          className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
-                            item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
-                          }`}
+                  {MEGA_MENUS.pecp.sections
+                    .flatMap((s) => s.items)
+                    .map((item, idx) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={idx}
+                          to={item.href as any}
+                          onClick={(e) => handleItemNavigation(e, item.href)}
+                          className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
                         >
-                          <Icon className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="truncate">{item.title}</span>
-                            {item.badge && (
-                              <span
-                                className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
-                                  item.badgeColor || "bg-red-50 text-brand-red border-red-200"
-                                }`}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
+                          <div
+                            className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
+                              item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="truncate">{item.title}</span>
+                              {item.badge && (
+                                <span
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                    item.badgeColor || "bg-red-50 text-brand-red border-red-200"
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                 </div>
               )}
             </div>
@@ -1043,39 +1039,41 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.courses && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.courses.sections.flatMap((s) => s.items).map((item, idx) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={idx}
-                        to={item.href as any}
-                        onClick={(e) => handleItemNavigation(e, item.href)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
-                      >
-                        <div
-                          className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
-                            item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
-                          }`}
+                  {MEGA_MENUS.courses.sections
+                    .flatMap((s) => s.items)
+                    .map((item, idx) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={idx}
+                          to={item.href as any}
+                          onClick={(e) => handleItemNavigation(e, item.href)}
+                          className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
                         >
-                          <Icon className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="truncate">{item.title}</span>
-                            {item.badge && (
-                              <span
-                                className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
-                                  item.badgeColor || "bg-red-50 text-brand-red border-red-200"
-                                }`}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
+                          <div
+                            className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
+                              item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="truncate">{item.title}</span>
+                              {item.badge && (
+                                <span
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                    item.badgeColor || "bg-red-50 text-brand-red border-red-200"
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                 </div>
               )}
             </div>
@@ -1112,39 +1110,41 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded["ai-unlocked"] && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS["ai-unlocked"].sections.flatMap((s) => s.items).map((item, idx) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link
-                        key={idx}
-                        to={item.href as any}
-                        onClick={(e) => handleItemNavigation(e, item.href)}
-                        className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
-                      >
-                        <div
-                          className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
-                            item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
-                          }`}
+                  {MEGA_MENUS["ai-unlocked"].sections
+                    .flatMap((s) => s.items)
+                    .map((item, idx) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={idx}
+                          to={item.href as any}
+                          onClick={(e) => handleItemNavigation(e, item.href)}
+                          className="flex items-center gap-2.5 p-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 hover:text-brand-red transition-all"
                         >
-                          <Icon className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="truncate">{item.title}</span>
-                            {item.badge && (
-                              <span
-                                className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
-                                  item.badgeColor || "bg-red-50 text-brand-red border-red-200"
-                                }`}
-                              >
-                                {item.badge}
-                              </span>
-                            )}
+                          <div
+                            className={`h-7.5 w-7.5 rounded-lg flex items-center justify-center shrink-0 border ${
+                              item.iconBg || "bg-slate-100 text-slate-500 border-slate-200/60"
+                            }`}
+                          >
+                            <Icon className="h-3.5 w-3.5" />
                           </div>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="truncate">{item.title}</span>
+                              {item.badge && (
+                                <span
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                    item.badgeColor || "bg-red-50 text-brand-red border-red-200"
+                                  }`}
+                                >
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
                 </div>
               )}
             </div>

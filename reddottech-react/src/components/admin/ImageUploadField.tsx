@@ -1,12 +1,5 @@
 import { useState, useRef, DragEvent } from "react";
-import {
-  UploadCloud,
-  X,
-  Loader2,
-  Link2,
-  CheckCircle2,
-  FolderOpen,
-} from "lucide-react";
+import { UploadCloud, X, Loader2, Link2, CheckCircle2, FolderOpen } from "lucide-react";
 import { uploadImage } from "@/lib/api";
 import { toast } from "sonner";
 

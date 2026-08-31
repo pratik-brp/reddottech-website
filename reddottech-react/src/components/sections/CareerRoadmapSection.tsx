@@ -61,7 +61,8 @@ export function CareerRoadmapSection() {
         <div
           className="absolute -top-[10%] right-[15%] h-[450px] w-[450px] rounded-full opacity-20 blur-3xl"
           style={{
-            background: "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 20%, transparent), transparent 70%)",
+            background:
+              "radial-gradient(circle, color-mix(in oklab, var(--brand-red) 20%, transparent), transparent 70%)",
           }}
         />
         <div
@@ -87,7 +88,8 @@ export function CareerRoadmapSection() {
           </h2>
 
           <p className="text-base sm:text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            A structured, high-impact progression engineered to transform ambition into verified industry leadership.
+            A structured, high-impact progression engineered to transform ambition into verified
+            industry leadership.
           </p>
         </div>
 
@@ -144,7 +146,10 @@ export function CareerRoadmapSection() {
                       Deliverables:
                     </p>
                     {step.highlights.map((item) => (
-                      <div key={item} className="flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs font-semibold text-slate-600">
+                      <div
+                        key={item}
+                        className="flex items-center gap-1 sm:gap-2 text-[9px] sm:text-xs font-semibold text-slate-600"
+                      >
                         <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-brand-red" />
                         <span className="truncate">{item}</span>
                       </div>
@@ -173,7 +178,10 @@ export function CareerRoadmapSection() {
           </div>
 
           <Magnetic>
-            <Link to="/contact" className="btn-primary shrink-0 px-5 sm:px-6 py-3 sm:py-3.5 text-xs w-full sm:w-auto text-center justify-center">
+            <Link
+              to="/contact"
+              className="btn-primary shrink-0 px-5 sm:px-6 py-3 sm:py-3.5 text-xs w-full sm:w-auto text-center justify-center"
+            >
               <span>Schedule Free Advice</span>
               <ArrowRight className="h-4 w-4" />
             </Link>

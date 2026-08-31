@@ -4,14 +4,22 @@ async function main() {
   await initDb();
   console.log("Connected to MySQL database:", dbConfig.database);
 
-  const courses = await query("SELECT id, name, description, curriculum, instructor_name, instructor_detail FROM courses");
+  const courses = await query(
+    "SELECT id, name, description, curriculum, instructor_name, instructor_detail FROM courses",
+  );
   console.log(`\nFound ${courses.length} courses in MySQL.`);
 
   let corruptedCount = 0;
   for (const c of courses) {
     for (const [key, val] of Object.entries(c)) {
       if (typeof val === "string") {
-        if (val.includes("???") || val.includes("â€") || val.includes("Ã©") || val.includes("") || val.includes("???")) {
+        if (
+          val.includes("???") ||
+          val.includes("â€") ||
+          val.includes("Ã©") ||
+          val.includes("") ||
+          val.includes("???")
+        ) {
           console.log(`[CORRUPT CHARS in MySQL Course ${c.id} - ${c.name}] field: ${key}`);
           console.log(`Preview: ${val.substring(0, 120)}...\n`);
           corruptedCount++;

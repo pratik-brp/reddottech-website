@@ -125,7 +125,7 @@ function CertificateVerificationPage() {
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/verify?id=${encodeURIComponent(
-      result?.certificateId || String(result?.id || "")
+      result?.certificateId || String(result?.id || ""),
     )}`;
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
@@ -136,7 +136,8 @@ function CertificateVerificationPage() {
     if (!result) return;
     printOfficialCertificate({
       name: result.name,
-      certificateId: result.certificateId || `RDT-${String(result.track || "AI").toUpperCase()}-${result.id}`,
+      certificateId:
+        result.certificateId || `RDT-${String(result.track || "AI").toUpperCase()}-${result.id}`,
       track: result.track,
       courseName: result.courseName,
       organization: result.organization || result.school,
@@ -311,7 +312,11 @@ function CertificateVerificationPage() {
                     onClick={copyShareLink}
                     className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 text-xs font-extrabold text-white transition-colors cursor-pointer"
                   >
-                    {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-300" /> : <Share2 className="h-3.5 w-3.5" />}
+                    {copiedLink ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-300" />
+                    ) : (
+                      <Share2 className="h-3.5 w-3.5" />
+                    )}
                     <span>{copiedLink ? "Link Copied!" : "Share Link"}</span>
                   </button>
                   <button
@@ -351,7 +356,9 @@ function CertificateVerificationPage() {
                   <div className="hidden sm:flex items-center gap-2 rounded-2xl bg-slate-50 border border-slate-200/80 px-3.5 py-2">
                     <QrCode className="h-5 w-5 text-slate-700" />
                     <div className="text-left">
-                      <div className="text-[9px] font-black text-slate-400 uppercase">Cryptographic ID</div>
+                      <div className="text-[9px] font-black text-slate-400 uppercase">
+                        Cryptographic ID
+                      </div>
                       <div className="text-xs font-mono font-bold text-brand-ink">
                         {result.certificateId || `RDT-AI-${result.id}`}
                       </div>
@@ -371,8 +378,8 @@ function CertificateVerificationPage() {
                   </h2>
 
                   <p className="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-                    Has successfully satisfied all academic assessments, laboratory benchmarks, and curriculum
-                    requirements for the completion of:
+                    Has successfully satisfied all academic assessments, laboratory benchmarks, and
+                    curriculum requirements for the completion of:
                   </p>
 
                   <div className="pt-2">
@@ -394,13 +401,19 @@ function CertificateVerificationPage() {
                   {/* Certificate ID */}
                   <div className="rounded-2xl bg-slate-50 border border-slate-200/70 p-4 space-y-1">
                     <div className="flex items-center justify-between text-slate-400">
-                      <span className="text-[10px] font-black uppercase tracking-wider">Reference Code</span>
+                      <span className="text-[10px] font-black uppercase tracking-wider">
+                        Reference Code
+                      </span>
                       <button
                         onClick={copyCertId}
                         title="Copy Certificate ID"
                         className="text-slate-400 hover:text-brand-red transition-colors cursor-pointer"
                       >
-                        {copiedId ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                        {copiedId ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
                       </button>
                     </div>
                     <div className="font-mono text-xs sm:text-sm font-extrabold text-slate-900 break-all">
@@ -435,7 +448,9 @@ function CertificateVerificationPage() {
                     <div className="sm:col-span-2 md:col-span-3 rounded-2xl bg-slate-50 border border-slate-200/70 p-4 flex flex-wrap items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-slate-400" />
-                        <span className="text-xs text-slate-600 font-medium">Affiliation / Organization:</span>
+                        <span className="text-xs text-slate-600 font-medium">
+                          Affiliation / Organization:
+                        </span>
                         <strong className="text-xs font-bold text-slate-900">
                           {[result.role, result.department, result.school || result.organization]
                             .filter(Boolean)
@@ -453,7 +468,8 @@ function CertificateVerificationPage() {
                       Download Official Digital Parchment
                     </h4>
                     <p className="text-xs text-slate-300 font-medium max-w-md">
-                      Generate an authentic, high-resolution A4 landscape certificate suitable for LinkedIn, PDF archival, or executive printing.
+                      Generate an authentic, high-resolution A4 landscape certificate suitable for
+                      LinkedIn, PDF archival, or executive printing.
                     </p>
                   </div>
 
@@ -469,7 +485,11 @@ function CertificateVerificationPage() {
                       onClick={copyShareLink}
                       className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
                     >
-                      {copiedLink ? <Check className="h-4 w-4 text-emerald-400" /> : <Share2 className="h-4 w-4" />}
+                      {copiedLink ? (
+                        <Check className="h-4 w-4 text-emerald-400" />
+                      ) : (
+                        <Share2 className="h-4 w-4" />
+                      )}
                       <span className="hidden sm:inline">{copiedLink ? "Copied!" : "Share"}</span>
                     </button>
                   </div>
@@ -481,11 +501,14 @@ function CertificateVerificationPage() {
                     <Lock className="h-4 w-4" />
                   </div>
                   <div className="space-y-0.5 text-xs">
-                    <h5 className="font-extrabold text-emerald-950">Tamper-Proof Digital Authenticity</h5>
+                    <h5 className="font-extrabold text-emerald-950">
+                      Tamper-Proof Digital Authenticity
+                    </h5>
                     <p className="text-emerald-800 leading-relaxed font-medium">
-                      This credential has been cryptographically signed and recorded in Red Dot Technologies&apos;
-                      central verification database. Employers and institutions can independently verify this certificate
-                      at any time using the reference identifier above.
+                      This credential has been cryptographically signed and recorded in Red Dot
+                      Technologies&apos; central verification database. Employers and institutions
+                      can independently verify this certificate at any time using the reference
+                      identifier above.
                     </p>
                   </div>
                 </div>
@@ -534,9 +557,17 @@ function CertificateVerificationPage() {
               <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 max-w-lg mx-auto text-left text-xs text-slate-600 space-y-2">
                 <h5 className="font-extrabold text-slate-900">Suggestions for Verification:</h5>
                 <ul className="list-disc pl-4 space-y-1">
-                  <li>Check for typographical errors in the Certificate Reference ID (e.g. <code>RDT-AI-2026-...</code>).</li>
-                  <li>Try searching using the exact <strong>Email Address</strong> registered during the course.</li>
-                  <li>Try searching using the recipient&apos;s <strong>Full Legal Name</strong>.</li>
+                  <li>
+                    Check for typographical errors in the Certificate Reference ID (e.g.{" "}
+                    <code>RDT-AI-2026-...</code>).
+                  </li>
+                  <li>
+                    Try searching using the exact <strong>Email Address</strong> registered during
+                    the course.
+                  </li>
+                  <li>
+                    Try searching using the recipient&apos;s <strong>Full Legal Name</strong>.
+                  </li>
                 </ul>
               </div>
 
@@ -572,7 +603,8 @@ function CertificateVerificationPage() {
             </div>
             <h4 className="text-sm font-extrabold text-slate-900">For Employers &amp; HR</h4>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
-              Easily confirm candidate qualifications and verify authenticity before hiring or granting executive promotions.
+              Easily confirm candidate qualifications and verify authenticity before hiring or
+              granting executive promotions.
             </p>
           </div>
 
@@ -582,7 +614,8 @@ function CertificateVerificationPage() {
             </div>
             <h4 className="text-sm font-extrabold text-slate-900">Global Academic Standard</h4>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
-              Curricula and executive programs built in academic partnership with the University of South Carolina Upstate (USA).
+              Curricula and executive programs built in academic partnership with the University of
+              South Carolina Upstate (USA).
             </p>
           </div>
 
@@ -592,7 +625,8 @@ function CertificateVerificationPage() {
             </div>
             <h4 className="text-sm font-extrabold text-slate-900">Cryptographic Security</h4>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
-              Every certificate carries an unforgeable reference ID synchronized with our secure central database.
+              Every certificate carries an unforgeable reference ID synchronized with our secure
+              central database.
             </p>
           </div>
         </div>

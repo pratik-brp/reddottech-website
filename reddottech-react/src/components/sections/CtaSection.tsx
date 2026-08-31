@@ -47,12 +47,14 @@ export function CtaSection() {
               <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-400">
                 <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red shrink-0" />
                 <span>Join 1,000+ learners who chose Red Dot</span>
-
               </div>
 
               <div className="pt-2">
                 <Magnetic>
-                  <Link to="/contact" className="btn-primary text-xs sm:text-base px-6 sm:px-10 py-3.5 sm:py-4 w-full sm:w-auto text-center justify-center">
+                  <Link
+                    to="/contact"
+                    className="btn-primary text-xs sm:text-base px-6 sm:px-10 py-3.5 sm:py-4 w-full sm:w-auto text-center justify-center"
+                  >
                     <span>Schedule a Consultation</span>
                     <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Link>

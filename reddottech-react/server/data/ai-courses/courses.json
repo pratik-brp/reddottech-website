@@ -2284,12 +2284,7 @@
       "quiz": [
         {
           "q": "A credit model performs well for two years, then quietly deteriorates as economic conditions change. This is…",
-          "opts": [
-            "Prompt injection",
-            "Model drift",
-            "Overfitting",
-            "Data leakage"
-          ],
+          "opts": ["Prompt injection", "Model drift", "Overfitting", "Data leakage"],
           "a": 1,
           "fb": "Drift is silent degradation as the world moves away from the training conditions — which is why ongoing monitoring is mandatory, not optional."
         },
@@ -2705,12 +2700,7 @@
         },
         {
           "q": "On advanced AI adoption, the Cambridge study found fintechs lead traditional financial institutions by:",
-          "opts": [
-            "10% to 9%",
-            "47% to 30%",
-            "They are equal",
-            "95% to 5%"
-          ],
+          "opts": ["10% to 9%", "47% to 30%", "They are equal", "95% to 5%"],
           "a": 1,
           "fb": "Fintechs lead 47% to 30% on advanced adoption and 19% to 6% at the Transforming stage, with workforce preparedness and investment as key differentiators."
         },
@@ -3881,12 +3871,7 @@
         },
         {
           "q": "The Cambridge survey found that among 130 regulators, the proportion still in the Exploring stage or not engaged with AI is:",
-          "opts": [
-            "90%",
-            "48%",
-            "5%",
-            "None — all are advanced"
-          ],
+          "opts": ["90%", "48%", "5%", "None — all are advanced"],
           "a": 1,
           "fb": "Supervisory capability will lag industry for some years, which places more weight on institutions' own governance rather than less."
         }
