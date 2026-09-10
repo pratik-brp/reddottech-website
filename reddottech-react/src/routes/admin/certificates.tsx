@@ -15,6 +15,8 @@ import {
   Stethoscope,
   Building2,
   Sparkles,
+  GraduationCap,
+  Briefcase,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCertificates, claimCertificate, deleteCertificate } from "@/lib/api";
@@ -30,7 +32,16 @@ export const Route = createFileRoute("/admin/certificates")({
   component: AdminCertificatesPage,
 });
 
-export type CertTrackKey = "healthcare" | "finance" | "finance-advanced" | "foundations" | "pecp";
+export type CertTrackKey =
+  | "healthcare"
+  | "finance"
+  | "finance-advanced"
+  | "foundations"
+  | "education"
+  | "management"
+  | "agile-developers"
+  | "agile-managers"
+  | "pecp";
 
 export interface CertTrackConfig {
   key: CertTrackKey;
@@ -131,6 +142,106 @@ export const CERT_TRACK_CONFIGS: Record<CertTrackKey, CertTrackConfig> = {
     descriptionTemplate: (_name, _school) =>
       `has successfully completed all modules and practical assessments of AI Foundations: General AI Literacy, an applied foundation programme covering machine learning paradigms, deep learning, generative AI, prompt engineering, and ethical AI stewardship.`,
   },
+  education: {
+    key: "education",
+    title: "AI for Teachers and Educators",
+    subtitle: "Professional Certificate Programme · 12 Modules",
+    moduleCount: 12,
+    badge: "Education Track",
+    accentColor: "text-amber-700 bg-amber-50 border-amber-200",
+    borderAccent: "#B8892B",
+    modules: [
+      "AI Foundations for Educators",
+      "Prompt Engineering Masterclass",
+      "Lesson Planning & Curriculum Design",
+      "Assessment, Rubrics & Feedback",
+      "Differentiated & Special Education",
+      "AI for STEM Education",
+      "AI for Humanities & Languages",
+      "AI Literacy & Student Guidance",
+      "Academic Integrity & Detection",
+      "Administrative Productivity",
+      "Ethics, Bias & Digital Safety",
+      "Future-Ready Schools & Capstone",
+    ],
+    descriptionTemplate: (_name, _school) =>
+      `has successfully completed all 12 modules and assessments of AI for Teachers and Educators, an applied professional programme covering prompt engineering pedagogy, automated lesson & curriculum design, rubrics and feedback, AI in STEM and Humanities, academic integrity frameworks, and ethical AI stewardship in learning institutions.`,
+  },
+  management: {
+    key: "management",
+    title: "AI for Management Professionals",
+    subtitle: "Executive Certificate Programme · 12 Modules",
+    moduleCount: 12,
+    badge: "Management Track",
+    accentColor: "text-indigo-700 bg-indigo-50 border-indigo-200",
+    borderAccent: "#B8892B",
+    modules: [
+      "AI Foundations for Modern Managers",
+      "The Modern AI Technology Stack",
+      "Strategic Alignment & Opportunity Assessment",
+      "Building the AI Business Case & ROI",
+      "AI in Operations, Supply Chain & CX",
+      "AI in Marketing, Sales & Growth",
+      "AI in HR, People Analytics & Talent",
+      "Data Governance, Quality & Architecture",
+      "Enterprise AI Risk, Security & Compliance",
+      "Managing AI Teams, Culture & Change",
+      "Vendor Evaluation, Build vs. Buy & Pilots",
+      "The Capstone AI Strategic Roadmap",
+    ],
+    descriptionTemplate: (_name, _school) =>
+      `has successfully completed all 12 executive modules and assessments of AI for Management Professionals, demonstrating mastery in strategic AI alignment, business case and ROI modeling, operations & customer experience automation, data governance, vendor evaluation, and leading enterprise AI transformations.`,
+  },
+  "agile-developers": {
+    key: "agile-developers",
+    title: "Agile Methodologies for Software Developers",
+    subtitle: "Professional Engineering Certificate Programme · ~8 Hours",
+    moduleCount: 12,
+    badge: "Developer Track",
+    accentColor: "text-sky-700 bg-sky-50 border-sky-200",
+    borderAccent: "#0284c7",
+    modules: [
+      "Why Agile Exists",
+      "The Agile Manifesto in Plain Language",
+      "Scrum: Roles, Events and Artefacts",
+      "Your First Sprint",
+      "User Stories and Definition of Done",
+      "Estimation and Velocity",
+      "Kanban and Flow",
+      "Extreme Programming: The Technical Practices",
+      "Testing and Test-Driven Development",
+      "Continuous Integration and Delivery",
+      "Code Review, Pairing and Working in a Team",
+      "Retrospectives and Your First 90 Days",
+    ],
+    descriptionTemplate: (_name, _school) =>
+      `has successfully completed all 12 modules and practical assessments of Agile Methodologies for Software Developers, demonstrating practical competence in iterative delivery, Scrum sprint events, user story refinement, estimation, Kanban flow, test-driven development, continuous integration, pair programming, and agile team retrospectives.`,
+  },
+  "agile-managers": {
+    key: "agile-managers",
+    title: "Agile Methodologies for Managers",
+    subtitle: "Executive Certificate Programme in Agile Leadership · ~8 Hours",
+    moduleCount: 12,
+    badge: "Agile Leadership Track",
+    accentColor: "text-teal-700 bg-teal-50 border-teal-200",
+    borderAccent: "#0f766e",
+    modules: [
+      "What Agile Actually Is — and What It Is Not",
+      "When Agile Works — and When It Does Not",
+      "Choosing an Approach: Scrum, Kanban, XP and Hybrids",
+      "The Manager's New Role",
+      "Team Design, Structure and Dedication",
+      "Planning, Estimation and Forecasting",
+      "Funding, Budgeting and Contracts",
+      "Metrics That Matter — and Metrics That Destroy",
+      "Governance, Risk and Compliance",
+      "Scaling: Frameworks, Trade-offs and Traps",
+      "Leading the Change",
+      "Your Adoption Plan",
+    ],
+    descriptionTemplate: (_name, _school) =>
+      `has successfully completed all 12 modules and assessments of Agile Methodologies for Managers, an applied executive programme covering adaptive leadership, agile suitability and framework selection, team design and dedication, forecasting and estimation, value-driven procurement and budgeting, governance and compliance, scaling frameworks, and organizational adoption roadmaps.`,
+  },
   pecp: {
     key: "pecp",
     title: "Professional Executive Certificate",
@@ -224,6 +335,21 @@ function AdminCertificatesPage() {
       txt.includes("credit")
     )
       return "finance";
+    if (
+      txt.includes("teacher") ||
+      txt.includes("educat") ||
+      txt.includes("aied") ||
+      txt.includes("classroom")
+    )
+      return "education";
+    if (
+      txt.includes("manage") ||
+      txt.includes("leadership") ||
+      txt.includes("aimp") ||
+      txt.includes("strategy") ||
+      txt.includes("operations")
+    )
+      return "management";
     if (txt.includes("pecp") || txt.includes("executive")) return "pecp";
     return "foundations";
   };
@@ -267,9 +393,17 @@ function AdminCertificatesPage() {
             ? "RDT-AIFA"
             : newCertTrack === "finance"
               ? "RDT-AIFP"
-              : newCertTrack === "foundations"
-                ? "RDT-AIFOUND"
-                : "RDT-PECP";
+              : newCertTrack === "education"
+                ? "RDT-AIED"
+                : newCertTrack === "management"
+                  ? "RDT-AIMP"
+                  : newCertTrack === "agile-developers"
+                    ? "RDT-AGSD"
+                    : newCertTrack === "agile-managers"
+                      ? "RDT-AGMG"
+                      : newCertTrack === "foundations"
+                        ? "RDT-AIFOUND"
+                        : "RDT-PECP";
 
       const certCode = `${trackPrefix}-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
@@ -397,7 +531,7 @@ function AdminCertificatesPage() {
     <AdminLayout
       title="Certificates Registry"
       mobileTitle="Certificates"
-      subtitle="Issue, preview in all 3 AI course tracks + PECP format, and download official credentials."
+      subtitle="Issue, preview in all 6 AI course tracks + PECP format, and download official credentials."
       actions={
         <div className="flex items-center gap-1.5 sm:gap-2">
           <button
@@ -421,10 +555,18 @@ function AdminCertificatesPage() {
       }
     >
       <div className="space-y-4 sm:space-y-6">
-        {/* ── 5 Course Track Metric Cards (Responsive Grid) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3.5">
+        {/* ── 7 Course Track Metric Cards (Responsive Grid) ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2 sm:gap-3.5">
           {(
-            ["healthcare", "finance", "finance-advanced", "foundations", "pecp"] as CertTrackKey[]
+            [
+              "healthcare",
+              "finance",
+              "finance-advanced",
+              "education",
+              "management",
+              "foundations",
+              "pecp",
+            ] as CertTrackKey[]
           ).map((tKey) => {
             const cfg = CERT_TRACK_CONFIGS[tKey];
             const count = certs.filter((c) => detectTrack(c) === tKey).length;
@@ -498,6 +640,8 @@ function AdminCertificatesPage() {
               <option value="healthcare">AI Healthcare (9 Modules)</option>
               <option value="finance">AI Finance Level 1 (8 Modules)</option>
               <option value="finance-advanced">Advanced AI Finance Level 2 (12 Modules)</option>
+              <option value="education">AI for Teachers & Educators (12 Modules)</option>
+              <option value="management">AI for Management Professionals (12 Modules)</option>
               <option value="foundations">AI Foundations (5 Modules)</option>
               <option value="pecp">PECP Executive</option>
             </select>
@@ -551,6 +695,12 @@ function AdminCertificatesPage() {
                           {cTrack === "finance" && <Building2 className="h-2.5 w-2.5" />}
                           {cTrack === "finance-advanced" && (
                             <Sparkles className="h-2.5 w-2.5 text-purple-600" />
+                          )}
+                          {cTrack === "education" && (
+                            <GraduationCap className="h-2.5 w-2.5 text-amber-600" />
+                          )}
+                          {cTrack === "management" && (
+                            <Briefcase className="h-2.5 w-2.5 text-indigo-600" />
                           )}
                           {cTrack === "foundations" && <Sparkles className="h-2.5 w-2.5" />}
                           {cTrack === "pecp" && <Award className="h-2.5 w-2.5" />}
@@ -673,6 +823,12 @@ function AdminCertificatesPage() {
                             {cTrack === "finance" && <Building2 className="h-3 w-3" />}
                             {cTrack === "finance-advanced" && (
                               <Sparkles className="h-3 w-3 text-purple-600" />
+                            )}
+                            {cTrack === "education" && (
+                              <GraduationCap className="h-3 w-3 text-amber-600" />
+                            )}
+                            {cTrack === "management" && (
+                              <Briefcase className="h-3 w-3 text-indigo-600" />
                             )}
                             {cTrack === "foundations" && <Sparkles className="h-3 w-3" />}
                             {cTrack === "pecp" && <Award className="h-3 w-3" />}
@@ -806,12 +962,24 @@ function AdminCertificatesPage() {
                   onChange={(e) => setNewCertTrack(e.target.value as CertTrackKey)}
                   className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none cursor-pointer"
                 >
+                  <option value="agile-developers">
+                    Agile Methodologies for Software Developers (12 Modules)
+                  </option>
+                  <option value="agile-managers">
+                    Agile Methodologies for Managers (12 Modules)
+                  </option>
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
                   <option value="finance">
                     AI for Financial Professionals (Level 1 · 8 Modules)
                   </option>
                   <option value="finance-advanced">
                     Advanced AI for Finance Professionals (Level 2 · 12 Modules)
+                  </option>
+                  <option value="education">
+                    AI for Teachers and Educators (12 Modules)
+                  </option>
+                  <option value="management">
+                    AI for Management Professionals (12 Modules)
                   </option>
                   <option value="foundations">AI Unlocked — AI Foundations (5 Modules)</option>
                   <option value="pecp">PECP — Professional Executive Certificate Program</option>
@@ -888,6 +1056,8 @@ function AdminCertificatesPage() {
                   "healthcare",
                   "finance",
                   "finance-advanced",
+                  "education",
+                  "management",
                   "foundations",
                   "pecp",
                 ] as CertTrackKey[]

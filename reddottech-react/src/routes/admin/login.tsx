@@ -20,7 +20,7 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("info@reddottech.com.np");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +30,7 @@ function AdminLoginPage() {
   // Forgot password workflow states
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [resetStep, setResetStep] = useState<"request" | "verify">("request");
-  const [resetEmail, setResetEmail] = useState("info@reddottech.com.np");
+  const [resetEmail, setResetEmail] = useState("");
   const [resetTokenInput, setResetTokenInput] = useState("");
   const [newResetPassword, setNewResetPassword] = useState("");
   const [confirmResetPassword, setConfirmResetPassword] = useState("");
@@ -160,7 +160,7 @@ function AdminLoginPage() {
                 autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="info@reddottech.com.np"
+                placeholder="admin@reddottech.com.np"
                 className="w-full rounded-lg border border-slate-300 bg-[#edf2f7]/60 px-3.5 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:bg-white focus:border-brand-red focus:outline-none focus:ring-2 focus:ring-brand-red/15 transition-all duration-200"
               />
             </div>
@@ -289,7 +289,7 @@ function AdminLoginPage() {
                     required
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="info@reddottech.com.np"
+                    placeholder="admin@reddottech.com.np"
                     className="w-full rounded-lg border border-slate-300 bg-slate-50 px-3.5 py-2 text-xs font-medium text-slate-900 focus:bg-white focus:border-brand-red focus:outline-none"
                   />
                 </div>

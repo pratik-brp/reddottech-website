@@ -85,6 +85,14 @@ function CoursesPage() {
       .finally(() => {
         setLoading(false);
       });
+
+    const handleCoursesUpdated = () => {
+      getCourses().then((data) => {
+        if (data) setCoursesList(data);
+      });
+    };
+    window.addEventListener("courses-updated", handleCoursesUpdated);
+    return () => window.removeEventListener("courses-updated", handleCoursesUpdated);
   }, []);
 
   // Keyboard shortcut (Cmd/Ctrl + K) to focus search
@@ -104,6 +112,9 @@ function CoursesPage() {
     const PREFERRED_ORDER = [
       "All",
       "Artificial Intelligence",
+      "Programming & Software",
+      "Web Development",
+      "Digital Marketing",
       "Project Management",
       "Executive & Leadership",
       "Analytics & Data",

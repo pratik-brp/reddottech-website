@@ -46,9 +46,14 @@ function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const faqContentRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [settings, setSettings] = useState<Record<string, string>>(() => getCachedSettings() || {});
+  const [settings, setSettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    const cached = getCachedSettings();
+    if (cached) {
+      setSettings(cached);
+    }
+
     getSettings().then((data) => {
       if (data) setSettings(data);
     });

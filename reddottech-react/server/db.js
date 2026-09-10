@@ -112,10 +112,12 @@ async function createTables() {
       requirements LONGTEXT,
       curriculum LONGTEXT,
       status VARCHAR(50) DEFAULT 'published',
+      sort_order INT NOT NULL DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (id),
       UNIQUE KEY idx_courses_slug (slug),
-      INDEX idx_courses_status (status)
+      INDEX idx_courses_status (status),
+      INDEX idx_courses_sort_order (sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
     `CREATE TABLE IF NOT EXISTS certificates (
@@ -236,6 +238,40 @@ async function createTables() {
     }
   }
 
+  // Safe migration for existing MySQL ai_leads table
+  const aiLeadCols = [
+    { name: "receipt_url", type: "VARCHAR(500) DEFAULT NULL" },
+    { name: "notes", type: "TEXT DEFAULT NULL" },
+    { name: "email_sent", type: "TINYINT(1) DEFAULT 0" },
+    { name: "email_sent_at", type: "DATETIME DEFAULT NULL" },
+    { name: "access_code", type: "VARCHAR(255) DEFAULT NULL" },
+    { name: "txn", type: "VARCHAR(255) DEFAULT NULL" },
+    { name: "org", type: "VARCHAR(255) DEFAULT NULL" },
+    { name: "track", type: "VARCHAR(100) DEFAULT 'healthcare'" },
+    { name: "status", type: "VARCHAR(50) DEFAULT 'pending'" },
+  ];
+
+  for (const col of aiLeadCols) {
+    try {
+      await pool.query(`ALTER TABLE ai_leads ADD COLUMN ${col.name} ${col.type}`);
+    } catch {
+      // Column already exists
+    }
+  }
+
+  // Safe migration for existing MySQL courses table
+  const courseCols = [
+    { name: "sort_order", type: "INT NOT NULL DEFAULT 0" },
+  ];
+
+  for (const col of courseCols) {
+    try {
+      await pool.query(`ALTER TABLE courses ADD COLUMN ${col.name} ${col.type}`);
+    } catch {
+      // Column already exists
+    }
+  }
+
   // Safe unique index creation
   try {
     await pool.query(
@@ -247,6 +283,12 @@ async function createTables() {
 
   try {
     await pool.query("ALTER TABLE courses ADD UNIQUE INDEX idx_courses_slug_unique (slug)");
+  } catch {
+    // Index already exists
+  }
+
+  try {
+    await pool.query("ALTER TABLE courses ADD INDEX idx_courses_sort_order (sort_order)");
   } catch {
     // Index already exists
   }

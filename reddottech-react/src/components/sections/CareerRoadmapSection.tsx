@@ -14,41 +14,53 @@ export function CareerRoadmapSection() {
   const steps = [
     {
       number: "01",
-      title: "Enroll & Skill Assessment",
+      title: "Choose Your Program",
       icon: GraduationCap,
-      phase: "PHASE 01: ONBOARDING",
-      shortDesc: "Personalized skill matrix evaluation to map your ideal trajectory.",
-      highlights: ["Skill Gap Analysis", "Personalized Roadmap", "Instructor Matching"],
+      phase: "PHASE 01: ENROLLMENT",
+      shortDesc:
+        "Explore our courses and select a learning pathway aligned with your interests and professional goals.",
+      highlights: ["Program Selection", "Course Access", "Learning Resources"],
       gradient: "from-rose-500 to-brand-red",
       iconBg: "bg-rose-50 text-brand-red border-rose-200/80",
     },
     {
       number: "02",
-      title: "Hands-on Live Labs & Capstones",
+      title: "Learn at Your Own Pace",
       icon: Zap,
-      phase: "PHASE 02: IMMERSIVE TRAINING",
-      shortDesc: "Scenario-based simulations and real corporate capstones.",
-      highlights: ["Live Weekend Sessions", "Real Corporate Datasets", "1-on-1 Code Reviews"],
+      phase: "PHASE 02: LEARNING",
+      shortDesc:
+        "Build practical knowledge through structured online content, examples, discussions, and learning materials.",
+      highlights: [
+        "Self-Paced Online Learning",
+        "Practical Examples & Discussions",
+        "Downloadable Study Resources",
+      ],
       gradient: "from-amber-500 to-orange-500",
       iconBg: "bg-amber-50 text-amber-600 border-amber-200/80",
     },
     {
       number: "03",
-      title: "Global Certification",
+      title: "Build Practical Skills",
       icon: Award,
-      phase: "PHASE 03: ACCREDITATION",
-      shortDesc: "Dual credentials co-certified with premier US university partners.",
-      highlights: ["Dual Digital Badges", "Verifiable Credential URL", "US Transcript"],
+      phase: "PHASE 03: APPLICATION",
+      shortDesc:
+        "Apply what you learn through projects, activities, and workplace-focused learning designed to connect knowledge with practice.",
+      highlights: ["Hands-on Projects", "Practical Applications", "Workplace-Focused Learning"],
       gradient: "from-emerald-500 to-teal-500",
       iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200/80",
     },
     {
       number: "04",
-      title: "Career Accelerator",
+      title: "Earn Your Credential",
       icon: Briefcase,
-      phase: "PHASE 04: PLACEMENT & GROWTH",
-      shortDesc: "Spotlighting your profile to 40+ corporate hiring partners.",
-      highlights: ["Executive Resume Makeover", "Direct Corporate Referrals", "Alumni Network"],
+      phase: "PHASE 04: CERTIFICATION",
+      shortDesc:
+        "Complete your program requirements and earn a recognized credential that validates your learning and professional development.",
+      highlights: [
+        "Joint USC Upstate & Red Dot Credential",
+        "Digital Credential",
+        "Certificate of Completion",
+      ],
       gradient: "from-blue-500 to-indigo-500",
       iconBg: "bg-blue-50 text-blue-600 border-blue-200/80",
     },
@@ -169,10 +181,10 @@ export function CareerRoadmapSection() {
             </div>
             <div>
               <h4 className="text-sm sm:text-lg font-extrabold text-brand-ink">
-                Ready to begin Step 01 of your trajectory?
+                Ready to Begin Your Journey?
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Connect with an academic counselor for a free 1-on-1 strategy session.
+                Explore our programs and find the right learning pathway for your professional goals.
               </p>
             </div>
           </div>

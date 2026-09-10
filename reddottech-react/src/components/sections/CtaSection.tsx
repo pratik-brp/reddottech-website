@@ -46,7 +46,7 @@ export function CtaSection() {
 
               <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-400">
                 <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red shrink-0" />
-                <span>Join 1,000+ learners who chose Red Dot</span>
+                <span>Explore 10+ Career Pathways.</span>
               </div>
 
               <div className="pt-2">

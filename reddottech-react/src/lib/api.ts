@@ -2,7 +2,9 @@ import { getToken, clearAuth, setAdminEmail } from "./auth";
 
 // Same-origin by default (served behind the Vite dev proxy in development and a
 // reverse proxy / API route in production). Override with VITE_API_BASE_URL.
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || "/api";
+const API_BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string) ||
+  (typeof window === "undefined" ? "http://127.0.0.1:5000/api" : "/api");
 
 interface FetchOptions extends RequestInit {
   /** When true, throws on HTTP errors even for reads (default: writes throw, reads fall back). */
@@ -211,29 +213,93 @@ export async function getDashboardStats() {
 }
 
 // 2. Courses API
+let cachedCourses: any[] | null = null;
+
+export function getCachedCourses(): any[] | null {
+  if (cachedCourses) return cachedCourses;
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("rdt_db_courses");
+      if (raw) {
+        cachedCourses = JSON.parse(raw);
+        return cachedCourses;
+      }
+    } catch {}
+  }
+  return null;
+}
+
 export async function getCourses() {
-  const data = await fetchApi<any[]>("/courses");
-  return data;
+  try {
+    const data = await fetchApi<any[]>("/courses");
+    if (Array.isArray(data)) {
+      cachedCourses = data;
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("rdt_db_courses", JSON.stringify(data));
+        } catch {}
+      }
+      return data;
+    }
+  } catch (err) {
+    console.warn("[getCourses] Failed to fetch fresh courses:", err);
+  }
+  return getCachedCourses() || [];
 }
 
 export async function createCourse(course: any) {
-  return await fetchApi("/courses", {
+  const res = await fetchApi("/courses", {
     method: "POST",
     body: JSON.stringify(course),
   });
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("rdt_db_courses");
+    } catch {}
+    window.dispatchEvent(new CustomEvent("courses-updated"));
+  }
+  return res;
 }
 
 export async function updateCourse(id: string | number, course: any) {
-  return await fetchApi(`/courses/${id}`, {
+  const res = await fetchApi(`/courses/${id}`, {
     method: "PUT",
     body: JSON.stringify(course),
   });
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("rdt_db_courses");
+    } catch {}
+    window.dispatchEvent(new CustomEvent("courses-updated"));
+  }
+  return res;
 }
 
 export async function deleteCourse(id: string | number) {
-  return await fetchApi(`/courses/${id}`, {
+  const res = await fetchApi(`/courses/${id}`, {
     method: "DELETE",
   });
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("rdt_db_courses");
+    } catch {}
+    window.dispatchEvent(new CustomEvent("courses-updated"));
+  }
+  return res;
+}
+
+export async function reorderCourses(orders: { id: string | number; sortOrder: number }[]) {
+  const res = await fetchApi("/courses/reorder", {
+    method: "POST",
+    body: JSON.stringify({ orders }),
+  });
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("rdt_db_courses");
+    } catch {}
+    window.dispatchEvent(new CustomEvent("courses-updated"));
+  }
+  return res;
 }
 
 // 3. Certificates API

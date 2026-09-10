@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail, ArrowUp } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { subscribeNewsletter, getSettings, getCachedSettings } from "@/lib/api";
+import { subscribeNewsletter, getSettings, getCachedSettings, getCourses, getCachedCourses } from "@/lib/api";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -20,11 +20,21 @@ function TikTokIcon({ className }: { className?: string }) {
 export function Footer() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [settings, setSettings] = useState<Record<string, string>>(() => getCachedSettings() || {});
+  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [courses, setCourses] = useState<any[]>(() => getCachedCourses() || []);
 
   useEffect(() => {
+    const cached = getCachedSettings();
+    if (cached) {
+      setSettings(cached);
+    }
+
     getSettings().then((data) => {
       if (data) setSettings(data);
+    });
+
+    getCourses().then((data) => {
+      if (Array.isArray(data)) setCourses(data);
     });
 
     const handleSettingsUpdate = (e: Event) => {
@@ -34,8 +44,18 @@ export function Footer() {
       }
     };
 
+    const handleCoursesUpdate = () => {
+      getCourses().then((data) => {
+        if (Array.isArray(data)) setCourses(data);
+      });
+    };
+
     window.addEventListener("rdt_settings_updated", handleSettingsUpdate);
-    return () => window.removeEventListener("rdt_settings_updated", handleSettingsUpdate);
+    window.addEventListener("courses-updated", handleCoursesUpdate);
+    return () => {
+      window.removeEventListener("rdt_settings_updated", handleSettingsUpdate);
+      window.removeEventListener("courses-updated", handleCoursesUpdate);
+    };
   }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -60,35 +80,26 @@ export function Footer() {
 
   const quickLinks = [
     { name: "About Us", href: "/about" },
-    { name: "All Courses", href: "/courses" },
     { name: "PECP Program", href: "/pecp" },
+    { name: "All Courses", href: "/courses" },
     { name: "AI Unlocked", href: "/ai-unlocked" },
     { name: "Verify Certificate", href: "/verify" },
     { name: "Contact Us", href: "/contact" },
   ];
 
-  const programs = [
-    {
-      name: "Introduction to Business Analytics",
-      href: "/courses/introduction-to-business-analytics",
-    },
-    {
-      name: "Introduction to Artificial Intelligence",
-      href: "/courses/introduction-to-artificial-intelligence",
-    },
-    {
-      name: "Project Management Fundamentals",
-      href: "/courses/project-management-fundamentals",
-    },
-    {
-      name: "Fundamentals of Supervision and Management",
-      href: "/courses/fundamentals-of-supervision-and-management",
-    },
-    {
-      name: "Six Sigma: Total Quality Applications",
-      href: "/courses/six-sigma-total-quality-applications",
-    },
-  ];
+  const programs = useMemo(() => {
+    if (courses.length > 0) {
+      return courses.slice(0, 6).map((c) => ({
+        name: c.name,
+        href: `/courses/${c.id}`,
+      }));
+    }
+    return [
+      { name: "Explore All Courses", href: "/courses" },
+      { name: "PECP Executive Program", href: "/pecp" },
+      { name: "AI Unlocked Hub", href: "/ai-unlocked" },
+    ];
+  }, [courses]);
 
   const socials = [
     {

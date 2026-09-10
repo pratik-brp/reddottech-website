@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   GraduationCap,
   Users,
@@ -11,6 +11,7 @@ import {
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Link } from "@tanstack/react-router";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { getCourses, getCachedCourses } from "@/lib/api";
 
 const features = [
   {
@@ -21,33 +22,45 @@ const features = [
     title: "International Recognition",
     badge: "GLOBAL CREDENTIALS",
     description:
-      "Programs backed by world-class global institutions such as University of South Carolina Upstate (USA).",
-    highlights: ["Dual digital badges", "Verifiable credential URLs", "USC Upstate Transcripts"],
-    tagline: "Certified by U.S. University standard with verifiable digital credentials.",
+      "Earn globally oriented credentials through programs offered in collaboration with internationally recognized academic partners.",
+    highlights: [
+      "Joint USC Upstate & Red Dot credentials",
+      "Verifiable digital credentials",
+      "International academic collaboration",
+    ],
+    tagline: "Jointly certified with USC Upstate (USA)",
   },
   {
     id: "02",
     icon: Users,
     svg: "/images/about/choose-us-2.svg",
     image: "/images/about/expert-trainers.png",
-    title: "Expert Trainers",
-    badge: "WORLD-CLASS FACULTY",
+    title: "Industry-Relevant Skills",
+    badge: "INDUSTRY-RELEVANT",
     description:
-      "Instructors with deep industry expertise, global credentials, and international corporate exposure.",
-    highlights: ["International authors", "Patent holders & practitioners", "1-on-1 mentorship"],
-    tagline: "Learn directly from authors, PMP® credential holders, and industry leaders.",
+      "Build practical knowledge through structured courses, real-world examples, projects, and guided learning resources.",
+    highlights: [
+      "Practical projects & case studies",
+      "Workplace-focused learning",
+      "Downloadable study resources",
+    ],
+    tagline: "Practical, project-driven skill building",
   },
   {
     id: "03",
     icon: Globe,
     svg: "/images/about/choose-us-3.svg",
     image: "/images/about/career-advancement.png",
-    title: "Career Advancement",
-    badge: "CAREER ACCELERATION",
+    title: "Career-Ready Skills",
+    badge: "CAREER-READY",
     description:
-      "Courses tailored to help learners secure better jobs, promotions, or international opportunities.",
-    highlights: ["Global hiring network", "Interview prep & resume coaching", "Alumni network"],
-    tagline: "Designed specifically to unlock promotions and international hiring pipelines.",
+      "Build relevant skills and credentials to support your professional growth and prepare for evolving career opportunities.",
+    highlights: [
+      "Workplace-ready skills",
+      "Professional development",
+      "Career-focused learning pathways",
+    ],
+    tagline: "Skills built for real career growth",
   },
   {
     id: "04",
@@ -55,16 +68,44 @@ const features = [
     svg: "/images/about/choose-us-4.svg",
     image: "/images/about/flexible-learning.png",
     title: "Flexible Learning Models",
-    badge: "WORK-LIFE BALANCED",
+    badge: "FLEXIBLE LEARNING",
     description:
-      "Instructor-led, online, and hybrid options specifically designed for working professionals.",
-    highlights: ["Weekend live sessions", "Interactive digital labs", "Lifetime course access"],
-    tagline: "Study on weekends with live instructor interactions and hands-on digital labs.",
+      "Learn online and at your own pace with flexible programs designed to fit around your work, studies, and other commitments.",
+    highlights: [
+      "100% online learning",
+      "Self-paced course access",
+      "Flexible study schedule",
+    ],
+    tagline: "100% online, self-paced programs",
   },
 ];
 
 export function WhyChooseUsSection() {
   const [active, setActive] = useState(0);
+  const [coursesCount, setCoursesCount] = useState<number>(() => {
+    const cached = getCachedCourses();
+    return Array.isArray(cached) && cached.length > 0 ? cached.length : 9;
+  });
+
+  useEffect(() => {
+    getCourses().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setCoursesCount(data.length);
+      }
+    });
+
+    const handleCoursesUpdated = () => {
+      getCourses().then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setCoursesCount(data.length);
+        }
+      });
+    };
+
+    window.addEventListener("courses-updated", handleCoursesUpdated);
+    return () => window.removeEventListener("courses-updated", handleCoursesUpdated);
+  }, []);
+
   const activeFeature = features[active];
   const Icon = activeFeature.icon;
 
@@ -165,7 +206,7 @@ export function WhyChooseUsSection() {
                         {feature.id}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-[9px] sm:text-xs text-slate-500 leading-snug line-clamp-2 font-medium min-h-[24px] sm:min-h-[32px]">
+                    <p className="mt-0.5 text-[9px] sm:text-xs text-slate-500 leading-snug font-medium">
                       {feature.description}
                     </p>
                   </div>
@@ -225,7 +266,7 @@ export function WhyChooseUsSection() {
 
                   {/* Description with Fixed Min-Height */}
                   <div className="min-h-[36px] sm:min-h-[42px] flex items-center">
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal line-clamp-2">
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
                       {activeFeature.description}
                     </p>
                   </div>
@@ -254,27 +295,27 @@ export function WhyChooseUsSection() {
                   <div className="grid grid-cols-3 gap-4 sm:gap-6 text-center sm:text-left w-full sm:w-auto">
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={1} suffix="k+" />
+                        <AnimatedCounter value={coursesCount} />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
-                        Learners
+                        PECP Courses
                       </p>
                     </div>
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={10} suffix="+" />
+                        <AnimatedCounter value={4} />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
-                        Certifications
+                        AI Unlocked Courses
                       </p>
                     </div>
 
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={4.9} decimals={1} suffix="★" />
+                        <AnimatedCounter value={10} suffix="+" />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
-                        Rating
+                        Career-ready Pathways
                       </p>
                     </div>
                   </div>

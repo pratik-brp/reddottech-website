@@ -20,14 +20,22 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
     TRACK_CONFIGS[trackKey] ||
     (trackKey.includes("health")
       ? TRACK_CONFIGS.healthcare
-      : trackKey.includes("adv") ||
-          trackKey.includes("fa") ||
-          trackKey.includes("level 2") ||
-          trackKey.includes("level-2")
-        ? TRACK_CONFIGS["finance-advanced"]
-        : trackKey.includes("finan") || trackKey.includes("bank")
-          ? TRACK_CONFIGS.finance
-          : TRACK_CONFIGS.foundations);
+      : trackKey.includes("edu") || trackKey.includes("teach")
+        ? TRACK_CONFIGS.education
+        : trackKey.includes("dev") || trackKey.includes("agsd") || trackKey.includes("software")
+          ? TRACK_CONFIGS["agile-developers"]
+          : trackKey.includes("agmg") || (trackKey.includes("agile") && trackKey.includes("manag"))
+            ? TRACK_CONFIGS["agile-managers"]
+            : trackKey.includes("manage") || trackKey.includes("mgmt")
+              ? TRACK_CONFIGS.management
+              : trackKey.includes("adv") ||
+                  trackKey.includes("fa") ||
+                  trackKey.includes("level 2") ||
+                  trackKey.includes("level-2")
+                ? TRACK_CONFIGS["finance-advanced"]
+                : trackKey.includes("finan") || trackKey.includes("bank")
+                  ? TRACK_CONFIGS.finance
+                  : TRACK_CONFIGS.foundations);
 
   const courseTitle = options.courseName || cfg?.certTitle || "AI Foundations: General AI Literacy";
   const certSubtitle = cfg?.certSubtitle || "Professional Certificate Programme";

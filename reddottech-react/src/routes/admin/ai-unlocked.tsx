@@ -11,7 +11,6 @@ import {
   Trash2,
   Mail,
   Clock,
-  ShieldCheck,
   Send,
   ExternalLink,
   X,
@@ -24,7 +23,7 @@ import { toast } from "sonner";
 import { requireAdminRoute, getToken } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { getAiLeads, createAiLead, updateAiLead, deleteAiLead } from "@/lib/api";
-import { TRACK_CONFIGS, generateAccessCode, validateAccessCode } from "@/lib/ai-course-utils";
+import { TRACK_CONFIGS, generateAccessCode } from "@/lib/ai-course-utils";
 
 function getResolvedReceiptUrl(rawUrl?: string): string {
   if (!rawUrl) return "";
@@ -63,7 +62,14 @@ export interface AiPaymentLead {
   name: string;
   email: string;
   org: string;
-  track: "healthcare" | "finance" | "finance-advanced";
+  track:
+    | "healthcare"
+    | "finance"
+    | "finance-advanced"
+    | "education"
+    | "management"
+    | "agile-developers"
+    | "agile-managers";
   txn: string;
   date: string;
   status: "pending" | "verified" | "rejected";
@@ -87,7 +93,15 @@ export async function sendAccessCodeEmailViaFormSubmit(
       ? "AI for Healthcare Professionals (Clinical Track)"
       : lead.track === "finance-advanced"
         ? "Advanced AI for Finance Professionals (Level 2 Architecture Track)"
-        : "AI for Financial Professionals (Banking Track)";
+        : lead.track === "education"
+          ? "AI for Teachers and Educators (Pedagogy Track)"
+          : lead.track === "management"
+            ? "AI for Management Professionals (Executive Management Track)"
+            : lead.track === "agile-developers"
+              ? "Agile Methodologies for Software Developers (Engineering Track)"
+              : lead.track === "agile-managers"
+                ? "Agile Methodologies for Managers (Governance & Leadership Track)"
+                : "AI for Financial Professionals (Banking Track)";
   const activationUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
 
   const payload = {
@@ -158,43 +172,19 @@ function AdminAiUnlockedPage() {
     loadLeads();
   }, []);
 
-  // ── Code Generator State ──
-  const [genTrack, setGenTrack] = useState<"healthcare" | "finance" | "finance-advanced">(
-    "healthcare",
-  );
-  const [generatedCode, setGeneratedCode] = useState(() =>
-    generateAccessCode(TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"),
-  );
-  const [codeCopied, setCodeCopied] = useState(false);
-
-  // ── Code Validator State ──
-  const [testCode, setTestCode] = useState("");
-  const [validationResult, setValidationResult] = useState<{
-    tested: boolean;
-    valid: boolean;
-    track?: string;
-    studentName?: string;
-    studentEmail?: string;
-    isEnrolled?: boolean;
-  }>({ tested: false, valid: false });
-
   // ── Manual Add Modal State ──
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedReceiptLead, setSelectedReceiptLead] = useState<AiPaymentLead | null>(null);
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newOrg, setNewOrg] = useState("");
-  const [newTrack, setNewTrack] = useState<"healthcare" | "finance" | "finance-advanced">(
-    "healthcare",
-  );
+  const [newTrack, setNewTrack] = useState<AiPaymentLead["track"]>("healthcare");
   const [newTxn, setNewTxn] = useState("");
   const [autoEmailManual, setAutoEmailManual] = useState(true);
 
   // ── Filters ──
   const [searchQuery, setSearchQuery] = useState("");
-  const [trackFilter, setTrackFilter] = useState<
-    "all" | "healthcare" | "finance" | "finance-advanced"
-  >("all");
+  const [trackFilter, setTrackFilter] = useState<"all" | AiPaymentLead["track"]>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "verified">("all");
 
   const filteredLeads = useMemo(() => {
@@ -214,23 +204,6 @@ function AdminAiUnlockedPage() {
   }, [leads, trackFilter, statusFilter, searchQuery]);
 
   // ── Actions ──
-  const handleGenerateCode = (track: "healthcare" | "finance" | "finance-advanced") => {
-    const salt =
-      track === "healthcare"
-        ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
-        : track === "finance-advanced"
-          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
-    setGeneratedCode(generateAccessCode(salt));
-    setCodeCopied(false);
-  };
-
-  const handleCopyGeneratedCode = () => {
-    navigator.clipboard.writeText(generatedCode);
-    setCodeCopied(true);
-    toast.success("Access code copied to clipboard");
-    setTimeout(() => setCodeCopied(false), 2000);
-  };
 
   const handleCopyLeadCode = (lead: AiPaymentLead) => {
     if (!lead.accessCode) return;
@@ -246,7 +219,15 @@ function AdminAiUnlockedPage() {
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
         : lead.track === "finance-advanced"
           ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
+          : lead.track === "education"
+            ? TRACK_CONFIGS.education?.salt || "RDT-AIED-2026"
+            : lead.track === "management"
+              ? TRACK_CONFIGS.management?.salt || "RDT-AIMP-2026"
+              : lead.track === "agile-developers"
+                ? TRACK_CONFIGS["agile-developers"]?.salt || "RDT-AGSD-2026"
+                : lead.track === "agile-managers"
+                  ? TRACK_CONFIGS["agile-managers"]?.salt || "RDT-AGMG-2026"
+                  : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const newCode = lead.accessCode || generateAccessCode(salt);
 
@@ -255,7 +236,15 @@ function AdminAiUnlockedPage() {
         ? "AI for Healthcare Professionals"
         : lead.track === "finance-advanced"
           ? "Advanced AI for Finance Professionals (Level 2)"
-          : "AI for Financial Professionals";
+          : lead.track === "education"
+            ? "AI for Teachers & Educators"
+            : lead.track === "management"
+              ? "AI for Management Professionals"
+              : lead.track === "agile-developers"
+                ? "Agile for Software Developers"
+                : lead.track === "agile-managers"
+                  ? "Agile Methodologies for Managers"
+                  : "AI for Financial Professionals";
 
     const courseUrl = `https://reddottech.com.np/ai-unlocked?track=${lead.track}&view=pay`;
     const messageTemplate = `Dear ${lead.name},\n\nYour payment for ${trackName} (Txn Ref: ${lead.txn || "Confirmed"}) has been verified!\n\nYour Access Code: ${newCode}\n\nTo activate your course, visit:\n${courseUrl}\nand enter your code under Step 3 (Instant Access Code Unlock).\n\nBest regards,\nRed Dot Technologies Pvt. Ltd.\nKathmandu, Nepal`;
@@ -339,54 +328,6 @@ function AdminAiUnlockedPage() {
     }
   };
 
-  const handleTestCode = (e: React.FormEvent) => {
-    e.preventDefault();
-    const clean = testCode.trim().toUpperCase();
-    if (!clean) return;
-
-    const isHealth = validateAccessCode(clean, TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026");
-    const isFin = validateAccessCode(clean, TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026");
-    const isFinAdv = validateAccessCode(
-      clean,
-      TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026",
-    );
-
-    const matchingLead = leads.find(
-      (l) => l.accessCode?.trim().toUpperCase() === clean && l.status === "verified",
-    );
-
-    if (isHealth) {
-      setValidationResult({
-        tested: true,
-        valid: true,
-        track: "AI for Healthcare Professionals (Clinical)",
-        studentName: matchingLead?.name,
-        studentEmail: matchingLead?.email,
-        isEnrolled: !!matchingLead,
-      });
-    } else if (isFin) {
-      setValidationResult({
-        tested: true,
-        valid: true,
-        track: "AI for Financial Professionals (Banking)",
-        studentName: matchingLead?.name,
-        studentEmail: matchingLead?.email,
-        isEnrolled: !!matchingLead,
-      });
-    } else if (isFinAdv) {
-      setValidationResult({
-        tested: true,
-        valid: true,
-        track: "Advanced AI for Finance Professionals (Level 2)",
-        studentName: matchingLead?.name,
-        studentEmail: matchingLead?.email,
-        isEnrolled: !!matchingLead,
-      });
-    } else {
-      setValidationResult({ tested: true, valid: false });
-    }
-  };
-
   const handleCreateManualLead = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim() || !newEmail.trim()) {
@@ -399,7 +340,15 @@ function AdminAiUnlockedPage() {
         ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
         : newTrack === "finance-advanced"
           ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-          : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
+          : newTrack === "education"
+            ? TRACK_CONFIGS.education?.salt || "RDT-AIED-2026"
+            : newTrack === "management"
+              ? TRACK_CONFIGS.management?.salt || "RDT-AIMP-2026"
+              : newTrack === "agile-developers"
+                ? TRACK_CONFIGS["agile-developers"]?.salt || "RDT-AGSD-2026"
+                : newTrack === "agile-managers"
+                  ? TRACK_CONFIGS["agile-managers"]?.salt || "RDT-AGMG-2026"
+                  : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
 
     const generated = generateAccessCode(salt);
 
@@ -515,235 +464,7 @@ function AdminAiUnlockedPage() {
           </div>
         </div>
 
-        {/* ── Operational Utilities: Token Generator + Validator ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Box 1: Token Generator (7 Cols) */}
-          <div className="lg:col-span-7 bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-2 pb-3 border-b border-slate-100 justify-between">
-                <div className="flex items-center gap-2">
-                  <KeyRound className="h-4 w-4 text-slate-700" />
-                  <h3 className="font-semibold text-sm text-slate-900">Generate Access Token</h3>
-                </div>
-                <span className="text-[11px] text-slate-400 font-mono">
-                  {genTrack === "healthcare"
-                    ? "Salt: AIHP"
-                    : genTrack === "finance-advanced"
-                      ? "Salt: AIFA (L2)"
-                      : "Salt: AIFP (L1)"}
-                </span>
-              </div>
 
-              <div className="mt-4 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                  <label className="text-xs font-medium text-slate-600">Target Track</label>
-                  {/* Segmented Control */}
-                  <div className="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-[11px]">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setGenTrack("healthcare");
-                        handleGenerateCode("healthcare");
-                      }}
-                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
-                        genTrack === "healthcare"
-                          ? "bg-white text-slate-900 shadow-2xs"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
-                    >
-                      Healthcare
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setGenTrack("finance");
-                        handleGenerateCode("finance");
-                      }}
-                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
-                        genTrack === "finance"
-                          ? "bg-white text-slate-900 shadow-2xs"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
-                    >
-                      Finance L1
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setGenTrack("finance-advanced");
-                        handleGenerateCode("finance-advanced");
-                      }}
-                      className={`px-2.5 py-1 rounded-md font-medium transition-all cursor-pointer ${
-                        genTrack === "finance-advanced"
-                          ? "bg-purple-600 text-white shadow-2xs"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
-                    >
-                      Adv Finance L2
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Access Token
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        readOnly
-                        value={generatedCode}
-                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 px-3.5 py-2 font-mono text-sm font-bold tracking-widest text-slate-900 select-all focus:outline-none"
-                      />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleCopyGeneratedCode}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium transition-colors cursor-pointer shrink-0"
-                    >
-                      {codeCopied ? (
-                        <>
-                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                          <span>Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5" />
-                          <span>Copy Token</span>
-                        </>
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleGenerateCode(genTrack)}
-                      className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer shrink-0"
-                      title="Generate new token"
-                    >
-                      <RefreshCw className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => {
-                  setNewTrack(genTrack);
-                  setShowAddModal(true);
-                }}
-                className="text-emerald-700 hover:text-emerald-800 font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Enrol Student with this Token</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const trackLabel =
-                    genTrack === "healthcare"
-                      ? "AI for Healthcare"
-                      : genTrack === "finance-advanced"
-                        ? "Advanced AI for Finance (Level 2)"
-                        : "AI for Finance";
-                  const msg = `Dear Learner,\n\nYour payment for ${trackLabel} has been verified.\n\nYour Access Code: ${generatedCode}\n\nUnlock here: https://reddottech.com.np/ai-unlocked?track=${genTrack}&view=pay\n\nBest regards,\nRed Dot Technologies`;
-                  navigator.clipboard.writeText(msg);
-                  toast.success("Ready dispatch message copied");
-                }}
-                className="text-brand-red hover:text-red-700 font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <Copy className="h-3 w-3" />
-                <span>Copy Message Template</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Box 2: Token Validator (5 Cols) */}
-          <div className="lg:col-span-5 bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs space-y-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-                <ShieldCheck className="h-4 w-4 text-slate-700" />
-                <h3 className="font-semibold text-sm text-slate-900">Token Verification</h3>
-              </div>
-
-              <form onSubmit={handleTestCode} className="mt-4 space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">
-                    Inspect Access Code
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={testCode}
-                      onChange={(e) => setTestCode(e.target.value)}
-                      placeholder="e.g. RDTA8K2..."
-                      className="flex-1 rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-mono uppercase focus:bg-white focus:outline-none focus:border-slate-400 font-medium"
-                    />
-                    <button
-                      type="submit"
-                      className="rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium px-3.5 py-2 transition-colors cursor-pointer shrink-0"
-                    >
-                      Verify
-                    </button>
-                  </div>
-                </div>
-
-                {validationResult.tested && (
-                  <div
-                    className={`p-3 rounded-lg text-xs font-medium flex items-start gap-2 ${
-                      validationResult.valid
-                        ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
-                        : "bg-rose-50 border border-rose-200 text-rose-800"
-                    }`}
-                  >
-                    {validationResult.valid ? (
-                      <>
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
-                          <p className="font-semibold">Valid Access Token</p>
-                          <p className="text-[11px] text-emerald-700">
-                            Track: {validationResult.track}
-                          </p>
-                          {validationResult.isEnrolled ? (
-                            <p className="text-[10px] text-emerald-800 font-bold bg-emerald-100/70 px-1.5 py-0.5 rounded inline-block mt-1">
-                              ✓ Active Enrolment: {validationResult.studentName} (
-                              {validationResult.studentEmail})
-                            </p>
-                          ) : (
-                            <p className="text-[10px] text-slate-500 italic mt-0.5">
-                              Cryptographically valid, not yet assigned to an active student in
-                              queue.
-                            </p>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="h-4 w-4 text-rose-600 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-semibold">Invalid Token</p>
-                          <p className="text-[11px] text-rose-700 mt-0.5">
-                            Checksum failed or code format is invalid.
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </form>
-            </div>
-
-            <p className="text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-              Validates cryptographic signature against active course salts and cross-references
-              database enrolments.
-            </p>
-          </div>
-        </div>
 
         {/* ── Main Data Table: Verification Queue ── */}
         <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
@@ -777,9 +498,13 @@ function AdminAiUnlockedPage() {
                   className="rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none cursor-pointer"
                 >
                   <option value="all">All Tracks</option>
+                  <option value="agile-developers">Agile Developers (AGSD)</option>
+                  <option value="agile-managers">Agile Managers (AGMG)</option>
                   <option value="healthcare">Healthcare (AIHP)</option>
                   <option value="finance">Finance L1 (AIFP)</option>
                   <option value="finance-advanced">Adv Finance L2 (AIFA)</option>
+                  <option value="education">Education &amp; Pedagogy (AIED)</option>
+                  <option value="management">Management &amp; Exec (AIMP)</option>
                 </select>
 
                 <select
@@ -791,6 +516,15 @@ function AdminAiUnlockedPage() {
                   <option value="pending">Pending</option>
                   <option value="verified">Verified</option>
                 </select>
+
+                <button
+                  onClick={loadLeads}
+                  disabled={isLoading}
+                  title="Refresh records from database"
+                  className="p-1.5 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-slate-100 text-slate-600 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? "animate-spin text-brand-red" : ""}`} />
+                </button>
               </div>
             </div>
           </div>
@@ -864,6 +598,22 @@ function AdminAiUnlockedPage() {
                           ) : lead.track === "finance-advanced" ? (
                             <span className="inline-flex items-center gap-1 rounded-md bg-purple-50 text-purple-800 border border-purple-200/80 px-2 py-0.5 text-[11px] font-medium">
                               Adv Finance L2
+                            </span>
+                          ) : lead.track === "education" ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200/80 px-2 py-0.5 text-[11px] font-medium">
+                              Education
+                            </span>
+                          ) : lead.track === "management" ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 text-amber-800 border border-amber-200/80 px-2 py-0.5 text-[11px] font-medium">
+                              Management
+                            </span>
+                          ) : lead.track === "agile-developers" ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-sky-50 text-sky-800 border border-sky-200/80 px-2 py-0.5 text-[11px] font-medium">
+                              Agile Developers
+                            </span>
+                          ) : lead.track === "agile-managers" ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200/80 px-2 py-0.5 text-[11px] font-medium">
+                              Agile Managers
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 text-blue-800 border border-blue-200/80 px-2 py-0.5 text-[11px] font-medium">
@@ -1061,10 +811,32 @@ function AdminAiUnlockedPage() {
                       className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium ${
                         lead.track === "healthcare"
                           ? "bg-emerald-50 text-emerald-800 border border-emerald-200/80"
-                          : "bg-blue-50 text-blue-800 border border-blue-200/80"
+                          : lead.track === "finance-advanced"
+                            ? "bg-purple-50 text-purple-800 border border-purple-200/80"
+                            : lead.track === "education"
+                              ? "bg-teal-50 text-teal-800 border border-teal-200/80"
+                              : lead.track === "management"
+                                ? "bg-amber-50 text-amber-800 border border-amber-200/80"
+                                : lead.track === "agile-developers"
+                                  ? "bg-sky-50 text-sky-800 border border-sky-200/80"
+                                  : lead.track === "agile-managers"
+                                    ? "bg-teal-50 text-teal-800 border border-teal-200/80"
+                                    : "bg-blue-50 text-blue-800 border border-blue-200/80"
                       }`}
                     >
-                      {lead.track === "healthcare" ? "Healthcare" : "Finance"}
+                      {lead.track === "healthcare"
+                        ? "Healthcare"
+                        : lead.track === "finance-advanced"
+                          ? "Adv Finance"
+                          : lead.track === "education"
+                            ? "Education"
+                            : lead.track === "management"
+                              ? "Management"
+                              : lead.track === "agile-developers"
+                                ? "Agile Dev"
+                                : lead.track === "agile-managers"
+                                  ? "Agile Mgmt"
+                                  : "Finance"}
                     </span>
                   </div>
 
@@ -1209,12 +981,24 @@ function AdminAiUnlockedPage() {
                   onChange={(e) => setNewTrack(e.target.value as any)}
                   className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-slate-400 cursor-pointer"
                 >
+                  <option value="agile-developers">
+                    Agile Methodologies for Software Developers (12 Modules)
+                  </option>
+                  <option value="agile-managers">
+                    Agile Methodologies for Managers (12 Modules)
+                  </option>
                   <option value="healthcare">AI for Healthcare Professionals (9 Modules)</option>
                   <option value="finance">
                     AI for Financial Professionals — Level 1 (8 Modules)
                   </option>
                   <option value="finance-advanced">
                     Advanced AI for Finance Professionals — Level 2 (12 Modules)
+                  </option>
+                  <option value="education">
+                    AI for Teachers and Educators (12 Modules)
+                  </option>
+                  <option value="management">
+                    AI for Management Professionals (12 Modules)
                   </option>
                 </select>
               </div>

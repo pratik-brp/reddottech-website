@@ -15,11 +15,22 @@ export const Route = createFileRoute("/admin/courses/create")({
   component: AdminCreateCoursePage,
 });
 
+const POPULAR_CATEGORIES = [
+  "Artificial Intelligence",
+  "Programming & Software",
+  "Web Development",
+  "Digital Marketing",
+  "Project Management",
+  "Executive & Leadership",
+  "Analytics & Data",
+  "Quality Management",
+];
+
 function AdminCreateCoursePage() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Professional Certification");
+  const [category, setCategory] = useState("Web Development");
   const [instructorName, setInstructorName] = useState("");
   const [instructorTitle, setInstructorTitle] = useState("Faculty Lead");
   const [instructorDetail, setInstructorDetail] = useState("");
@@ -32,6 +43,7 @@ function AdminCreateCoursePage() {
   const [skillLevel, setSkillLevel] = useState("beginner");
   const [certification, setCertification] = useState("PECP");
   const [status, setStatus] = useState("published");
+  const [sortOrder, setSortOrder] = useState("0");
   const [thumbnail, setThumbnail] = useState("");
   const [bannerImage, setBannerImage] = useState("");
   const [instructorImage, setInstructorImage] = useState("");
@@ -65,6 +77,7 @@ function AdminCreateCoursePage() {
         skillLevel,
         certification,
         status,
+        sortOrder: Number(sortOrder) || 0,
         thumbnail,
         bannerImage,
         description,
@@ -132,11 +145,17 @@ function AdminCreateCoursePage() {
                   id="create_course_category"
                   name="category"
                   type="text"
+                  list="create-category-suggestions"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  placeholder="e.g. Analytics & Data"
+                  placeholder="e.g. Web Development"
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
+                <datalist id="create-category-suggestions">
+                  {POPULAR_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat} />
+                  ))}
+                </datalist>
               </div>
 
               <div>
@@ -229,6 +248,24 @@ function AdminCreateCoursePage() {
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
               </div>
+
+              <div>
+                <label
+                  htmlFor="create_sort_order"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
+                  Display Sequence (# Order)
+                </label>
+                <input
+                  id="create_sort_order"
+                  name="sort_order"
+                  type="number"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value)}
+                  placeholder="0 (automatic next position)"
+                  className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+                />
+              </div>
             </div>
           </div>
 
@@ -297,26 +334,6 @@ function AdminCreateCoursePage() {
 
               <div>
                 <label
-                  htmlFor="create_skill_level"
-                  className="block text-xs font-bold text-slate-700 mb-1.5"
-                >
-                  Skill Level
-                </label>
-                <select
-                  id="create_skill_level"
-                  name="skill_level"
-                  value={skillLevel}
-                  onChange={(e) => setSkillLevel(e.target.value)}
-                  className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
-              </div>
-
-              <div>
-                <label
                   htmlFor="create_certification"
                   className="block text-xs font-bold text-slate-700 mb-1.5"
                 >
@@ -331,6 +348,26 @@ function AdminCreateCoursePage() {
                   placeholder="PECP / Reddot"
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="create_skillLevel"
+                  className="block text-xs font-bold text-slate-700 mb-1.5"
+                >
+                  Skill Level
+                </label>
+                <select
+                  id="create_skillLevel"
+                  name="skillLevel"
+                  value={skillLevel}
+                  onChange={(e) => setSkillLevel(e.target.value)}
+                  className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
               </div>
 
               <div>

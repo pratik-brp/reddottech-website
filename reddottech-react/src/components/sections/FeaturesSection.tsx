@@ -1,20 +1,41 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Award, ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import { Award, ArrowRight, CheckCircle2, Zap, Globe2, Check } from "lucide-react";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Magnetic } from "@/components/motion/Magnetic";
+
+const pecpBanner = {
+  badge: "Flagship Executive Program",
+  subtitle: "Joint Credentials with USC Upstate (USA)",
+  title: "Professional Excellence & Certification Program (PECP)",
+  description:
+    "A joint initiative between USC Upstate and Red Dot Technologies, bringing globally recognized credentials and practical, career-ready learning to Nepal through flexible online, self-paced programs.",
+  stats: [
+    { label: "Duration", val: "6-8 Weeks" },
+    { label: "Format", val: "Online / Self-Paced" },
+    { label: "Eligibility", val: "Open for All" },
+  ],
+  features: [
+    "Globally Recognized Joint Credentials",
+    "Courses Developed with International Faculty",
+    "Practical Projects & Workplace Discussions",
+    "Workplace-Ready Professional Skills",
+  ],
+  link: "/pecp",
+};
 
 const features = [
   {
     id: "faculty",
-    title: "USC Upstate Faculty",
-    badge: "Top U.S. Faculty",
+    title: "International Academic Collaboration",
+    badge: "USC Upstate (USA)",
     icon: "/images/hero/upstate-faculty.svg",
-    description: "Courses taught by USC Upstate faculty with international experience",
+    description:
+      "Programs developed through collaboration with USC Upstate and international academic expertise",
     highlights: [
-      "Direct mentorship from senior U.S. university professors",
-      "Real-world case studies & executive masterclasses",
-      "Global industry exposure tailored for Nepalese workforce",
+      "Curricula co-developed with USC Upstate faculty",
+      "International academic standards & mentorship",
+      "Cross-border learning experience from expert instructors",
     ],
     statsLabel: "Mentorship",
     statsVal: "1-on-1 Weekly",
@@ -24,31 +45,33 @@ const features = [
   },
   {
     id: "format",
-    title: "Flexible Formate",
-    badge: "Live & On-Demand",
+    title: "Flexible Learning Format",
+    badge: "100% Online",
     icon: "/images/hero/flexible-format.svg",
-    description: "Online or Instructor-led for working professionals",
+    description:
+      "Learn at your own pace with accessible online courses designed for working professionals and learners",
     highlights: [
-      "Live weekend interactive online masterclasses",
-      "On-demand video recordings & downloadable study guides",
-      "Designed for full-time engineers, managers & executives",
+      "Self-paced online learning on any schedule",
+      "Downloadable study guides & learning resources",
+      "Designed for working professionals & learners",
     ],
     statsLabel: "Schedule",
-    statsVal: "Weekend / Live",
+    statsVal: "Self-Paced",
     accentColor: "from-amber-500 to-orange-600",
     glowColor: "rgba(245, 158, 11, 0.4)",
     badgeBg: "bg-amber-50 text-amber-600 border-amber-500/20",
   },
   {
     id: "recognition",
-    title: "Global Recognization",
-    badge: "US Certified Credentials",
+    title: "Global Recognition",
+    badge: "Joint Credential",
     icon: "/images/hero/global-recognization.svg",
-    description: "Certification-backed learning with global recognition",
+    description:
+      "Earn a joint credential from USC Upstate and Red Dot Technologies upon completion",
     highlights: [
-      "Official credentials issued with USC Upstate (USA)",
-      "Verifiable digital badge for LinkedIn & resume verification",
-      "Accepted by multinational employers and overseas universities",
+      "Joint USC Upstate & Red Dot credential",
+      "Globally recognized verification for professionals",
+      "Career-ready recognition accepted worldwide",
     ],
     statsLabel: "Accreditation",
     statsVal: "US University",
@@ -103,14 +126,140 @@ export function FeaturesSection() {
           </p>
         </div>
 
+        {/* PECP Executive Certifications Banner */}
+        <div className="mb-6 sm:mb-10 w-full">
+          <TiltCard maxTilt={3}>
+            <div className="group relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-10 lg:p-12 text-white shadow-xl sm:shadow-2xl border border-white/15 transition-all duration-500 hover:shadow-brand-red/25">
+              {/* Background Image with Zoom & Dark Gradient Overlay */}
+              <div className="absolute inset-0 z-0 overflow-hidden">
+                <img
+                  src="/images/pecp-hero-card-bg.png"
+                  alt="PECP Executive Education"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                {/* Gradient overlay for optimal readability & executive ambiance */}
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-slate-900/80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
+              </div>
+
+              {/* Background Pattern & Ambient Glow */}
+              <div className="pointer-events-none absolute inset-0 bg-grid-pattern opacity-20 z-0" />
+              <div
+                className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full opacity-35 blur-[100px] z-0"
+                style={{
+                  background: "radial-gradient(circle, var(--brand-red) 0%, transparent 70%)",
+                }}
+              />
+
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-12 items-center">
+                <div className="lg:col-span-7 space-y-3 sm:space-y-6">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+                    <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-brand-red px-2.5 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-xs font-extrabold uppercase tracking-wider text-white shadow-md shadow-red-900/40">
+                      <Award className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      {pecpBanner.badge}
+                    </span>
+                    <span className="text-[9px] sm:text-xs font-bold text-amber-300/90 bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full">
+                      {pecpBanner.subtitle}
+                    </span>
+                  </div>
+
+                  <h3 className="display-font text-lg sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                    {pecpBanner.title}
+                  </h3>
+
+                  <p className="text-slate-300 text-xs sm:text-base leading-relaxed font-normal">
+                    {pecpBanner.description}
+                  </p>
+
+                  {/* Features Checklist */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 pt-1">
+                    {pecpBanner.features.map((feat) => (
+                      <div
+                        key={feat}
+                        className="flex items-center gap-1.5 sm:gap-2.5 text-xs sm:text-sm font-semibold text-slate-200"
+                      >
+                        <div className="flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full bg-brand-red/30 text-brand-red shrink-0">
+                          <Check className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 stroke-[3]" />
+                        </div>
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
+                    <Magnetic>
+                      <Link
+                        to={pecpBanner.link as any}
+                        className="btn-primary group py-2.5 sm:py-3.5 px-5 sm:px-8 text-xs sm:text-sm w-full sm:w-auto text-center justify-center"
+                      >
+                        <span>Explore PECP Credentials</span>
+                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                      </Link>
+                    </Magnetic>
+                  </div>
+                </div>
+
+                {/* Right Column: Stats Matrix Card */}
+                <div className="lg:col-span-5">
+                  <div className="rounded-xl sm:rounded-3xl border border-white/15 bg-slate-900/85 p-3.5 sm:p-8 space-y-3 sm:space-y-6 shadow-xl">
+                    <div className="flex items-center justify-between gap-3">
+                      {/* PECP Logo with clean white background */}
+                      <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl bg-white p-1.5 sm:p-2 shrink-0 shadow-md border border-white/20">
+                        <img
+                          src="/images/pecp/pecp.png"
+                          alt="PECP Logo"
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+
+                      {/* RDT x USC Upstate Logos Beside with matching white background */}
+                      <div className="flex items-center gap-2 sm:gap-3 bg-white px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-md border border-white/20">
+                        <img
+                          src="/logo.png"
+                          alt="Red Dot Technologies"
+                          className="h-5 sm:h-7 w-auto object-contain"
+                        />
+                        <span className="text-slate-400 text-xs sm:text-sm font-bold">×</span>
+                        <img
+                          src="https://uscupstate.edu/wp-content/uploads/2023/10/COLOR_HOR_BLK_Upstate_Logo-1-e1698410030138.png"
+                          alt="USC Upstate Logo"
+                          className="h-4 sm:h-6 w-auto object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-1.5 sm:gap-3 border-y border-white/10 py-2.5 sm:py-5">
+                      {pecpBanner.stats.map((s) => (
+                        <div key={s.label}>
+                          <p className="text-[9px] sm:text-[11px] text-slate-400 font-medium leading-tight">
+                            {s.label}
+                          </p>
+                          <p className="mt-0.5 sm:mt-1 text-[11px] sm:text-sm font-extrabold text-white">
+                            {s.val}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 sm:gap-3 text-[10px] sm:text-xs text-slate-300">
+                      <Globe2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red shrink-0" />
+                      <span>Joint USC Upstate &amp; Red Dot Credential</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TiltCard>
+        </div>
+
         {/* Subtitle */}
         <div className="mb-6 sm:mb-8 text-center">
           <h3 className="display-font text-lg sm:text-2xl font-extrabold text-brand-ink">
             Check Out Key <span className="gradient-text">Features</span>
           </h3>
-          <p className="text-[11px] sm:text-xs text-slate-500 font-semibold mt-0.5 sm:mt-1">
-            Click any feature below to inspect detailed curriculum benefits
-          </p>
         </div>
 
         {/* 3 Interactive Feature Cards — 2-Column Mobile Grid */}
@@ -196,18 +345,23 @@ export function FeaturesSection() {
                 <span className="badge-brand">Spotlight Feature</span>
                 <span className="text-xs font-bold text-slate-400">|</span>
                 <span className="text-xs font-extrabold text-brand-red uppercase tracking-wider">
-                  {activeFeature.title}
+                  USC Upstate Collaboration
                 </span>
               </div>
 
               <div className="min-h-[36px] sm:min-h-[44px] flex items-center">
                 <h4 className="display-font text-2xl sm:text-3xl font-extrabold text-brand-ink">
-                  Why {activeFeature.title} Sets PECP Apart
+                  Why USC Upstate Collaboration Sets PECP Apart
                 </h4>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 pt-1">
-                {activeFeature.highlights.map((h) => (
+                {[
+                  "International academic expertise integrated into professional learning",
+                  "Practical learning designed around Nepal’s workforce needs",
+                  "Globally oriented credentials with accessible online delivery",
+                  "Flexible self-paced learning for students and working professionals",
+                ].map((h) => (
                   <div
                     key={h}
                     className="flex items-start gap-3 bg-slate-50 p-3 sm:p-3.5 rounded-2xl border border-slate-100 min-h-[52px] sm:min-h-[56px]"

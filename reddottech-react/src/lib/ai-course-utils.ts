@@ -6,8 +6,23 @@
      - AI for Financial Professionals (Track 3)
    ============================================================= */
 
+import {
+  renderEducationDiagram,
+  renderManagementDiagram,
+  renderAgileDevDiagram,
+  renderAgileMgmtDiagram,
+} from "./ai-course-diagrams-extra";
+
 export interface TrackConfig {
-  id: "foundations" | "healthcare" | "finance" | "finance-advanced";
+  id:
+    | "foundations"
+    | "healthcare"
+    | "finance"
+    | "finance-advanced"
+    | "education"
+    | "management"
+    | "agile-developers"
+    | "agile-managers";
   name: string;
   shortName: string;
   badge: string;
@@ -207,7 +222,267 @@ export const TRACK_CONFIGS: Record<string, TrackConfig> = {
       accentColor: "#B8892B",
     },
   },
+  education: {
+    id: "education",
+    name: "AI for Teachers and Educators",
+    shortName: "AI for Educators",
+    badge: "Education & Pedagogy Track",
+    tagline: "Cognitive Science, Lesson Differentiation, Assessment Redesign & Institutional Leadership",
+    description:
+      "An applied programme for teachers, lecturers, heads of department, principals, and education administrators in Nepal and emerging markets — covering cognitive foundations of learning, AI for teacher workload, lesson planning, feedback and marking, academic integrity, assessment redesign, student AI literacy, safety, and school-wide adoption.",
+    modulesCount: 12,
+    durationLabel: "7+ hours (12 Modules)",
+    level: "Foundational to Institutional Leader",
+    isPaid: true,
+    price: {
+      amount: "1,499",
+      was: "2,999",
+      currency: "NPR",
+      intro: true,
+    },
+    salt: "RDT-AIED-2026",
+    freePreviewIds: ["e1"],
+    storageKey: "aiEduPro_v1",
+    certCodePrefix: "RDT-AIED",
+    certTitle: "AI for Teachers and Educators",
+    certSubtitle: "Professional Certificate Programme for Educators · ~8 Hours",
+    certDesc:
+      "has successfully completed all 12 modules and assessments of AI for Teachers and Educators, an applied programme covering the cognitive science of learning, lesson planning and differentiation, feedback and assessment, academic integrity and assessment redesign, teaching AI literacy to students, equity and safeguarding, and leading AI adoption across a school or college.",
+    modules: [
+      "What AI Actually Is — and What It Means for Your Classroom",
+      "How People Learn: The Evidence AI Must Serve",
+      "Reclaiming Your Time: AI for Teacher Workload",
+      "Planning, Differentiating and Resourcing",
+      "Feedback, Marking and the Limits of Automated Assessment",
+      "Academic Integrity: Beyond the Arms Race",
+      "Redesigning Assessment for an AI World",
+      "Teaching Students to Use AI Well",
+      "Equity, Safety and Student Data",
+      "What Has Actually Worked: Global Case Studies",
+      "Leading AI Adoption in Your School or College",
+      "Your Implementation Plan",
+    ],
+    theme: {
+      primaryColor: "#1E7A52",
+      badgeBg: "bg-teal-500/10 text-teal-400 border-teal-500/20",
+      badgeText: "text-teal-500",
+      accentColor: "#1E7A52",
+    },
+  },
+  management: {
+    id: "management",
+    name: "AI for Management Professionals",
+    shortName: "AI for Management",
+    badge: "Executive Management Track",
+    tagline: "The Executive Mental Model, Decision Rights, Business Cases & Institutional Transformation",
+    description:
+      "An applied executive programme for managers, C-suite executives, and senior leaders — covering the managerial mental model of AI, aligning technology to business strategy, decision rights, use-case selection and ROI, data and organizational readiness, people and change management, responsible AI governance, and executing a 12-month transformation roadmap.",
+    modulesCount: 12,
+    durationLabel: "7+ hours (12 Modules)",
+    level: "Intermediate to Executive",
+    isPaid: true,
+    price: {
+      amount: "2,499",
+      was: "3,999",
+      currency: "NPR",
+      intro: true,
+    },
+    salt: "RDT-AIMP-2026",
+    freePreviewIds: ["g1"],
+    storageKey: "aiMgmtPro_v1",
+    certCodePrefix: "RDT-AIMP",
+    certTitle: "AI for Management Professionals",
+    certSubtitle: "Executive Certificate Programme · ~8 Hours",
+    certDesc:
+      "has successfully completed all 12 modules and assessments of AI for Management Professionals, an applied executive programme covering AI strategy and decision rights, use-case selection and prioritisation, investment and business cases, organisational readiness, people and change management, responsible AI governance, risk management, implementation from pilot to production, and leading AI-enabled transformation.",
+    modules: [
+      "The Executive's Mental Model of AI",
+      "AI Strategy: Aligning Technology to Business Goals",
+      "Decision Rights: Who Owns AI in the Leadership Team",
+      "Finding and Prioritising Use Cases",
+      "AI in Executive Decision-Making",
+      "The Business Case: Investment, ROI and Budgeting",
+      "Data, Technology and Organisational Readiness",
+      "People, Culture and Change Management",
+      "Responsible AI and Governance for Leaders",
+      "Managing AI Risk: What Actually Goes Wrong",
+      "Implementation: From Pilot to Production",
+      "Leading the Transformation: Your Twelve-Month Plan",
+    ],
+    theme: {
+      primaryColor: "#b45309",
+      badgeBg: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      badgeText: "text-amber-500",
+      accentColor: "#d97706",
+    },
+  },
+  "agile-developers": {
+    id: "agile-developers",
+    name: "Agile Methodologies for Software Developers",
+    shortName: "Agile for Developers",
+    badge: "Engineering & Scrum Track",
+    tagline: "Waterfall vs Iterative Flow, Sprint Execution, TDD, CI/CD & Extreme Programming",
+    description:
+      "An applied, hands-on engineering programme for software developers, testers, and computing students — covering iterative delivery, Scrum sprints, user story sizing, DoD, flow & Kanban, test-driven development, continuous integration/delivery, code review, pair programming, and retrospectives.",
+    modulesCount: 12,
+    durationLabel: "7+ hours (12 Modules)",
+    level: "Practitioner to Senior Developer",
+    isPaid: true,
+    price: {
+      amount: "999",
+      was: "1,999",
+      currency: "NPR",
+      intro: true,
+    },
+    salt: "RDT-AGSD-2026",
+    freePreviewIds: ["d1"],
+    storageKey: "aiAgileDev_v1",
+    certCodePrefix: "RDT-AGSD",
+    certTitle: "Agile Methodologies for Software Developers",
+    certSubtitle: "Professional Engineering Certificate Programme · ~8 Hours",
+    certDesc:
+      "has successfully completed all 12 modules and practical assessments of Agile Methodologies for Software Developers, demonstrating practical competence in iterative delivery, Scrum sprint events and artefacts, user story refinement, estimation, Kanban flow, test-driven development, continuous integration, pair programming, and agile team retrospectives.",
+    modules: [
+      "Why Agile Exists",
+      "The Agile Manifesto in Plain Language",
+      "Scrum: Roles, Events and Artefacts",
+      "Your First Sprint",
+      "User Stories and Definition of Done",
+      "Estimation and Velocity",
+      "Kanban and Flow",
+      "Extreme Programming: The Technical Practices",
+      "Testing and Test-Driven Development",
+      "Continuous Integration and Delivery",
+      "Code Review, Pairing and Working in a Team",
+      "Retrospectives and Your First 90 Days",
+    ],
+    theme: {
+      primaryColor: "#0284c7",
+      badgeBg: "bg-sky-500/10 text-sky-400 border-sky-500/20",
+      badgeText: "text-sky-500",
+      accentColor: "#0284c7",
+    },
+  },
+  "agile-managers": {
+    id: "agile-managers",
+    name: "Agile Methodologies for Managers",
+    shortName: "Agile for Managers",
+    badge: "Governance & Leadership Track",
+    tagline: "Servant Leadership, Framework Selection, Budgeting, Metrics & Enterprise Scaling",
+    description:
+      "An applied executive programme for engineering managers, product leaders, project directors, and enterprise executives — covering the manager's evolving role, framework selection (Scrum, Kanban, XP, hybrids), team dedication, agile estimation vs traditional forecasting, value-driven budgeting and contracts, metrics that matter, risk & compliance, scaling frameworks (SAFe/LeSS), and leading organizational change.",
+    modulesCount: 12,
+    durationLabel: "7+ hours (12 Modules)",
+    level: "Management to Executive Leader",
+    isPaid: true,
+    price: {
+      amount: "1,999",
+      was: "3,499",
+      currency: "NPR",
+      intro: true,
+    },
+    salt: "RDT-AGMG-2026",
+    freePreviewIds: ["n1"],
+    storageKey: "aiAgileMgmt_v1",
+    certCodePrefix: "RDT-AGMG",
+    certTitle: "Agile Methodologies for Managers",
+    certSubtitle: "Executive Certificate Programme in Agile Leadership · ~8 Hours",
+    certDesc:
+      "has successfully completed all 12 modules and assessments of Agile Methodologies for Managers, an applied executive programme covering adaptive leadership, agile suitability and framework selection, team design and dedication, forecasting and estimation, value-driven procurement and budgeting, governance and compliance, scaling frameworks, and organizational adoption roadmaps.",
+    modules: [
+      "What Agile Actually Is — and What It Is Not",
+      "When Agile Works — and When It Does Not",
+      "Choosing an Approach: Scrum, Kanban, XP and Hybrids",
+      "The Manager's New Role",
+      "Team Design, Structure and Dedication",
+      "Planning, Estimation and Forecasting",
+      "Funding, Budgeting and Contracts",
+      "Metrics That Matter — and Metrics That Destroy",
+      "Governance, Risk and Compliance",
+      "Scaling: Frameworks, Trade-offs and Traps",
+      "Leading the Change",
+      "Your Adoption Plan",
+    ],
+    theme: {
+      primaryColor: "#0f766e",
+      badgeBg: "bg-teal-500/10 text-teal-400 border-teal-500/20",
+      badgeText: "text-teal-500",
+      accentColor: "#0f766e",
+    },
+  },
 };
+
+/* =============================================================
+   TRACK READINESS / NO-CODE PREREQUISITE CALLOUTS
+   Provides role-specific reassurance for non-technical learners
+   ============================================================= */
+export interface TrackReadinessCallout {
+  title: string;
+  text: string;
+  titleColor: string;
+  bgColor: string;
+  borderColor: string;
+}
+
+export const TRACK_READINESS_CALLOUTS: Record<string, TrackReadinessCallout> = {
+  education: {
+    title: "CLASSROOM-READY, NO TECHNICAL BACKGROUND NEEDED",
+    text: "Every module ends with something you can use on Monday — prompt libraries, an AI maturity matrix, policy and parent templates, and task designs that work in a class of fifty with no student devices.",
+    titleColor: "#7FD6A8",
+    bgColor: "rgba(13, 38, 28, 0.94)",
+    borderColor: "rgba(30, 122, 82, 0.65)",
+  },
+  management: {
+    title: "NO TECHNICAL BACKGROUND REQUIRED",
+    text: "You will not write code or train a model. You will learn to set strategy, allocate budget, assign decision rights, select vendors, govern risk and lead your people through the change.",
+    titleColor: "#8FC0F0",
+    bgColor: "rgba(13, 27, 49, 0.94)",
+    borderColor: "rgba(46, 111, 176, 0.65)",
+  },
+  healthcare: {
+    title: "CLINICAL PRACTICE FOCUS, NO CODING REQUIRED",
+    text: "You will not write code or train algorithms. You will learn to evaluate clinical decision-support tools, protect patient data, navigate medical-legal safety, and govern AI adoption in hospital and community health settings.",
+    titleColor: "#6EE7B7",
+    bgColor: "rgba(8, 35, 28, 0.94)",
+    borderColor: "rgba(16, 185, 129, 0.6)",
+  },
+  finance: {
+    title: "BANKING & REGULATION FOCUSED, NO CODING REQUIRED",
+    text: "No machine learning engineering background needed. You will learn credit scoring evaluation, fraud pattern analysis, NRB compliance guidelines, model risk management, and ROI justification for board presentations.",
+    titleColor: "#93C5FD",
+    bgColor: "rgba(14, 28, 56, 0.94)",
+    borderColor: "rgba(59, 130, 246, 0.6)",
+  },
+  "finance-advanced": {
+    title: "EXECUTIVE PREREQUISITE & ARCHITECTURAL DEPTH",
+    text: "Built for senior banking executives, risk committees, and enterprise architects. Focuses on foundation model capability stacks, advanced model risk validation, deep explainability, and multi-agent financial systems.",
+    titleColor: "#F0DCB4",
+    bgColor: "rgba(36, 24, 12, 0.94)",
+    borderColor: "rgba(184, 137, 43, 0.65)",
+  },
+  foundations: {
+    title: "OPEN CURRICULUM · ZERO PRIOR KNOWLEDGE REQUIRED",
+    text: "Designed for everyone. Learn the fundamentals of generative AI, prompt engineering, agentic systems, and ethical deployment without writing code or needing mathematical prerequisites.",
+    titleColor: "#FCA5A5",
+    bgColor: "rgba(38, 14, 18, 0.94)",
+    borderColor: "rgba(200, 16, 46, 0.6)",
+  },
+  "agile-developers": {
+    title: "PRACTICAL CODE & SPRINT CADENCE · DEVELOPER READY",
+    text: "Built for software developers and computing students. Master sprint cadences, story estimation, TDD loops, CI/CD automated pipelines, and collaborative pair programming.",
+    titleColor: "#38BDF8",
+    bgColor: "rgba(12, 30, 48, 0.94)",
+    borderColor: "rgba(2, 132, 199, 0.65)",
+  },
+  "agile-managers": {
+    title: "LEADERSHIP & GOVERNANCE FOCUS · NO CODING REQUIRED",
+    text: "Designed for engineering managers, product leads, and executives. Focuses on team dedication, outcome-driven metrics, agile contracts, compliance risk, and multi-team scaling.",
+    titleColor: "#2DD4BF",
+    bgColor: "rgba(13, 36, 36, 0.94)",
+    borderColor: "rgba(15, 118, 110, 0.65)",
+  },
+};
+
 
 /* =============================================================
    CRYPTOGRAPHIC ACCESS CODE VALIDATION & GENERATOR
@@ -237,7 +512,8 @@ export function validateAccessCode(rawCode: string, salt: string): boolean {
   const c = String(rawCode || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "");
-  const m = c.match(/^RDT([A-Z0-9]{5})([A-Z0-9]{4})$/);
+  const clean = c.replace(/^RDT(AIHP|AIFP|AIFA|AIFOUND|AIED|AIMP|AGSD|AGMG)?/, "");
+  const m = clean.match(/^([A-Z0-9]{5})([A-Z0-9]{4})$/);
   if (!m) return false;
   return checksumFor(salt, m[1]) === m[2];
 }
@@ -397,6 +673,24 @@ export const FINANCE_SOURCES: SourceItem[] = [
    INTERACTIVE SVG DIAGRAMS ENGINE (22 Total Modules)
    ============================================================= */
 export function renderSvgDiagram(diagramId: string): string {
+  // ── 0. EXTRA MODULE DIAGRAMS (Education, Management, Agile) ──
+  if (diagramId.startsWith("e")) {
+    const svg = renderEducationDiagram(diagramId);
+    if (svg) return svg;
+  }
+  if (diagramId.startsWith("g")) {
+    const svg = renderManagementDiagram(diagramId);
+    if (svg) return svg;
+  }
+  if (diagramId.startsWith("d")) {
+    const svg = renderAgileDevDiagram(diagramId);
+    if (svg) return svg;
+  }
+  if (diagramId.startsWith("n")) {
+    const svg = renderAgileMgmtDiagram(diagramId);
+    if (svg) return svg;
+  }
+
   // ── 1. FOUNDATIONS DIAGRAMS (l1 to l5) ──
   if (diagramId === "l1") {
     const layers = [
@@ -1444,6 +1738,144 @@ export const FINANCE_ADVANCED_SOURCES: SourceItem[] = [
   },
 ];
 
+export const EDUCATION_SOURCES: SourceItem[] = [
+  {
+    org: "IDC & Microsoft",
+    title: "A Blueprint for AI-Ready Schools: Strategies from the Front Lines of K–12 Education",
+    summary:
+      "Source of the six foundational characteristics of advanced school AI strategies, the strategic, organisational, pedagogical and technology recommendations, the AI maturity matrix concept, age-band guidance, and documented case studies of Brisbane Catholic Education, Broward County Public Schools and Coquitlam School District.",
+  },
+  {
+    org: "Tom Chatfield & Sage",
+    title: "AI and the Future of Pedagogy",
+    summary:
+      "Source of the cognitive, instructional and social dimensions of learning, the limits of enforcement and detection, reframing assessment as conversation rather than surveillance, the cognitive co-pilot, and the principle that automation should elevate rather than displace human skill.",
+  },
+  {
+    org: "US Department of Education",
+    title: "Artificial Intelligence and the Future of Teaching and Learning: Insights and Recommendations",
+    summary:
+      "Source of the four foundations, the human-in-the-loop principle, inspectable, explainable and overridable AI requirements, warnings on algorithmic discrimination, and teacher workload findings.",
+  },
+  {
+    org: "University of Rochester",
+    title: "AI Horizons Transdisciplinary Institute White Paper",
+    summary:
+      "Source of the four working themes — innovating teaching, developing AI literacy, rethinking workforce preparation, and improving educator productivity and wellbeing — along with equity findings.",
+  },
+  {
+    org: "Frontiers in Education (PRISMA)",
+    title: "Artificial intelligence in education: a systematic review of personalized learning trends",
+    summary:
+      "Review of global literature from 2013 to 2025. Source of findings on pedagogical integration, institutional pressures in developing markets, and digital literacy development.",
+  },
+];
+
+export const MANAGEMENT_SOURCES: SourceItem[] = [
+  {
+    org: "Deloitte Center for Integrated Research",
+    title: "How the right mix of C-suite leadership can drive outsized AI returns",
+    summary:
+      "Analysis of 550 business and technology leaders. Source of findings on distributed decision rights, EBITDA gains, ROI likelihood drivers, and the peak performance of complementary C-suite leadership.",
+  },
+  {
+    org: "World Economic Forum",
+    title: "Empowering AI Leadership: AI C-Suite Toolkit",
+    summary:
+      "Source of the six principal causes of AI initiative failure, data cleansing realities (80% of project time), 2-3x cost/time overrun patterns, framing AI as R&D rather than deterministic IT, and ring-fenced project governance.",
+  },
+  {
+    org: "Capgemini Research Institute",
+    title: "Inside the C-Suite: How AI is quietly reshaping executive decisions",
+    summary:
+      "Survey of 500 CXOs including 100 CEOs. Source of findings that more than half use AI for strategic decision support, augmentation vs autonomous decisions, executive trust, and prompt-engineering confidence.",
+  },
+  {
+    org: "Saïd Business School, Oxford University",
+    title: "Research on AI business cases and value realisation",
+    summary:
+      "Evidence that 60–70% of spend relates to foundational middleware and data integration rather than AI models directly, the efficiency-trap pattern, and programmatic evaluation.",
+  },
+];
+
+export const AGILE_DEVELOPERS_SOURCES: SourceItem[] = [
+  {
+    org: "Beck, K. and others (2001)",
+    title: "Manifesto for Agile Software Development",
+    summary:
+      "The four values and twelve principles that underpin every approach in this course. Referenced throughout, particularly for technical excellence, sustainable pace, simplicity, and responding to change.",
+  },
+  {
+    org: "Project Management Institute & Agile Alliance",
+    title: "Agile Practice Guide",
+    summary:
+      "A global standard developed jointly by PMI and Agile Alliance. Referenced for treatment of retrospectives, backlog refinement, daily standups, iteration planning, and execution practices.",
+  },
+  {
+    org: "European Scrum",
+    title: "Agile Methodologies Guide, 2025",
+    summary:
+      "Practitioner guidance for Scrum components — sprints, product/sprint backlogs, planning, daily scrum, review, refinement, retrospective, and Scrum role responsibilities.",
+  },
+  {
+    org: "Serrador, P. and Zadeh, A. A.",
+    title: "When Agile Works: Unveiling the Secrets to Agile Success (Engineering Management Journal, July 2025)",
+    summary:
+      "Empirical study of 1,002 projects demonstrating that team experience materially affects agile outcomes, reinforcing the necessity of engineering standards for new teams.",
+  },
+  {
+    org: "Software Engineering Literature",
+    title: "Comparative Reviews of Waterfall and Agile Methodologies",
+    summary:
+      "Comparison of sequential and iterative approaches, risk profiles, feedback latency, and hybrid development techniques.",
+  },
+  {
+    org: "Red Dot Technologies",
+    title: "Engineering Practice Note on Frameworks & Attribution",
+    summary:
+      "Framework summaries for Scrum, Kanban, and Extreme Programming aligned with modern developer workflows and professional software craftsmanship.",
+  },
+];
+
+export const AGILE_MANAGERS_SOURCES: SourceItem[] = [
+  {
+    org: "Project Management Institute & Agile Alliance",
+    title: "Agile Practice Guide",
+    summary:
+      "Global standard for practitioners transitioning from traditional to adaptive environments. Referenced for servant leadership, suitability filters, hybrid lifecycles, dedicated teams, and value-driven PMOs.",
+  },
+  {
+    org: "Serrador, P. and Zadeh, A. A.",
+    title: "When Agile Works: Unveiling the Secrets to Agile Success (Engineering Management Journal, July 2025)",
+    summary:
+      "Empirical analysis of 1,002 projects analyzing agile usage correlation with stakeholder success, team size, goal clarity, complexity, and governance constraints.",
+  },
+  {
+    org: "World Economic Forum",
+    title: "Agile Governance: Reimagining Policy-making in the Fourth Industrial Revolution (2018)",
+    summary:
+      "Analysis of how traditional policy lags technological change, proposing iterative, experimental, and collaborative governance applied to organisational rule-making.",
+  },
+  {
+    org: "Anifa, M., Ramakrishnan, S., Kabiraj, S. and Joghee, S.",
+    title: "Systematic Review of Literature on Agile Approach (NMIMS Management Review, 2024)",
+    summary:
+      "Systematic literature review of agile timeboxing and adaptive management maturity across diverse industries.",
+  },
+  {
+    org: "European Scrum",
+    title: "Agile Methodologies Guide, 2025",
+    summary:
+      "Framework selection criteria — team size, uncertainty, organizational maturity, hybrid combinations (Scrumban), and chapter/guild structures.",
+  },
+  {
+    org: "Red Dot Technologies",
+    title: "Executive Note on Agile Governance & Enterprise Scaling",
+    summary:
+      "Governance guidelines for scaling frameworks (SAFe, LeSS) and aligning agility with board reporting, compliance audits, and commercial contracting.",
+  },
+];
+
 export const DIAGRAM_CAPTIONS: Record<string, string> = {
   // Foundations
   l1: "A neural network: data flows through weighted connections, and learning slowly tunes the weights.",
@@ -1483,4 +1915,56 @@ export const DIAGRAM_CAPTIONS: Record<string, string> = {
   a10: "Model herding as a systemic stability risk: correlated model actions amplifying market movements.",
   a11: "Four levels of value measurement: activity, operational efficiency, business outcomes, and financial impact.",
   a12: "Three-horizon transformation roadmap: foundations (H1), decisioning scale (H2), and business model evolution (H3).",
+  // Education Track
+  e1: "The two-question test — the judgement that resolves most classroom AI dilemmas.",
+  e2: "The five learning techniques with the strongest evidence, and what AI should produce for each.",
+  e3: "Where the teacher week goes, and what two real school systems measured.",
+  e4: "Differentiation done wrong and done right.",
+  e5: "The division of labour that makes AI-assisted marking defensible.",
+  e6: "The AI maturity matrix, adapted from Brisbane Catholic Education.",
+  e7: "The shift from assessment as surveillance to assessment as conversation.",
+  e8: "Mollick's seven pedagogical roles AI can play for a student.",
+  e9: "The mechanism by which adaptive systems can widen achievement gaps.",
+  e10: "Measured outcomes from three documented school-system programmes.",
+  e11: "IDC's six foundational characteristics of advanced school AI strategies.",
+  e12: "A realistic three-term sequence for your own practice.",
+  // Management Track
+  g1: "Machine learning predicts, generative AI produces, agentic AI acts — three different cost, risk and governance profiles.",
+  g2: "The ladder of ambition. A strategy that does not state its level drifts toward the easiest.",
+  g3: "Deloitte's evidence on executive decision rights and AI returns, from 550 business and technology leaders.",
+  g4: "Prioritising use cases on value and feasibility — and balancing the portfolio behind them.",
+  g5: "How executives use AI today, and how they expect to use it within three years.",
+  g6: "The full cost of an AI initiative — what sits below the licence line.",
+  g7: "The four readiness dimensions, and where organisations are typically weakest.",
+  g8: "AI literacy segmented by what each group must actually be able to do.",
+  g9: "Risk-tiering governance by consequence rather than by technology.",
+  g10: "The World Economic Forum's six principal causes of AI initiative failure.",
+  g11: "Stage gates from design through the six-month post-implementation review.",
+  g12: "A twelve-month sequence for a management team starting now.",
+  // Agile for Developers Track
+  d1: "Waterfall sequential lag vs Iterative fast feedback — how long before you find out.",
+  d2: "The 4 core Agile Manifesto values and 12 principles in plain language.",
+  d3: "The Scrum framework: 3 roles, 5 events, and 3 artefacts.",
+  d4: "A two-week sprint timeline from sprint planning to retrospective.",
+  d5: "User story template (As a / I want / So that) and Definition of Done checklist.",
+  d6: "Story points, Planning Poker, and velocity-based burnup forecasting.",
+  d7: "Kanban board with Work-In-Progress (WIP) limits and cumulative flow.",
+  d8: "Extreme Programming (XP) technical feedback loops and core engineering practices.",
+  d9: "The Test-Driven Development (TDD) cycle: Red, Green, Refactor, and test pyramid.",
+  d10: "The Continuous Integration and Delivery (CI/CD) automated build and deploy pipeline.",
+  d11: "Code review etiquette, pull request flow, and pair programming patterns.",
+  d12: "Retrospective frameworks (Start, Stop, Continue) and 90-day action plan.",
+  // Agile for Managers Track
+  n1: "Doing Agile (mechanics) versus Being Agile (mindset and values).",
+  n2: "The Cynefin framework: matching management style to problem complexity.",
+  n3: "Choosing an approach: Scrum, Kanban, XP, and hybrid framework selection.",
+  n4: "The manager's transition from command-and-control to servant leadership and impediment removal.",
+  n5: "Cross-functional team structure vs siloed handoffs and fractional allocation cost.",
+  n6: "Estimation horizons: precision vs accuracy in agile forecasting.",
+  n7: "Traditional fixed-scope contracts vs agile value-driven dynamic funding.",
+  n8: "Metrics that matter (Lead Time, Cycle Time) vs metrics that destroy (Lines of code, Velocity targets).",
+  n9: "Agile governance, audit compliance, and continuous risk reduction.",
+  n10: "Scaling agile: Spotify model, SAFe, LeSS, and avoiding coordination tax.",
+  n11: "Kotter's 8-step change model adapted for agile organizational transformation.",
+  n12: "A twelve-month agile adoption and capability roadmap for management.",
 };

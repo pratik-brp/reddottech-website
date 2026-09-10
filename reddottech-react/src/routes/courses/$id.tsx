@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock, BookOpen, CheckCircle, ArrowLeft, Globe, Layers, Signal } from "lucide-react";
+import { Clock, BookOpen, CheckCircle, ArrowLeft, Globe, Layers } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { fetchApi } from "@/lib/api";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
-import { sanitizeHtml } from "@/lib/sanitize";
+import { sanitizeHtml, stripHtml } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/courses/$id")({
   loader: async ({ params }) => {
@@ -21,8 +21,7 @@ export const Route = createFileRoute("/courses/$id")({
       ? `${course.name} | Red Dot Technologies`
       : "Course Details | Red Dot Technologies";
     const desc =
-      course?.description ||
-      course?.longDescription ||
+      stripHtml(course?.description || course?.longDescription) ||
       "Professional IT & Business Certification Cohort delivered by Red Dot Technologies.";
     const banner = course?.bannerImage || course?.thumbnail || "/og-image.png";
 
@@ -54,11 +53,10 @@ function CourseDetailPage() {
   const loaderData = Route.useLoaderData();
   const [course, setCourse] = useState<any | null>(loaderData?.course || null);
   const [loading, setLoading] = useState(!loaderData?.course);
-  const [activeTab, setActiveTab] = useState<
-    "overview" | "curriculum" | "instructor" | "requirements"
-  >("overview");
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (!course) {
       fetchApi<any>(`/courses/${id}`)
         .then((data) => {
@@ -77,13 +75,6 @@ function CourseDetailPage() {
     }
   }, [id]);
 
-  const tabs = [
-    { key: "overview" as const, label: "Overview" },
-    { key: "curriculum" as const, label: "Curriculum" },
-    { key: "instructor" as const, label: "Instructor" },
-    { key: "requirements" as const, label: "Requirements" },
-  ];
-
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center pt-28">
@@ -94,28 +85,35 @@ function CourseDetailPage() {
 
   if (!course) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center pt-28 px-4 text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Course Not Found</h2>
-        <p className="text-slate-500 text-sm mb-6 max-w-md">
-          The requested course could not be located in our verified database registry.
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
+        <h1 className="text-2xl font-bold text-slate-800 mb-2">Course Not Found</h1>
+        <p className="text-sm text-slate-500 mb-6">
+          The requested course could not be found or may have been removed.
         </p>
-        <Link
-          to="/courses"
-          className="inline-flex items-center gap-2 rounded-xl bg-brand-red text-white font-bold text-xs px-5 py-2.5 shadow-md hover:bg-red-700 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Browse All Courses</span>
+        <Link to="/courses" className="btn-primary">
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Courses
         </Link>
       </div>
     );
   }
 
+  const tabs = [
+    { key: "overview", label: "Overview" },
+    { key: "curriculum", label: "Curriculum" },
+    { key: "instructor", label: "Instructor" },
+    { key: "requirements", label: "Requirements" },
+  ];
+
   return (
-    <div className="pt-20 pb-10 sm:pt-28 sm:pb-16 bg-surface-base">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* Breadcrumbs */}
+    <div className="min-h-screen bg-[var(--color-background)] pt-24 sm:pt-28 lg:pt-32 pb-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
         <ScrollReveal>
-          <div className="mb-4 sm:mb-6 flex items-center gap-2 text-xs font-semibold text-slate-500">
+          <div className="mb-6 flex items-center gap-2 text-xs font-semibold text-slate-600">
+            <Link to="/" className="hover:text-brand-red transition-colors">
+              Home
+            </Link>
+            <span>/</span>
             <Link to="/courses" className="hover:text-brand-red transition-colors">
               Courses
             </Link>
@@ -135,12 +133,6 @@ function CourseDetailPage() {
                     <BookOpen className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     {course.category || "Professional Course"}
                   </span>
-                  {course.skillLevel && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-slate-700 capitalize">
-                      <Signal className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-600" />
-                      {course.skillLevel}
-                    </span>
-                  )}
                   {course.certification && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-emerald-700">
                       USC Upstate Certified
@@ -158,10 +150,19 @@ function CourseDetailPage() {
             <ScrollReveal delay={40}>
               <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-sm sm:shadow-lg border border-slate-200/90 aspect-video bg-slate-900">
                 <img
-                  src={course.bannerImage || course.thumbnail}
+                  src={
+                    course.bannerImage ||
+                    course.thumbnail ||
+                    "/storage/courses/banners/LYjIFUq6UfrNkit4gpGjtDnzeOrtTRCZYnTI0njh.jpg"
+                  }
                   alt={course.name}
                   loading="eager"
                   decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      "/storage/courses/banners/LYjIFUq6UfrNkit4gpGjtDnzeOrtTRCZYnTI0njh.jpg";
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -308,6 +309,10 @@ function CourseDetailPage() {
                           alt={course.instructorName}
                           loading="lazy"
                           decoding="async"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = "/images/common/dummy-avatar.jpg";
+                          }}
                           className="h-16 w-16 rounded-2xl object-cover border-2 border-white shadow-md"
                         />
                         <div>

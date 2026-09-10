@@ -32,6 +32,15 @@ export function CoursesSliderSection() {
         }
       })
       .catch(() => {});
+
+    const handleCoursesUpdated = () => {
+      getCourses().then((data) => {
+        if (data) setCourses(data as Course[]);
+      });
+    };
+
+    window.addEventListener("courses-updated", handleCoursesUpdated);
+    return () => window.removeEventListener("courses-updated", handleCoursesUpdated);
   }, []);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -105,20 +114,20 @@ export function CoursesSliderSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Row */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4 sm:gap-6">
-          <div className="space-y-2 sm:space-y-4 max-w-2xl">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-8 sm:mb-10 gap-4 sm:gap-6">
+          <div className="space-y-2 sm:space-y-4 max-w-3xl lg:max-w-4xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-red/20 bg-brand-mist px-3.5 py-1.5 shadow-xs">
               <span className="h-2 w-2 rounded-full bg-brand-red animate-glow-pulse" />
               <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-[0.14em] text-brand-red">
                 Programs &amp; Cohorts
               </span>
             </span>
-            <h2 className="display-font text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15]">
+            <h2 className="display-font text-2xl sm:text-3xl md:text-4xl xl:text-5xl font-extrabold tracking-tight text-brand-ink leading-[1.15] lg:whitespace-nowrap">
               Upskill with Our <span className="gradient-text">Popular Courses</span>
             </h2>
             <p className="text-xs sm:text-base text-slate-600 font-medium">
-              Explore university-backed certifications co-designed with top U.S. faculty and
-              industry leaders.
+              Explore PECP courses developed through collaboration with USC Upstate and designed to
+              build practical, workplace-ready skills.
             </p>
           </div>
 

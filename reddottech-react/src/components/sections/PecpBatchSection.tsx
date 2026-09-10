@@ -6,29 +6,35 @@ import { useState, useEffect } from "react";
 import { getSettings, getCachedSettings } from "@/lib/api";
 
 const benefits = [
-  "U.S. Certified Credentials (USC Upstate)",
-  "Top US & Local Faculty Mentorship",
-  "Live Hands-on Labs & Capstone Projects",
-  "Guaranteed Career Placement Assistance",
+  "Globally Recognized Joint Credentials",
+  "Courses Developed with International Faculty",
+  "Practical Projects & Workplace Discussions",
+  "Workplace-Ready Professional Skills",
 ];
 
 const cohortDetails = [
-  { label: "Collaborator", value: "USC Upstate (USA)", icon: Globe2 },
-  { label: "Format", value: "Live Online / Weekend", icon: Clock },
-  { label: "Certification", value: "U.S. Credential Badge", icon: Award },
-  { label: "Eligibility", value: "Professionals & Seniors", icon: Users },
+  { label: "Duration", value: "6-8 Weeks", icon: Clock },
+  { label: "Format", value: "Online / Self-Paced", icon: Globe2 },
+  { label: "Eligibility", value: "Open for All", icon: Users },
+  { label: "Credential", value: "Joint USC Upstate & Red Dot", icon: Award },
 ];
 
 export function PecpBatchSection() {
-  const cached = getCachedSettings();
-  const [subtitle, setSubtitle] = useState(cached?.batch_banner_subtitle || "");
-  const [title, setTitle] = useState(
-    cached?.batch_banner_title ? cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n") : "",
-  );
-  const [buttonText, setButtonText] = useState(cached?.batch_banner_button_text || "Enroll Now");
-  const [isLoading, setIsLoading] = useState(!cached);
+  const [subtitle, setSubtitle] = useState("");
+  const [title, setTitle] = useState("");
+  const [buttonText, setButtonText] = useState("Enroll Now");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const cached = getCachedSettings();
+    if (cached) {
+      if (cached.batch_banner_subtitle) setSubtitle(cached.batch_banner_subtitle);
+      if (cached.batch_banner_title)
+        setTitle(cached.batch_banner_title.replace(/<br\s*\/?>/gi, "\n"));
+      if (cached.batch_banner_button_text) setButtonText(cached.batch_banner_button_text);
+      setIsLoading(false);
+    }
+
     getSettings()
       .then((data) => {
         if (data) {
@@ -38,7 +44,7 @@ export function PecpBatchSection() {
           if (data.batch_banner_button_text) setButtonText(data.batch_banner_button_text);
         }
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         setIsLoading(false);
       });
@@ -112,7 +118,7 @@ export function PecpBatchSection() {
 
                 {/* Subtitle */}
                 {subtitle ? (
-                  <p className="text-sm sm:text-2xl font-semibold text-white/90 tracking-wide">
+                  <p className="text-sm sm:text-xl font-semibold text-white/90 tracking-wide">
                     {subtitle}
                   </p>
                 ) : isLoading ? (
@@ -121,8 +127,19 @@ export function PecpBatchSection() {
 
                 {/* Title & Batch Dates */}
                 {title ? (
-                  <h2 className="display-font text-2xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-line">
-                    {title}
+                  <h2 className="display-font font-extrabold leading-[1.1] tracking-tight text-white whitespace-pre-line">
+                    {title.split("\n").map((line, i) => (
+                      <span
+                        key={i}
+                        className={
+                          i === 0
+                            ? "block text-2xl sm:text-5xl lg:text-6xl"
+                            : "block mt-2 sm:mt-3 text-xl sm:text-3xl lg:text-4xl text-white font-bold tracking-tight"
+                        }
+                      >
+                        {line}
+                      </span>
+                    ))}
                   </h2>
                 ) : isLoading ? (
                   <div className="space-y-2 py-1">
@@ -132,9 +149,9 @@ export function PecpBatchSection() {
                 ) : null}
 
                 <p className="text-slate-200 text-xs sm:text-base font-medium max-w-2xl leading-relaxed">
-                  The Professional Excellence &amp; Certification Program (PECP) bridges top U.S.
-                  faculty expertise with local workforce needs in Nepal—providing credentials
-                  accepted worldwide.
+                  A joint initiative between USC Upstate and Red Dot Technologies, bringing
+                  globally recognized credentials and practical, career-ready learning to Nepal
+                  through flexible online, self-paced programs.
                 </p>
 
                 {/* Highlights List */}

@@ -17,7 +17,7 @@ import { Magnetic } from "@/components/motion/Magnetic";
 const pillars = [
   {
     id: "pecp",
-    title: "PECP Executive Certifications",
+    title: "Professional Excellence & Certification Program (PECP)",
     subtitle: "Joint Credentials with USC Upstate (USA)",
     badge: "Flagship Executive Program",
     badgeColor: "bg-brand-red text-white",
@@ -27,17 +27,17 @@ const pillars = [
     borderGlow: "border-brand-red/30 hover:border-brand-red/60",
     link: "/pecp",
     description:
-      "Designed for senior managers, quality engineers, and project leaders seeking international recognition. 6-week structured modules with live masterclasses and university credentials.",
+      "A joint initiative between USC Upstate and Red Dot Technologies, bringing globally recognized credentials and practical, career-ready learning to Nepal through flexible online, self-paced programs.",
     stats: [
-      { label: "Duration", val: "6 Weeks" },
-      { label: "Credential", val: "USC Upstate USA" },
-      { label: "Format", val: "Hybrid / Weekend" },
+      { label: "Duration", val: "6-8 Weeks" },
+      { label: "Format", val: "Online / Self-Paced" },
+      { label: "Eligibility", val: "Open for All" },
     ],
     features: [
-      "Six Sigma Total Quality DMAIC Framework",
-      "PMP® & CAPM® Project Management Principles",
-      "Executive Leadership & Industrial Psychology",
-      "Verifiable International Credentials",
+      "Globally Recognized Joint Credentials",
+      "Courses Developed with International Faculty",
+      "Practical Projects & Workplace Discussions",
+      "Workplace-Ready Professional Skills",
     ],
     isFeatured: true,
   },
@@ -81,7 +81,7 @@ const pillars = [
       "Master machine learning, supervisor management, and financial forecasting with modular video lessons, downloadable guides, and syllabus checklists.",
     stats: [
       { label: "Courses", val: "40+ Modules" },
-      { label: "Skill Level", val: "Beginner to Advanced" },
+      { label: "Format", val: "Self-Paced" },
       { label: "Access", val: "Lifetime" },
     ],
     features: [
@@ -94,7 +94,7 @@ const pillars = [
   {
     id: "ai-unlocked",
     title: "AI Unlocked & Applied Hub",
-    subtitle: "Multi-Track Applied AI Learning: Literacy, Healthcare & Finance",
+    subtitle: "Multi-Track Applied AI & Agile: Engineering, Healthcare, Finance & Management",
     badge: "Free + Professional Tracks",
     badgeColor: "bg-emerald-600 text-white",
     icon: Sparkles,
@@ -103,16 +103,16 @@ const pillars = [
     borderGlow: "border-emerald-400/40 hover:border-emerald-600",
     link: "/ai-unlocked",
     description:
-      "Explore interactive multi-track applied AI: General Literacy (Free), AI for Healthcare Professionals (9 modules), and AI for Financial & Banking Professionals (8 modules) with instant verifiable certificates.",
+      "Explore interactive multi-track applied learning: Agile Methodologies for Developers & Managers, Healthcare, Banking & Finance, Educators, and General AI Literacy with instant verifiable credentials.",
     stats: [
-      { label: "Tracks", val: "3 Sector Tracks" },
+      { label: "Tracks", val: "8 Sector Tracks" },
       { label: "Credentials", val: "Verified Certificates" },
-      { label: "Modules", val: "22 In-Depth Modules" },
+      { label: "Modules", val: "82 In-Depth Modules" },
     ],
     features: [
-      "AI Foundations, Prompting & AI Safety (Free)",
+      "Agile Sprints, TDD, CI/CD & Extreme Programming",
       "Clinical Diagnostics, Medical Risk & Triage Track",
-      "Credit Scoring, Fraud AML & NRB AI Guidelines Track",
+      "Banking Credit Scoring, Fraud AML & NRB AI Guidelines",
     ],
     isFeatured: false,
   },
@@ -247,13 +247,30 @@ export function LearningMatrixSection() {
                   {/* Right Column: Stats Matrix Card */}
                   <div className="lg:col-span-5">
                     <div className="rounded-xl sm:rounded-3xl border border-white/15 bg-slate-900/85 p-3.5 sm:p-8 space-y-3 sm:space-y-6 shadow-xl">
-                      <div className="flex items-center justify-between">
-                        <div className="flex h-9 w-9 sm:h-14 sm:w-14 items-center justify-center rounded-lg sm:rounded-2xl bg-brand-red text-white shadow-md shadow-red-900/40">
-                          <GraduationCap className="h-4.5 w-4.5 sm:h-7 sm:w-7 stroke-[2.2]" />
+                      <div className="flex items-center justify-between gap-3">
+                        {/* PECP Logo with clean white background */}
+                        <div className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl bg-white p-1.5 sm:p-2 shrink-0 shadow-md border border-white/20">
+                          <img
+                            src="/images/pecp/pecp.png"
+                            alt="PECP Logo"
+                            className="h-full w-full object-contain"
+                          />
                         </div>
-                        <span className="rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[11px] font-extrabold text-emerald-400">
-                          Official US Badge
-                        </span>
+
+                        {/* RDT x USC Upstate Logos Beside with matching white background */}
+                        <div className="flex items-center gap-2 sm:gap-3 bg-white px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-md border border-white/20">
+                          <img
+                            src="/logo.png"
+                            alt="Red Dot Technologies"
+                            className="h-5 sm:h-7 w-auto object-contain"
+                          />
+                          <span className="text-slate-400 text-xs sm:text-sm font-bold">×</span>
+                          <img
+                            src="https://uscupstate.edu/wp-content/uploads/2023/10/COLOR_HOR_BLK_Upstate_Logo-1-e1698410030138.png"
+                            alt="USC Upstate Logo"
+                            className="h-4 sm:h-6 w-auto object-contain"
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-3 border-y border-white/10 py-2.5 sm:py-5">
@@ -271,7 +288,7 @@ export function LearningMatrixSection() {
 
                       <div className="flex items-center gap-1.5 sm:gap-3 text-[10px] sm:text-xs text-slate-300">
                         <Globe2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red shrink-0" />
-                        <span>USC Upstate (USA) University Accreditation</span>
+                        <span>Joint USC Upstate &amp; Red Dot Credential</span>
                       </div>
                     </div>
                   </div>

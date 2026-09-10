@@ -3,7 +3,6 @@ import { NewHeroSection } from "@/components/sections/NewHeroSection";
 import { MarqueeStrip } from "@/components/sections/MarqueeStrip";
 import { StatsSection } from "@/components/sections/StatsSection";
 import { PecpBatchSection } from "@/components/sections/PecpBatchSection";
-import { LearningMatrixSection } from "@/components/sections/LearningMatrixSection";
 import { HomeAboutSection } from "@/components/sections/HomeAboutSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { WhyChooseUsSection } from "@/components/sections/WhyChooseUsSection";
@@ -14,7 +13,7 @@ import { CtaSection } from "@/components/sections/CtaSection";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Red Dot Technologies — Grow. Upskill. Succeed." },
+      { title: "Red Dot Technologies - Grow. Upskill. Succeed." },
       {
         name: "description",
         content:
@@ -40,7 +39,6 @@ function Index() {
       <PecpBatchSection />
       <StatsSection />
       <HomeAboutSection />
-      <LearningMatrixSection />
       <FeaturesSection />
       <CoursesSliderSection />
       <WhyChooseUsSection />

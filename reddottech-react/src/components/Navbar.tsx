@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from "react";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -21,8 +21,12 @@ import {
   Stethoscope,
   CheckCircle2,
   Target,
+  Code2,
+  Megaphone,
 } from "lucide-react";
 import { Magnetic } from "@/components/motion/Magnetic";
+import { getCourses, getCachedCourses } from "@/lib/api";
+import { stripHtml } from "@/lib/sanitize";
 
 type MegaMenuKey = "about" | "pecp" | "courses" | "ai-unlocked";
 
@@ -64,7 +68,115 @@ interface MegaMenuConfig {
   };
 }
 
-const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
+function getCategoryIcon(category?: string) {
+  if (!category) return BookOpen;
+  const lower = category.toLowerCase();
+  if (
+    lower.includes("ai") ||
+    lower.includes("artificial") ||
+    lower.includes("machine") ||
+    lower.includes("intelligence")
+  ) {
+    return Bot;
+  }
+  if (
+    lower.includes("web") ||
+    lower.includes("programming") ||
+    lower.includes("software") ||
+    lower.includes("code") ||
+    lower.includes("c++") ||
+    lower.includes("java")
+  ) {
+    return Code2;
+  }
+  if (
+    lower.includes("marketing") ||
+    lower.includes("digital") ||
+    lower.includes("seo") ||
+    lower.includes("media")
+  ) {
+    return Megaphone;
+  }
+  if (
+    lower.includes("project") ||
+    lower.includes("agile") ||
+    lower.includes("scrum") ||
+    lower.includes("management")
+  ) {
+    return Briefcase;
+  }
+  if (lower.includes("leadership") || lower.includes("executive") || lower.includes("team")) {
+    return Users;
+  }
+  if (
+    lower.includes("analytics") ||
+    lower.includes("data") ||
+    lower.includes("sql") ||
+    lower.includes("business")
+  ) {
+    return TrendingUp;
+  }
+  if (lower.includes("quality") || lower.includes("sigma") || lower.includes("cert")) {
+    return Award;
+  }
+  return BookOpen;
+}
+
+function getCategoryIconBg(category?: string) {
+  if (!category) return "bg-red-50 text-brand-red border-red-200/60";
+  const lower = category.toLowerCase();
+  if (lower.includes("ai") || lower.includes("artificial")) {
+    return "bg-red-50 text-brand-red border-red-200/60";
+  }
+  if (lower.includes("web") || lower.includes("programming") || lower.includes("software")) {
+    return "bg-indigo-50 text-indigo-600 border-indigo-200/60";
+  }
+  if (lower.includes("marketing") || lower.includes("digital")) {
+    return "bg-orange-50 text-orange-600 border-orange-200/60";
+  }
+  if (lower.includes("project") || lower.includes("agile")) {
+    return "bg-blue-50 text-blue-600 border-blue-200/60";
+  }
+  if (lower.includes("leadership") || lower.includes("executive")) {
+    return "bg-purple-50 text-purple-600 border-purple-200/60";
+  }
+  if (lower.includes("analytics") || lower.includes("data")) {
+    return "bg-emerald-50 text-emerald-600 border-emerald-200/60";
+  }
+  if (lower.includes("quality") || lower.includes("sigma")) {
+    return "bg-amber-50 text-amber-600 border-amber-200/60";
+  }
+  return "bg-rose-50 text-brand-red border-rose-200/60";
+}
+
+function getCategoryBadgeColor(category?: string) {
+  if (!category) return "bg-red-50 text-brand-red border-red-200";
+  const lower = category.toLowerCase();
+  if (lower.includes("ai") || lower.includes("artificial")) {
+    return "bg-red-50 text-brand-red border-red-200";
+  }
+  if (lower.includes("web") || lower.includes("programming") || lower.includes("software")) {
+    return "bg-indigo-50 text-indigo-800 border-indigo-200";
+  }
+  if (lower.includes("marketing") || lower.includes("digital")) {
+    return "bg-orange-50 text-orange-800 border-orange-200";
+  }
+  if (lower.includes("project") || lower.includes("agile")) {
+    return "bg-blue-50 text-blue-800 border-blue-200";
+  }
+  if (lower.includes("leadership") || lower.includes("executive")) {
+    return "bg-purple-50 text-purple-800 border-purple-200";
+  }
+  if (lower.includes("analytics") || lower.includes("data")) {
+    return "bg-emerald-50 text-emerald-800 border-emerald-200";
+  }
+  if (lower.includes("quality") || lower.includes("sigma")) {
+    return "bg-amber-50 text-amber-800 border-amber-200";
+  }
+  return "bg-slate-100 text-slate-700 border-slate-200";
+}
+
+const STATIC_MEGA_MENUS: Omit<Record<MegaMenuKey, MegaMenuConfig>, "courses"> = {
   about: {
     id: "about",
     label: "About Us",
@@ -187,79 +299,6 @@ const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
     },
   },
 
-  courses: {
-    id: "courses",
-    label: "Courses",
-    href: "/courses",
-    icon: BookOpen,
-    sections: [
-      {
-        heading: "Explore by Course Category",
-        items: [
-          {
-            title: "Artificial Intelligence & ML",
-            desc: "Generative AI, Prompt Engineering & Workflow Automation.",
-            href: "/courses?category=Artificial+Intelligence#catalog",
-            badge: "AI & ML",
-            badgeColor: "bg-red-50 text-brand-red border-red-200",
-            iconBg: "bg-red-50 text-brand-red border-red-200/60",
-            icon: Bot,
-          },
-          {
-            title: "Project Management & Agile",
-            desc: "Scrum Master, Agile Frameworks & PMP® prep.",
-            href: "/courses?category=Project+Management#catalog",
-            badge: "PMI® / AGILE",
-            badgeColor: "bg-blue-50 text-blue-800 border-blue-200",
-            iconBg: "bg-blue-50 text-blue-600 border-blue-200/60",
-            icon: Briefcase,
-          },
-          {
-            title: "Executive & Leadership",
-            desc: "Strategic decision making & corporate leadership.",
-            href: "/courses?category=Executive+%26+Leadership#catalog",
-            badge: "LEADERSHIP",
-            badgeColor: "bg-purple-50 text-purple-800 border-purple-200",
-            iconBg: "bg-purple-50 text-purple-600 border-purple-200/60",
-            icon: Users,
-          },
-          {
-            title: "Analytics & Data Science",
-            desc: "PowerBI, SQL, Python & Statistical Analytics.",
-            href: "/courses?category=Analytics+%26+Data#catalog",
-            badge: "DATA & SQL",
-            badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200",
-            iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
-            icon: TrendingUp,
-          },
-          {
-            title: "Quality & Process Excellence",
-            desc: "Six Sigma Green Belt, DMAIC & quality applications.",
-            href: "/courses?category=Quality+Management#catalog",
-            badge: "SIX SIGMA",
-            badgeColor: "bg-amber-50 text-amber-800 border-amber-200",
-            iconBg: "bg-amber-50 text-amber-600 border-amber-200/60",
-            icon: Award,
-          },
-        ],
-      },
-    ],
-    featured: {
-      badge: "CATALOG 2026",
-      title: "Hands-on Industry Curriculum",
-      desc: "Learn directly from senior industry leaders with 100% lab-backed capstones and case studies.",
-      href: "/courses#catalog",
-      ctaText: "Browse All Courses",
-      gradient: "from-slate-900 via-[#1E293B] to-slate-950",
-      highlights: ["Practical Lab Capstones", "Industry Veteran Mentors", "Direct Career Pathways"],
-    },
-    bottomBar: {
-      text: "Looking for customized corporate cohort training?",
-      ctaText: "Schedule Corporate Consultation →",
-      href: "/contact?subject=Custom%20Corporate%20Course%20Curriculum",
-    },
-  },
-
   "ai-unlocked": {
     id: "ai-unlocked",
     label: "AI Unlocked",
@@ -305,6 +344,42 @@ const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
             iconBg: "bg-purple-50 text-purple-600 border-purple-200/60",
             icon: Sparkles,
           },
+          {
+            title: "AI for Teachers & Educators",
+            desc: "12 Modules: Pedagogy, Workload, Integrity & School AI Leadership.",
+            href: "/ai-unlocked?track=education",
+            badge: "PEDAGOGY",
+            badgeColor: "bg-teal-50 text-teal-700 border-teal-200 font-bold",
+            iconBg: "bg-teal-50 text-teal-600 border-teal-200/60",
+            icon: GraduationCap,
+          },
+          {
+            title: "AI for Management",
+            desc: "12 Modules: Strategy, Decision Rights, ROI & Transformation.",
+            href: "/ai-unlocked?track=management",
+            badge: "EXECUTIVE",
+            badgeColor: "bg-amber-50 text-amber-700 border-amber-200 font-bold",
+            iconBg: "bg-amber-50 text-amber-600 border-amber-200/60",
+            icon: Briefcase,
+          },
+          {
+            title: "Agile for Software Developers",
+            desc: "12 Modules: Sprints, TDD, CI/CD, XP Practices & Team Flow.",
+            href: "/ai-unlocked?track=agile-developers",
+            badge: "DEVELOPER",
+            badgeColor: "bg-sky-50 text-sky-700 border-sky-200 font-bold",
+            iconBg: "bg-sky-50 text-sky-600 border-sky-200/60",
+            icon: Code2,
+          },
+          {
+            title: "Agile Methodologies for Managers",
+            desc: "12 Modules: Strategy, Metrics That Matter, Governance & Scaling.",
+            href: "/ai-unlocked?track=agile-managers",
+            badge: "LEADERSHIP",
+            badgeColor: "bg-teal-50 text-teal-700 border-teal-200 font-bold",
+            iconBg: "bg-teal-50 text-teal-600 border-teal-200/60",
+            icon: Users,
+          },
         ],
       },
     ],
@@ -315,7 +390,7 @@ const MEGA_MENUS: Record<MegaMenuKey, MegaMenuConfig> = {
       href: "/ai-unlocked",
       ctaText: "Launch AI Learning Hub",
       gradient: "from-[#064E3B] via-[#0F1E3D] to-[#0A2540]",
-      highlights: ["4 Domain Curricula", "34 In-Depth Modules", "Instant Verified Certificate"],
+      highlights: ["8 Domain Curricula", "82 In-Depth Modules", "Instant Verified Certificate"],
     },
     bottomBar: {
       text: "Already completed your course modules?",
@@ -330,11 +405,154 @@ export const Navbar = memo(function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<MegaMenuKey | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
+  const [courses, setCourses] = useState<any[]>(() => getCachedCourses() || []);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
 
   const currentPath = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
+
+  // Load live courses from API and subscribe to real-time update events
+  useEffect(() => {
+    const loadCourses = () => {
+      getCourses()
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setCourses(data);
+          }
+        })
+        .catch(() => {});
+    };
+
+    loadCourses();
+
+    const handleCoursesUpdated = () => {
+      loadCourses();
+    };
+
+    window.addEventListener("courses-updated", handleCoursesUpdated);
+    return () => {
+      window.removeEventListener("courses-updated", handleCoursesUpdated);
+    };
+  }, []);
+
+  // Dynamically compute mega menus including newly added/updated courses from admin
+  const megaMenus: Record<MegaMenuKey, MegaMenuConfig> = useMemo(() => {
+    const dynamicCourseItems: MegaSubItem[] = courses.slice(0, 6).map((c) => {
+      const cleanDesc = stripHtml(c.description);
+      return {
+        title: c.name,
+        desc: cleanDesc
+          ? cleanDesc.slice(0, 160) + (cleanDesc.length > 160 ? "..." : "")
+          : c.category || "Professional Certification",
+        href: `/courses/${c.id}`,
+        badge: c.category || "Course",
+        badgeColor: getCategoryBadgeColor(c.category),
+        iconBg: getCategoryIconBg(c.category),
+        icon: getCategoryIcon(c.category),
+      };
+    });
+
+    const categoryFallbackItems: MegaSubItem[] = [
+      {
+        title: "Artificial Intelligence & ML",
+        desc: "Generative AI, Prompt Engineering & Workflow Automation.",
+        href: "/courses?category=Artificial+Intelligence#catalog",
+        badge: "AI & ML",
+        badgeColor: "bg-red-50 text-brand-red border-red-200",
+        iconBg: "bg-red-50 text-brand-red border-red-200/60",
+        icon: Bot,
+      },
+      {
+        title: "Project Management & Agile",
+        desc: "Scrum Master, Agile Frameworks & PMP® prep.",
+        href: "/courses?category=Project+Management#catalog",
+        badge: "PMI® / AGILE",
+        badgeColor: "bg-blue-50 text-blue-800 border-blue-200",
+        iconBg: "bg-blue-50 text-blue-600 border-blue-200/60",
+        icon: Briefcase,
+      },
+      {
+        title: "Executive & Leadership",
+        desc: "Strategic decision making & corporate leadership.",
+        href: "/courses?category=Executive+%26+Leadership#catalog",
+        badge: "LEADERSHIP",
+        badgeColor: "bg-purple-50 text-purple-800 border-purple-200",
+        iconBg: "bg-purple-50 text-purple-600 border-purple-200/60",
+        icon: Users,
+      },
+      {
+        title: "Analytics & Data Science",
+        desc: "PowerBI, SQL, Python & Statistical Analytics.",
+        href: "/courses?category=Analytics+%26+Data#catalog",
+        badge: "DATA & SQL",
+        badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-200",
+        iconBg: "bg-emerald-50 text-emerald-600 border-emerald-200/60",
+        icon: TrendingUp,
+      },
+    ];
+
+    const courseSections: MegaMenuSection[] = [
+      {
+        heading:
+          dynamicCourseItems.length > 0
+            ? "Featured & Live Programs"
+            : "Explore by Course Category",
+        items: dynamicCourseItems.length > 0 ? dynamicCourseItems : categoryFallbackItems,
+      },
+    ];
+
+    const latestCourse = courses.length > 0 ? courses[0] : null;
+    const latestCleanDesc = latestCourse ? stripHtml(latestCourse.description) : "";
+
+    const coursesMegaMenu: MegaMenuConfig = {
+      id: "courses",
+      label: "Courses",
+      href: "/courses",
+      icon: BookOpen,
+      sections: courseSections,
+      featured: latestCourse
+        ? {
+            badge: latestCourse.category?.toUpperCase() || "NEW COHORT",
+            title: latestCourse.name,
+            desc: latestCleanDesc
+              ? latestCleanDesc.slice(0, 220) +
+                (latestCleanDesc.length > 220 ? "..." : "")
+              : "Instructor-led professional certification cohort with international credentials.",
+            href: `/courses/${latestCourse.id}`,
+            ctaText: "View Program Details",
+            gradient: "from-slate-900 via-[#1E293B] to-slate-950",
+            highlights: [
+              latestCourse.duration || "Cohort / Self-Paced",
+              latestCourse.delivery ? `${latestCourse.delivery} Delivery` : "Online / Hybrid",
+              latestCourse.certification ? "USC Upstate Certified" : "Verified Credential",
+            ],
+          }
+        : {
+            badge: "CATALOG 2026",
+            title: "Hands-on Industry Curriculum",
+            desc: "Learn directly from senior industry leaders with 100% lab-backed capstones and case studies.",
+            href: "/courses#catalog",
+            ctaText: "Browse All Courses",
+            gradient: "from-slate-900 via-[#1E293B] to-slate-950",
+            highlights: [
+              "Practical Lab Capstones",
+              "Industry Veteran Mentors",
+              "Direct Career Pathways",
+            ],
+          },
+      bottomBar: {
+        text: `Explore all ${courses.length > 0 ? courses.length : "40+"} professional certification cohorts in the catalog.`,
+        ctaText: "Browse Full Course Catalog →",
+        href: "/courses",
+      },
+    };
+
+    return {
+      ...STATIC_MEGA_MENUS,
+      courses: coursesMegaMenu,
+    };
+  }, [courses]);
 
   // Scroll detection for sticky navigation pill
   useEffect(() => {
@@ -666,35 +884,46 @@ export const Navbar = memo(function Navbar() {
       </div>
 
       {/* ── DESKTOP MEGA MENU FLOATING DROPDOWN CONTAINER ── */}
-      {activeMegaMenu && MEGA_MENUS[activeMegaMenu] && (
+      {activeMegaMenu && megaMenus[activeMegaMenu] && (
         <div
           className="hidden lg:block absolute left-0 right-0 top-full pt-2 px-4 z-50 pointer-events-auto"
           onMouseEnter={() => handleMouseEnter(activeMegaMenu)}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="mx-auto max-w-5xl rounded-[1.75rem] bg-white/98 backdrop-blur-2xl border border-slate-200/90 shadow-[0_30px_70px_-15px_rgba(15,23,42,0.18)] p-6 sm:p-7 overflow-hidden transition-all duration-300 animate-fade-in-up">
+          <div className="mx-auto max-w-6xl rounded-[1.75rem] bg-white/98 backdrop-blur-2xl border border-slate-200/90 shadow-[0_30px_70px_-15px_rgba(15,23,42,0.18)] p-6 sm:p-7 overflow-hidden transition-all duration-300 animate-fade-in-up">
             {/* Main 3-Column Content Layout */}
             <div className="grid grid-cols-12 gap-6 items-stretch">
               {/* Left & Middle Columns: Categorized Links */}
               <div
                 className={`col-span-8 ${
-                  MEGA_MENUS[activeMegaMenu].sections.length === 1
+                  megaMenus[activeMegaMenu].sections.length === 1
                     ? "grid grid-cols-1"
                     : "grid grid-cols-2"
                 } gap-6`}
               >
-                {MEGA_MENUS[activeMegaMenu].sections.map((sec, sIdx) => (
+                {megaMenus[activeMegaMenu].sections.map((sec, sIdx) => (
                   <div key={sIdx} className="space-y-3">
-                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-400 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
-                      <span>{sec.heading}</span>
+                    <div className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-400 border-b border-slate-100 pb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-brand-red" />
+                        <span>{sec.heading}</span>
+                      </div>
+                      {activeMegaMenu === "courses" && (
+                        <Link
+                          to="/courses"
+                          onClick={(e) => handleItemNavigation(e, "/courses")}
+                          className="text-[10px] font-bold text-brand-red hover:underline lowercase first-letter:uppercase"
+                        >
+                          view all ({courses.length}) →
+                        </Link>
+                      )}
                     </div>
 
                     <div
                       className={
-                        MEGA_MENUS[activeMegaMenu].sections.length === 1
-                          ? "grid grid-cols-2 gap-3"
-                          : "space-y-1.5"
+                        megaMenus[activeMegaMenu].sections.length === 1
+                          ? "grid grid-cols-2 gap-3.5"
+                          : "space-y-2"
                       }
                     >
                       {sec.items.map((item, iIdx) => {
@@ -707,20 +936,17 @@ export const Navbar = memo(function Navbar() {
                             className="group flex items-start gap-3 rounded-2xl p-2.5 transition-all duration-200 hover:bg-slate-50 border border-transparent hover:border-slate-200/70 hover:shadow-2xs"
                           >
                             <div
-                              className={`flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105 shadow-2xs ${
+                              className={`flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl border transition-all duration-200 group-hover:scale-105 shadow-2xs mt-0.5 ${
                                 item.iconBg || "bg-slate-100 text-slate-700 border-slate-200/60"
                               }`}
                             >
                               <Icon className="h-4.5 w-4.5" />
                             </div>
-                            <div className="min-w-0 flex-1 pt-0.5">
-                              <div className="flex items-center justify-between gap-1.5 mb-0.5">
-                                <span className="font-extrabold text-[13px] text-slate-900 group-hover:text-brand-red transition-colors leading-tight">
-                                  {item.title}
-                                </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-1.5 mb-1">
                                 {item.badge && (
                                   <span
-                                    className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8.5px] font-black tracking-tight ${
+                                    className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[8.5px] font-black tracking-tight uppercase truncate max-w-[140px] ${
                                       item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                     }`}
                                   >
@@ -728,7 +954,10 @@ export const Navbar = memo(function Navbar() {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+                              <h4 className="font-extrabold text-[13px] text-slate-900 group-hover:text-brand-red transition-colors leading-snug line-clamp-2">
+                                {item.title}
+                              </h4>
+                              <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 mt-1">
                                 {item.desc}
                               </p>
                             </div>
@@ -743,7 +972,7 @@ export const Navbar = memo(function Navbar() {
               {/* Right Column: High-Impact Featured Showcase Card */}
               <div className="col-span-4 flex flex-col">
                 <div
-                  className={`flex-1 rounded-2xl bg-gradient-to-br ${MEGA_MENUS[activeMegaMenu].featured.gradient} p-5 sm:p-5.5 text-white shadow-xl border border-white/15 flex flex-col justify-between relative overflow-hidden group`}
+                  className={`flex-1 rounded-2xl bg-gradient-to-br ${megaMenus[activeMegaMenu].featured.gradient} p-5 sm:p-5.5 text-white shadow-xl border border-white/15 flex flex-col justify-between relative overflow-hidden group`}
                 >
                   {/* Subtle ambient lighting */}
                   <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
@@ -751,26 +980,26 @@ export const Navbar = memo(function Navbar() {
                   <div className="relative z-10 space-y-3">
                     <div className="inline-flex items-center gap-1 rounded-full bg-white/15 border border-white/20 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#F0DCB4]">
                       <Sparkles className="h-2.5 w-2.5 text-amber-300" />
-                      <span>{MEGA_MENUS[activeMegaMenu].featured.badge}</span>
+                      <span>{megaMenus[activeMegaMenu].featured.badge}</span>
                     </div>
 
-                    <h4 className="text-sm sm:text-base font-black text-white leading-snug">
-                      {MEGA_MENUS[activeMegaMenu].featured.title}
+                    <h4 className="text-sm sm:text-base font-black text-white leading-snug line-clamp-3">
+                      {megaMenus[activeMegaMenu].featured.title}
                     </h4>
 
-                    <p className="text-[11px] text-slate-200 leading-relaxed font-medium">
-                      {MEGA_MENUS[activeMegaMenu].featured.desc}
+                    <p className="text-[11.5px] text-slate-200 leading-relaxed font-medium line-clamp-4">
+                      {megaMenus[activeMegaMenu].featured.desc}
                     </p>
 
-                    {MEGA_MENUS[activeMegaMenu].featured.highlights && (
+                    {megaMenus[activeMegaMenu].featured.highlights && (
                       <div className="space-y-1 pt-1 border-t border-white/10">
-                        {MEGA_MENUS[activeMegaMenu].featured.highlights.map((hl, hIdx) => (
+                        {megaMenus[activeMegaMenu].featured.highlights.map((hl, hIdx) => (
                           <div
                             key={hIdx}
-                            className="flex items-center gap-1.5 text-[10.5px] font-bold text-slate-200"
+                            className="flex items-center gap-1.5 text-[10.5px] font-bold text-slate-200 truncate"
                           >
                             <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
-                            <span>{hl}</span>
+                            <span className="truncate">{hl}</span>
                           </div>
                         ))}
                       </div>
@@ -779,13 +1008,13 @@ export const Navbar = memo(function Navbar() {
 
                   <div className="relative z-10 pt-4">
                     <Link
-                      to={MEGA_MENUS[activeMegaMenu].featured.href as any}
+                      to={megaMenus[activeMegaMenu].featured.href as any}
                       onClick={(e) =>
-                        handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].featured.href)
+                        handleItemNavigation(e, megaMenus[activeMegaMenu].featured.href)
                       }
                       className="inline-flex items-center justify-between w-full rounded-xl bg-white text-slate-900 hover:bg-brand-red hover:text-white font-extrabold text-xs px-3.5 py-2.5 transition-all shadow-md group-hover:translate-x-0.5 cursor-pointer"
                     >
-                      <span>{MEGA_MENUS[activeMegaMenu].featured.ctaText}</span>
+                      <span>{megaMenus[activeMegaMenu].featured.ctaText}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
@@ -794,19 +1023,19 @@ export const Navbar = memo(function Navbar() {
             </div>
 
             {/* Bottom Helper Bar Strip */}
-            {MEGA_MENUS[activeMegaMenu].bottomBar && (
+            {megaMenus[activeMegaMenu].bottomBar && (
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-medium">
-                  {MEGA_MENUS[activeMegaMenu].bottomBar?.text}
+                  {megaMenus[activeMegaMenu].bottomBar?.text}
                 </span>
                 <Link
-                  to={MEGA_MENUS[activeMegaMenu].bottomBar?.href as any}
+                  to={megaMenus[activeMegaMenu].bottomBar?.href as any}
                   onClick={(e) =>
-                    handleItemNavigation(e, MEGA_MENUS[activeMegaMenu].bottomBar?.href || "")
+                    handleItemNavigation(e, megaMenus[activeMegaMenu].bottomBar?.href || "")
                   }
                   className="font-bold text-brand-red hover:underline flex items-center gap-1"
                 >
-                  <span>{MEGA_MENUS[activeMegaMenu].bottomBar?.ctaText}</span>
+                  <span>{megaMenus[activeMegaMenu].bottomBar?.ctaText}</span>
                 </Link>
               </div>
             )}
@@ -907,7 +1136,7 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.about && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.about.sections
+                  {megaMenus.about.sections
                     .flatMap((s) => s.items)
                     .map((item, idx) => {
                       const Icon = item.icon;
@@ -973,7 +1202,7 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.pecp && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.pecp.sections
+                  {megaMenus.pecp.sections
                     .flatMap((s) => s.items)
                     .map((item, idx) => {
                       const Icon = item.icon;
@@ -1039,7 +1268,7 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded.courses && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS.courses.sections
+                  {megaMenus.courses.sections
                     .flatMap((s) => s.items)
                     .map((item, idx) => {
                       const Icon = item.icon;
@@ -1058,11 +1287,10 @@ export const Navbar = memo(function Navbar() {
                             <Icon className="h-3.5 w-3.5" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="truncate">{item.title}</span>
+                            <div className="flex items-center justify-between gap-1 mb-0.5">
                               {item.badge && (
                                 <span
-                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                  className={`inline-flex rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
                                     item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                   }`}
                                 >
@@ -1070,6 +1298,7 @@ export const Navbar = memo(function Navbar() {
                                 </span>
                               )}
                             </div>
+                            <span className="line-clamp-2 leading-snug">{item.title}</span>
                           </div>
                         </Link>
                       );
@@ -1110,7 +1339,7 @@ export const Navbar = memo(function Navbar() {
 
               {mobileExpanded["ai-unlocked"] && (
                 <div className="px-3 pb-3 space-y-1.5 pt-1 border-t border-slate-100 bg-white">
-                  {MEGA_MENUS["ai-unlocked"].sections
+                  {megaMenus["ai-unlocked"].sections
                     .flatMap((s) => s.items)
                     .map((item, idx) => {
                       const Icon = item.icon;

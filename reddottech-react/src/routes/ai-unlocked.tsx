@@ -30,6 +30,10 @@ import {
   CheckCircle,
   Upload,
   RotateCcw,
+  Loader2,
+  Briefcase,
+  Code2,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -43,26 +47,45 @@ import {
 } from "@/lib/api";
 import { PageHero } from "@/components/PageHero";
 import { sanitizeHtml } from "@/lib/sanitize";
+import { PecpNextStepBanner } from "@/components/ai/PecpNextStepBanner";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 import { foundationsLessons } from "@/data/ai-foundations-data";
 import { healthcareLessons } from "@/data/ai-healthcare-data";
 import { financeLessons } from "@/data/ai-finance-data";
 import { financeAdvancedLessons } from "@/data/ai-finance-advanced-data";
+import { educationLessons } from "@/data/ai-education-data";
+import { managementLessons } from "@/data/ai-management-data";
+import { agileDevelopersLessons } from "@/data/ai-agile-developers-data";
+import { agileManagersLessons } from "@/data/ai-agile-managers-data";
 import type { Lesson } from "@/data/ai-healthcare-data";
 import {
   TRACK_CONFIGS,
+  TRACK_READINESS_CALLOUTS,
   generateCertificateReference,
   renderSvgDiagram,
   DIAGRAM_CAPTIONS,
   HEALTHCARE_SOURCES,
   FINANCE_SOURCES,
   FINANCE_ADVANCED_SOURCES,
+  EDUCATION_SOURCES,
+  MANAGEMENT_SOURCES,
+  AGILE_DEVELOPERS_SOURCES,
+  AGILE_MANAGERS_SOURCES,
   type TrackConfig,
 } from "@/lib/ai-course-utils";
 import { printOfficialCertificate } from "@/lib/certificate-print";
 
 interface AiUnlockedSearch {
-  track?: "foundations" | "healthcare" | "finance" | "finance-advanced";
+  track?:
+    | "foundations"
+    | "healthcare"
+    | "finance"
+    | "finance-advanced"
+    | "education"
+    | "management"
+    | "agile-developers"
+    | "agile-managers";
   lesson?: string;
   view?: string;
 }
@@ -71,8 +94,15 @@ export const Route = createFileRoute("/ai-unlocked")({
   validateSearch: (search: Record<string, unknown>): AiUnlockedSearch => {
     return {
       track:
-        (search.track as "foundations" | "healthcare" | "finance" | "finance-advanced") ||
-        undefined,
+        (search.track as
+          | "foundations"
+          | "healthcare"
+          | "finance"
+          | "finance-advanced"
+          | "education"
+          | "management"
+          | "agile-developers"
+          | "agile-managers") || undefined,
       lesson: (search.lesson as string) || undefined,
       view: (search.view as string) || undefined,
     };
@@ -114,13 +144,265 @@ function useTabFade(key: string) {
   return visible;
 }
 
+interface AiTrackCard {
+  id:
+    | "foundations"
+    | "healthcare"
+    | "finance"
+    | "finance-advanced"
+    | "education"
+    | "management"
+    | "agile-developers"
+    | "agile-managers";
+  title: string;
+  category: string;
+  filterCategory: "Free" | "Healthcare" | "Finance" | "Leadership" | "Agile";
+  badge: string;
+  badgeBg: string;
+  ribbon?: string;
+  ribbonBg?: string;
+  cardBorder: string;
+  iconBg: string;
+  iconColor: string;
+  desc: string;
+  duration: string;
+  modulesCount: number;
+  certLabel: string;
+  isPaid: boolean;
+  price: string;
+  wasPrice?: string;
+  previewLabel: string;
+  icon: any;
+  ctaText: string;
+  ctaBg: string;
+  bottomBg: string;
+}
+
+const AI_TRACK_CATALOG: AiTrackCard[] = [
+  {
+    id: "foundations",
+    title: "AI Foundations & Literacy",
+    category: "AI & Digital Literacy",
+    filterCategory: "Free",
+    badge: "100% Free · Community",
+    badgeBg: "bg-slate-100 text-slate-800 border-slate-200",
+    cardBorder: "border border-slate-200 hover:border-slate-400",
+    iconBg: "bg-slate-900",
+    iconColor: "text-red-400",
+    desc: "Essential artificial intelligence concepts, prompt engineering, multimodal creation, study systems, and critical AI safety.",
+    duration: "2 Hours",
+    modulesCount: 5,
+    certLabel: "Free Digital Certificate",
+    isPaid: false,
+    price: "Enrolment: Free",
+    previewLabel: "Free Digital Certificate",
+    icon: Brain,
+    ctaText: "Start Free Foundations Track",
+    ctaBg: "bg-slate-900 hover:bg-brand-red",
+    bottomBg: "bg-slate-50 border-slate-100",
+  },
+  {
+    id: "healthcare",
+    title: "AI for Healthcare Professionals",
+    category: "Clinical Medicine & Health",
+    filterCategory: "Healthcare",
+    badge: "Clinical Applied Track",
+    badgeBg: "bg-emerald-50 text-emerald-800 border-emerald-200",
+    ribbon: "⭐ Highly Recommended for Clinicians",
+    ribbonBg: "bg-emerald-600 text-white",
+    cardBorder: "border-2 border-emerald-500 hover:border-emerald-600",
+    iconBg: "bg-emerald-950",
+    iconColor: "text-emerald-400",
+    desc: "Clinical decision support, diagnostic deep learning, ambient scribes, healthcare ethics, and the 10-20-70 implementation framework.",
+    duration: "7+ Hours",
+    modulesCount: 9,
+    certLabel: "Clinical Credential",
+    isPaid: true,
+    price: "NPR 1,499",
+    wasPrice: "NPR 2,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: Stethoscope,
+    ctaText: "Explore Healthcare Track",
+    ctaBg: "bg-emerald-700 hover:bg-emerald-800",
+    bottomBg: "bg-emerald-50/60 border-emerald-100",
+  },
+  {
+    id: "finance",
+    title: "AI for Financial Professionals",
+    category: "Banking & FinTech",
+    filterCategory: "Finance",
+    badge: "Level 1 · Banking & FinTech",
+    badgeBg: "bg-blue-50 text-blue-800 border-blue-200",
+    ribbon: "⭐ Highly Recommended for Banking & FinTech",
+    ribbonBg: "bg-blue-600 text-white",
+    cardBorder: "border-2 border-blue-500 hover:border-blue-600",
+    iconBg: "bg-blue-950",
+    iconColor: "text-blue-400",
+    desc: "Credit scoring ML, fraud AML graph detection, generative banking & RAG, model risk governance, and Nepal Rastra Bank AI Guidelines.",
+    duration: "7+ Hours",
+    modulesCount: 8,
+    certLabel: "Finance Credential",
+    isPaid: true,
+    price: "NPR 1,499",
+    wasPrice: "NPR 2,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: Building2,
+    ctaText: "Explore Finance Track (Level 1)",
+    ctaBg: "bg-blue-700 hover:bg-blue-800",
+    bottomBg: "bg-blue-50/60 border-blue-100",
+  },
+  {
+    id: "finance-advanced",
+    title: "Advanced AI for Finance Professionals",
+    category: "Enterprise Architecture",
+    filterCategory: "Finance",
+    badge: "Level 2 · Executive & Architecture",
+    badgeBg: "bg-purple-50 text-purple-800 border-purple-200",
+    ribbon: "🏆 Advanced Level 2 · Architecture & Leadership",
+    ribbonBg: "bg-purple-700 text-white",
+    cardBorder: "border-2 border-purple-500 hover:border-purple-600",
+    iconBg: "bg-purple-950",
+    iconColor: "text-purple-400",
+    desc: "Advanced follow-on covering capability stacks, MRM validation, deep XAI, multi-agent systems, systemic risk, and target operating models.",
+    duration: "10.5+ Hours",
+    modulesCount: 12,
+    certLabel: "Executive Credential",
+    isPaid: true,
+    price: "NPR 2,499",
+    wasPrice: "NPR 3,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: Sparkles,
+    ctaText: "Explore Advanced Finance Track (Level 2)",
+    ctaBg: "bg-purple-700 hover:bg-purple-800",
+    bottomBg: "bg-purple-50/60 border-purple-100",
+  },
+  {
+    id: "education",
+    title: "AI for Teachers & Educators",
+    category: "Pedagogy & Classroom",
+    filterCategory: "Leadership",
+    badge: "Pedagogy & Education Track",
+    badgeBg: "bg-teal-50 text-teal-800 border-teal-200",
+    ribbon: "⭐ Highly Recommended for Teachers & Educators",
+    ribbonBg: "bg-teal-600 text-white",
+    cardBorder: "border-2 border-teal-500 hover:border-teal-600",
+    iconBg: "bg-teal-950",
+    iconColor: "text-teal-400",
+    desc: "Cognitive science, teacher workload reduction, lesson differentiation, feedback, academic integrity, and school-wide AI leadership.",
+    duration: "7+ Hours",
+    modulesCount: 12,
+    certLabel: "Educator Credential",
+    isPaid: true,
+    price: "NPR 1,499",
+    wasPrice: "NPR 2,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: GraduationCap,
+    ctaText: "Explore Education Track",
+    ctaBg: "bg-teal-700 hover:bg-teal-800",
+    bottomBg: "bg-teal-50/60 border-teal-100",
+  },
+  {
+    id: "management",
+    title: "AI for Management Professionals",
+    category: "Executive & Leadership",
+    filterCategory: "Leadership",
+    badge: "Executive & Management Track",
+    badgeBg: "bg-amber-50 text-amber-800 border-amber-200",
+    ribbon: "⭐ Highly Recommended for CXOs & Management",
+    ribbonBg: "bg-amber-600 text-white",
+    cardBorder: "border-2 border-amber-500 hover:border-amber-600",
+    iconBg: "bg-amber-950",
+    iconColor: "text-amber-400",
+    desc: "The executive mental model of AI, business strategy alignment, decision rights, use-case ROI, change management, and a 12-month roadmap.",
+    duration: "7+ Hours",
+    modulesCount: 12,
+    certLabel: "Leadership Credential",
+    isPaid: true,
+    price: "NPR 2,499",
+    wasPrice: "NPR 3,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: Briefcase,
+    ctaText: "Explore Management Track",
+    ctaBg: "bg-amber-700 hover:bg-amber-800",
+    bottomBg: "bg-amber-50/60 border-amber-100",
+  },
+  {
+    id: "agile-developers",
+    title: "Agile for Software Developers",
+    category: "Software Engineering & Scrum",
+    filterCategory: "Agile",
+    badge: "Engineering & Scrum Track",
+    badgeBg: "bg-sky-50 text-sky-800 border-sky-200",
+    ribbon: "⚡ Applied Agile & Scrum for Developers",
+    ribbonBg: "bg-sky-600 text-white",
+    cardBorder: "border-2 border-sky-500 hover:border-sky-600",
+    iconBg: "bg-sky-950",
+    iconColor: "text-sky-400",
+    desc: "Waterfall vs Iterative flow, Scrum roles & sprint execution, User stories & DoD, TDD, CI/CD, XP practices, and Agile team dynamics.",
+    duration: "7+ Hours",
+    modulesCount: 12,
+    certLabel: "Engineering Credential",
+    isPaid: true,
+    price: "NPR 999",
+    wasPrice: "NPR 1,999",
+    previewLabel: "Module 1 Free Preview",
+    icon: Code2,
+    ctaText: "Explore Agile Developers Track",
+    ctaBg: "bg-sky-700 hover:bg-sky-800",
+    bottomBg: "bg-sky-50/60 border-sky-100",
+  },
+  {
+    id: "agile-managers",
+    title: "Agile Methodologies for Managers",
+    category: "Agile Governance & Leadership",
+    filterCategory: "Agile",
+    badge: "Governance & Leadership Track",
+    badgeBg: "bg-teal-50 text-teal-800 border-teal-200",
+    ribbon: "⭐ Agile Transformation & Governance",
+    ribbonBg: "bg-teal-600 text-white",
+    cardBorder: "border-2 border-teal-500 hover:border-teal-600",
+    iconBg: "bg-teal-950",
+    iconColor: "text-teal-400",
+    desc: "Agile mindset vs mechanics, approach selection (Scrum, Kanban, XP), team design, budgeting & contracts, metrics, risk, and scaling.",
+    duration: "7+ Hours",
+    modulesCount: 12,
+    certLabel: "Agile Leadership Credential",
+    isPaid: true,
+    price: "NPR 1,999",
+    wasPrice: "NPR 3,499",
+    previewLabel: "Module 1 Free Preview",
+    icon: Users,
+    ctaText: "Explore Agile Managers Track",
+    ctaBg: "bg-teal-700 hover:bg-teal-800",
+    bottomBg: "bg-teal-50/60 border-teal-100",
+  },
+];
+
+const CATALOG_FILTERS = [
+  { id: "All", label: "All Disciplines", icon: ShieldCheck },
+  { id: "Free", label: "Free Community", icon: Sparkles },
+  { id: "Agile", label: "Agile & Engineering", icon: Code2 },
+  { id: "Healthcare", label: "Clinical & Health", icon: Stethoscope },
+  { id: "Finance", label: "Banking & Finance", icon: Building2 },
+  { id: "Leadership", label: "Executive & Education", icon: Briefcase },
+];
+
 function AiUnlockedPage() {
   const search = useSearch({ from: "/ai-unlocked" });
   const navigateRouter = useNavigate({ from: "/ai-unlocked" });
+  const [catalogFilter, setCatalogFilter] = useState<string>("All");
 
   // Single source of truth from router search params
-  const currentTrackId: "foundations" | "healthcare" | "finance" | "finance-advanced" | null =
-    search.track || null;
+  const currentTrackId:
+    | "foundations"
+    | "healthcare"
+    | "finance"
+    | "finance-advanced"
+    | "education"
+    | "management"
+    | "agile-developers"
+    | "agile-managers"
+    | null = search.track || null;
 
   const [mobileSideOpen, setMobileSideOpen] = useState(false);
 
@@ -133,6 +415,10 @@ function AiUnlockedPage() {
     if (currentTrackId === "healthcare") return healthcareLessons;
     if (currentTrackId === "finance") return financeLessons;
     if (currentTrackId === "finance-advanced") return financeAdvancedLessons;
+    if (currentTrackId === "education") return educationLessons;
+    if (currentTrackId === "management") return managementLessons;
+    if (currentTrackId === "agile-developers") return agileDevelopersLessons;
+    if (currentTrackId === "agile-managers") return agileManagersLessons;
     if (currentTrackId === "foundations") return foundationsLessons;
     return [];
   }, [currentTrackId]);
@@ -152,6 +438,7 @@ function AiUnlockedPage() {
         dept?: string;
         date: string;
         captured: boolean;
+        certificateId?: string;
       };
       requestedLead?: {
         name: string;
@@ -164,16 +451,40 @@ function AiUnlockedPage() {
 
   const [trackStates, setTrackStates] = useState<TrackStateMap>(() => {
     const loaded: TrackStateMap = {};
-    const trackKeys = ["foundations", "healthcare", "finance", "finance-advanced"];
-    if (typeof window === "undefined") {
-      trackKeys.forEach((tid) => {
-        const cfg = TRACK_CONFIGS[tid];
-        if (cfg) {
-          loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
-        }
-      });
-      return loaded;
-    }
+    const trackKeys = [
+      "foundations",
+      "healthcare",
+      "finance",
+      "finance-advanced",
+      "education",
+      "management",
+      "agile-developers",
+      "agile-managers",
+    ];
+    trackKeys.forEach((tid) => {
+      const cfg = TRACK_CONFIGS[tid];
+      if (cfg) {
+        loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
+      }
+    });
+    return loaded;
+  });
+
+  // Hydrate stored progress and unlock state from localStorage after initial render
+  useEffect(() => {
+    const trackKeys = [
+      "foundations",
+      "healthcare",
+      "finance",
+      "finance-advanced",
+      "education",
+      "management",
+      "agile-developers",
+      "agile-managers",
+    ];
+    const loaded: TrackStateMap = {};
+    let hasStored = false;
+
     trackKeys.forEach((tid) => {
       const cfg = TRACK_CONFIGS[tid];
       if (!cfg) return;
@@ -181,14 +492,14 @@ function AiUnlockedPage() {
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
-          // If paid track is not actively unlocked, completely wipe any progress or answers
           if (cfg.isPaid && !parsed.unlocked) {
             loaded[tid] = { done: {}, answers: {}, unlocked: false };
             try {
               localStorage.setItem(cfg.storageKey, JSON.stringify(loaded[tid]));
-            } catch {}
+            } catch { }
           } else {
             loaded[tid] = parsed;
+            hasStored = true;
           }
         } catch {
           loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
@@ -197,8 +508,11 @@ function AiUnlockedPage() {
         loaded[tid] = { done: {}, answers: {}, unlocked: !cfg.isPaid };
       }
     });
-    return loaded;
-  });
+
+    if (hasStored) {
+      setTrackStates(loaded);
+    }
+  }, []);
 
   // Save changes to localStorage
   const updateTrackState = (
@@ -217,7 +531,7 @@ function AiUnlockedPage() {
       if (cfg && typeof window !== "undefined") {
         try {
           localStorage.setItem(cfg.storageKey, JSON.stringify(updated));
-        } catch {}
+        } catch { }
       }
       return next;
     });
@@ -225,18 +539,20 @@ function AiUnlockedPage() {
 
   const currentTrackState = currentTrackId
     ? trackStates[currentTrackId] || {
-        done: {},
-        answers: {},
-        unlocked: !activeTrackConfig?.isPaid,
-      }
+      done: {},
+      answers: {},
+      unlocked: !activeTrackConfig?.isPaid,
+    }
     : { done: {}, answers: {}, unlocked: false };
 
-  const isTrackUnlocked = !activeTrackConfig?.isPaid || !!currentTrackState.unlocked;
+  const isTrackUnlocked =
+    !activeTrackConfig?.isPaid ||
+    (Boolean(currentTrackState.unlocked) && Boolean(currentTrackState.accessCode));
 
   const isLessonLocked = (lessonId: string) => {
     if (!activeTrackConfig) return false;
     if (isTrackUnlocked) return false;
-    return !activeTrackConfig.freePreviewIds.includes(lessonId);
+    return !activeTrackConfig.freePreviewIds?.includes(lessonId);
   };
 
   // ── Dynamic Full Lesson Cache (Server-Side Gated Delivery) ──
@@ -301,19 +617,40 @@ function AiUnlockedPage() {
     setLessonFetchError(null);
 
     fetchAiLesson(currentTrackId, targetId, currentTrackState.accessCode)
-      .then((res) => {
+      .then((res: any) => {
         if (!isMounted) return;
-        if (res && res.success && res.data) {
-          setLoadedLessons((prev) => ({ ...prev, [cacheKey]: res.data }));
+        const lessonData = res?.sections ? res : res?.data?.sections ? res.data : null;
+        if (lessonData && lessonData.sections && lessonData.sections.length > 0) {
+          setLoadedLessons((prev) => ({ ...prev, [cacheKey]: lessonData }));
         } else if (res && res.locked) {
-          setLessonFetchError("This module requires an active verified access code.");
+          updateTrackState(currentTrackId, (prev) => ({
+            ...prev,
+            unlocked: false,
+            accessCode: undefined,
+          }));
+          navigateView("pay");
         } else {
           setLessonFetchError(res?.error || "Failed to load lesson from server.");
         }
       })
       .catch((err) => {
         if (!isMounted) return;
-        setLessonFetchError(err instanceof Error ? err.message : "Server connection error.");
+        const msg = err instanceof Error ? err.message : String(err);
+        if (
+          msg.includes("403") ||
+          msg.includes("Access denied") ||
+          msg.includes("enrollment required") ||
+          msg.includes("Invalid, revoked")
+        ) {
+          updateTrackState(currentTrackId, (prev) => ({
+            ...prev,
+            unlocked: false,
+            accessCode: undefined,
+          }));
+          navigateView("pay");
+          return;
+        }
+        setLessonFetchError(msg || "Server connection error.");
       })
       .finally(() => {
         if (isMounted) setIsLoadingLesson(false);
@@ -332,7 +669,13 @@ function AiUnlockedPage() {
   ]);
 
   const openCourse = (
-    track: "foundations" | "healthcare" | "finance" | "finance-advanced",
+    track:
+      | "foundations"
+      | "healthcare"
+      | "finance"
+      | "finance-advanced"
+      | "education"
+      | "management",
     initialView: string = "home",
   ) => {
     const isSpecial =
@@ -347,6 +690,9 @@ function AiUnlockedPage() {
         lesson: !isSpecial ? initialView : undefined,
       },
     });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   };
 
   const backToCatalog = () => {
@@ -442,7 +788,9 @@ function AiUnlockedPage() {
   const [requestOrg, setRequestOrg] = useState("");
   const [requestTxn, setRequestTxn] = useState("");
   const [requestReceiptUrl, setRequestReceiptUrl] = useState("");
+  const [receiptLocalPreview, setReceiptLocalPreview] = useState("");
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
   const [requestSubmitted, setRequestSubmitted] = useState(false);
 
   // ── Auto-Synchronize & Re-verify Course Access with Server Database ──
@@ -500,8 +848,8 @@ function AiUnlockedPage() {
       checkAiAccessStatus(currentTrackId, currentTrackState.accessCode)
         .then((res) => {
           if (!isMounted) return;
-          if (!res || !res.active) {
-            // Access revoked / deleted by admin -> FULLY WIPE ALL PROGRESS & LOCK COURSE
+          if (res && res.success && res.active === false && (res as any).revoked) {
+            // Only revoke if server explicitly confirmed revocation
             updateTrackState(currentTrackId, () => ({
               done: {},
               answers: {},
@@ -517,14 +865,13 @@ function AiUnlockedPage() {
             setCertRole("");
             setCertDept("");
             toast.warning(
-              "Course access has been revoked or removed by the administrator. All progress has been fully reset.",
+              "Course access has been revoked by the administrator.",
             );
-            // Redirect to paywall view
             navigateView("pay");
           }
         })
         .catch(() => {
-          // Network offline fallback continues gracefully
+          // Network offline fallback continues gracefully without wiping state
         });
 
       return () => {
@@ -545,6 +892,8 @@ function AiUnlockedPage() {
       toast.error("File size must be under 10MB");
       return;
     }
+    const localUrl = URL.createObjectURL(file);
+    setReceiptLocalPreview(localUrl);
     setIsUploadingReceipt(true);
     try {
       const url = await uploadPaymentReceipt(file);
@@ -577,16 +926,16 @@ function AiUnlockedPage() {
           accessCode: cleanCode,
           ...(res.lead
             ? {
-                lead: {
-                  name: res.lead.name || prev.lead?.name || "",
-                  email: res.lead.email || prev.lead?.email || "",
-                  org: res.lead.org || prev.lead?.org || "",
-                  role: prev.lead?.role || "",
-                  dept: prev.lead?.dept || "",
-                  date: new Date().toISOString(),
-                  captured: false,
-                },
-              }
+              lead: {
+                name: res.lead.name || prev.lead?.name || "",
+                email: res.lead.email || prev.lead?.email || "",
+                org: res.lead.org || prev.lead?.org || "",
+                role: prev.lead?.role || "",
+                dept: prev.lead?.dept || "",
+                date: new Date().toISOString(),
+                captured: false,
+              },
+            }
             : {}),
         }));
         toast.success(`✓ Full Access Unlocked for ${activeTrackConfig.name}!`);
@@ -595,7 +944,7 @@ function AiUnlockedPage() {
       } else {
         toast.error(
           res?.error ||
-            "Access code is invalid, revoked, or no active verified enrolment was found.",
+          "Access code is invalid, revoked, or no active verified enrolment was found.",
         );
       }
     } catch (err: any) {
@@ -613,6 +962,8 @@ function AiUnlockedPage() {
       return;
     }
 
+    setIsSubmittingPayment(true);
+
     const payload = {
       name: requestName.trim(),
       email: requestEmail.trim(),
@@ -626,36 +977,35 @@ function AiUnlockedPage() {
       requestedLead: payload,
     }));
 
-    // Synchronize to Admin Payment Verifications Queue
+    const newEntry = {
+      id: `lead-${Date.now()}`,
+      name: requestName.trim(),
+      email: requestEmail.trim(),
+      org: requestOrg.trim(),
+      track: currentTrackId,
+      txn: requestTxn.trim() || "FONEPAY-SUBMITTED",
+      receiptUrl: requestReceiptUrl || undefined,
+      receipt_url: requestReceiptUrl || undefined,
+      date: new Date().toISOString(),
+      status: "pending",
+    };
+
     try {
-      const newEntry = {
-        id: `lead-${Date.now()}`,
-        name: requestName.trim(),
-        email: requestEmail.trim(),
-        org: requestOrg.trim(),
-        track: currentTrackId as "healthcare" | "finance",
-        txn: requestTxn.trim() || "FONEPAY-SUBMITTED",
-        receiptUrl: requestReceiptUrl || undefined,
-        receipt_url: requestReceiptUrl || undefined,
-        date: new Date().toISOString(),
-        status: "pending",
-      };
+      // 1. Save directly to MySQL database via backend API
+      await createAiLead(newEntry);
 
-      // Save directly to MySQL database
-      createAiLead(newEntry).catch(() => {});
-
-      // Synchronize to localStorage backup
+      // 2. Synchronize to localStorage backup
       if (typeof window !== "undefined") {
         try {
           const existingLeads = JSON.parse(localStorage.getItem("rdt_ai_payment_leads") || "[]");
           localStorage.setItem(
             "rdt_ai_payment_leads",
-            JSON.stringify([newEntry, ...existingLeads]),
+            JSON.stringify([newEntry, ...existingLeads.filter((l: any) => l.id !== newEntry.id)]),
           );
-        } catch {}
+        } catch { }
       }
 
-      // Notify Red Dot admin team via FormSubmit
+      // 3. Notify Red Dot admin team via FormSubmit
       fetch("https://formsubmit.co/ajax/info@reddottech.com.np", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -673,15 +1023,18 @@ function AiUnlockedPage() {
           Admin_Verification_Url: "https://reddottech.com.np/admin/ai-unlocked",
         }),
         signal: AbortSignal.timeout(4000),
-      }).catch(() => {});
-    } catch {
-      // Fallback continues gracefully
-    }
+      }).catch(() => { });
 
-    setRequestSubmitted(true);
-    toast.success(
-      "Payment details submitted! Admin will verify your transaction ref and email your unlock code.",
-    );
+      setRequestSubmitted(true);
+      toast.success(
+        "Payment details submitted! Admin will verify your transaction ref and email your unlock code.",
+      );
+    } catch (err: any) {
+      console.error("[Submit Payment Error]", err);
+      toast.error(err?.message || "Failed to save payment details to server. Please try again.");
+    } finally {
+      setIsSubmittingPayment(false);
+    }
   };
 
   // ── Certificate Claim State (Track-Scoped) ──
@@ -704,30 +1057,32 @@ function AiUnlockedPage() {
     setCertDept(trackLead?.dept || "");
     setCertClaimed(Boolean(trackLead && trackLead.captured));
 
-    // If certificate is claimed locally, check with database
-    if (trackLead && trackLead.captured && (trackLead.email || trackLead.name)) {
+    // If certificate is claimed locally, check with database using certificate ID
+    if (trackLead && trackLead.captured && (trackLead.certificateId || trackLead.email)) {
       let isMounted = true;
-      const lookupTerm = trackLead.email || trackLead.name;
-      verifyCertificate(lookupTerm)
-        .then((res) => {
-          if (!isMounted) return;
-          // If deleted by admin from database (not found)
-          if (!res || !res.id) {
-            updateTrackState(currentTrackId, (prev) => ({
-              ...prev,
-              lead: undefined,
-            }));
-            setCertClaimed(false);
-            setCertName("");
-            setCertEmail("");
-            setCertOrg("");
-            setCertRole("");
-            setCertDept("");
-          }
-        })
-        .catch(() => {
-          // Network offline fallback
-        });
+      const lookupTerm = trackLead.certificateId;
+      if (lookupTerm) {
+        verifyCertificate(lookupTerm)
+          .then((res) => {
+            if (!isMounted) return;
+            // Only if API explicitly confirmed record was removed from registry
+            if (res && (res as any).verified === false) {
+              updateTrackState(currentTrackId, (prev) => ({
+                ...prev,
+                lead: undefined,
+              }));
+              setCertClaimed(false);
+              setCertName("");
+              setCertEmail("");
+              setCertOrg("");
+              setCertRole("");
+              setCertDept("");
+            }
+          })
+          .catch(() => {
+            // Network offline fallback
+          });
+      }
 
       return () => {
         isMounted = false;
@@ -750,8 +1105,9 @@ function AiUnlockedPage() {
       new Date().toISOString(),
     );
 
+    let finalRef = generatedRef;
     try {
-      await claimCertificate({
+      const res = await claimCertificate({
         name: certName.trim(),
         email: certEmail.trim(),
         school: certOrg.trim() || `${activeTrackConfig.name} Graduate`,
@@ -762,8 +1118,17 @@ function AiUnlockedPage() {
         role: certRole.trim(),
         department: certDept.trim(),
       });
-    } catch {
-      // Local fallback continues gracefully
+      if (res && (res as any).certificate_id) {
+        finalRef = (res as any).certificate_id;
+      }
+    } catch (err: any) {
+      if (activeTrackConfig.isPaid) {
+        toast.error(
+          err?.message ||
+          "Certificate claim failed. Please make sure you are using the verified email registered with your enrolment.",
+        );
+        return;
+      }
     }
 
     const leadData = {
@@ -774,6 +1139,7 @@ function AiUnlockedPage() {
       dept: certDept.trim(),
       date: new Date().toISOString(),
       captured: true,
+      certificateId: finalRef,
     };
 
     updateTrackState(currentTrackId, (prev) => ({
@@ -806,13 +1172,22 @@ function AiUnlockedPage() {
 
   const certReference = useMemo(() => {
     if (!activeTrackConfig) return "";
-    return generateCertificateReference(
-      activeTrackConfig.certCodePrefix,
-      certName || "Candidate",
-      certEmail || "email@example.com",
-      currentTrackState.lead?.date,
+    return (
+      currentTrackState.lead?.certificateId ||
+      generateCertificateReference(
+        activeTrackConfig.certCodePrefix,
+        certName || "Candidate",
+        certEmail || "email@example.com",
+        currentTrackState.lead?.date,
+      )
     );
-  }, [activeTrackConfig, certName, certEmail, currentTrackState.lead?.date]);
+  }, [
+    activeTrackConfig,
+    certName,
+    certEmail,
+    currentTrackState.lead?.date,
+    currentTrackState.lead?.certificateId,
+  ]);
 
   // ════════════════════════════════════════════════════════════════════
   // 1. HUB LANDING / COURSE CATALOG VIEW (When no course is active)
@@ -838,20 +1213,20 @@ function AiUnlockedPage() {
               className="inline-flex items-center gap-2 rounded-xl bg-brand-red hover:bg-red-700 text-white font-extrabold text-xs sm:text-sm px-5 sm:px-7 py-2.5 sm:py-3 shadow-md hover:shadow-lg transition-all cursor-pointer"
             >
               <LayoutGrid className="h-4 w-4" />
-              <span>Explore 4 Applied Tracks</span>
+              <span>Explore 8 Applied Tracks</span>
               <ArrowRight className="h-4 w-4" />
             </a>
           }
         >
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto pt-2 sm:pt-4 w-full">
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
-              <div className="text-lg sm:text-2xl font-black text-brand-ink">4</div>
+              <div className="text-lg sm:text-2xl font-black text-brand-ink">8</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
                 Specialized Tracks
               </div>
             </div>
             <div className="bg-white/90 border border-slate-200/90 rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 shadow-2xs backdrop-blur-xs text-center">
-              <div className="text-lg sm:text-2xl font-black text-brand-ink">34</div>
+              <div className="text-lg sm:text-2xl font-black text-brand-ink">58</div>
               <div className="text-[10px] sm:text-xs text-slate-500 font-bold mt-0.5">
                 In-Depth Modules
               </div>
@@ -871,431 +1246,176 @@ function AiUnlockedPage() {
           </div>
         </PageHero>
 
-        {/* ── Course Catalog Grid Section ── */}
+        {/* ── Course Catalog Grid Section (Medium Cards & Filter Tabs) ── */}
         <section
           id="course-catalog"
           className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 py-10 sm:py-16"
         >
-          <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-12">
+          <div className="text-center max-w-2xl mx-auto space-y-2 mb-8 sm:mb-10">
             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-brand-red bg-red-50 border border-red-200 px-2.5 py-0.5 rounded-full">
-              Industry-Specific Curricula
+              Applied Industry Catalog
             </span>
             <h2 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Select Your Learning Track
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 font-medium max-w-xl mx-auto">
-              Choose from foundational general literacy, clinical healthcare AI, foundational
-              banking AI (Level 1), or enterprise financial architecture (Level 2).
+              Choose from 6 industry-tailored tracks: General AI Literacy, Clinical Healthcare,
+              Banking &amp; Finance (Levels 1 &amp; 2), Teachers &amp; Educators, and Executive Management.
             </p>
           </div>
 
-          {/* 4 Course Cards Responsive Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch max-w-5xl mx-auto">
-            {/* Card 1: Foundations */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 hover:border-slate-400 shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group">
-              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
-                {/* Header Badge */}
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-200 px-2.5 py-0.5 rounded-full">
-                    100% Free · Community
-                  </span>
-                  <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" /> 2 Hours
-                  </span>
-                </div>
+          {/* Category Filter Pills (Matches the sleek Courses page design) */}
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 overflow-x-auto pb-3 mb-8 scrollbar-none select-none">
+            {CATALOG_FILTERS.map((cat) => {
+              const count =
+                cat.id === "All"
+                  ? AI_TRACK_CATALOG.length
+                  : AI_TRACK_CATALOG.filter((t) => t.filterCategory === cat.id).length;
+              const isActive = catalogFilter === cat.id;
+              const FilterIcon = cat.icon;
 
-                <div className="space-y-1.5">
-                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform">
-                    <Brain className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-red-400" />
-                  </div>
-                  <h3 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-brand-red transition-colors leading-snug">
-                    AI Foundations &amp; Literacy
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Essential artificial intelligence concepts, prompt engineering, multimodal
-                    creation, study systems, and critical AI safety.
-                  </p>
-                </div>
-
-                {/* Modules list preview */}
-                <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
-                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between">
-                    <span>5 Core Modules</span>
-                    <span className="text-slate-400">All Free</span>
-                  </div>
-                  <ul className="space-y-1 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
-                        1
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Neural Networks, Transformers &amp; LLMs
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
-                        2
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Prompt Engineering &amp; Role Conditioning
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
-                        3
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Multimodal Image, Audio &amp; Video Gen
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
-                        4
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        AI for Productivity &amp; Research
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-red-50 text-brand-red text-[10px] font-black flex items-center justify-center shrink-0 border border-red-100">
-                        5
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Ethics, Hallucinations &amp; AI Safety
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-3.5 sm:p-5 bg-slate-50 border-t border-slate-100 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-black text-slate-900">Enrolment: Free</span>
-                  <span className="font-bold text-emerald-600 flex items-center gap-1 text-[11px] sm:text-xs">
-                    <Check className="h-3.5 w-3.5" /> Free Digital Certificate
-                  </span>
-                </div>
+              return (
                 <button
-                  onClick={() => openCourse("foundations", "home")}
-                  className="w-full rounded-xl bg-slate-900 hover:bg-brand-red text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  key={cat.id}
+                  onClick={() => setCatalogFilter(cat.id)}
+                  aria-pressed={isActive}
+                  className={`group relative shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-full px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? "bg-slate-950 text-white shadow-md shadow-slate-950/20 scale-[1.02] border border-slate-800"
+                      : "bg-white text-slate-600 border border-slate-200/90 hover:border-slate-300 hover:text-brand-ink hover:bg-slate-50"
+                  }`}
                 >
-                  <span>Start Free Foundations Track</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <FilterIcon
+                    className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-300 ${
+                      isActive
+                        ? "text-brand-red scale-110"
+                        : "text-slate-400 group-hover:text-brand-ink group-hover:scale-110"
+                    }`}
+                  />
+                  <span>{cat.label}</span>
+                  <span
+                    className={`inline-flex items-center justify-center min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 px-1 sm:px-1.5 rounded-full text-[9px] sm:text-[10px] font-black transition-colors ${
+                      isActive
+                        ? "bg-brand-red text-white"
+                        : "bg-slate-100 border border-slate-200/80 text-slate-600 group-hover:bg-slate-200"
+                    }`}
+                  >
+                    {count}
+                  </span>
                 </button>
-              </div>
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Card 2: Healthcare */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-emerald-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
-              <div className="bg-emerald-600 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                ⭐ Highly Recommended for Clinicians
-              </div>
+          {/* 6 Medium-Sized Course Cards Responsive Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch max-w-7xl mx-auto">
+            {AI_TRACK_CATALOG.filter(
+              (t) => catalogFilter === "All" || t.filterCategory === catalogFilter,
+            ).map((track) => {
+              const TrackIcon = track.icon;
+              return (
+                <TiltCard key={track.id} maxTilt={3} className="h-full">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openCourse(track.id, "home")}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openCourse(track.id, "home");
+                      }
+                    }}
+                    aria-label={`Open ${track.title} course`}
+                    className={`bg-white rounded-2xl sm:rounded-3xl ${track.cardBorder} shadow-2xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden group relative h-full text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red select-none`}
+                  >
+                    {/* Optional Top Ribbon */}
+                    {track.ribbon && (
+                      <div
+                        className={`${track.ribbonBg} text-center py-1 px-3 text-[9px] sm:text-[10px] font-black uppercase tracking-widest shrink-0`}
+                      >
+                        {track.ribbon}
+                      </div>
+                    )}
 
-              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
-                {/* Header Badge */}
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <Stethoscope className="h-3 w-3 text-emerald-700" />
-                    Clinical Applied Track
-                  </span>
-                  <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" /> 7+ Hours
-                  </span>
-                </div>
+                    {/* Card Content Area */}
+                    <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col justify-between">
+                      <div>
+                        {/* Header Row: Badge & Duration */}
+                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                          <span
+                            className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider border px-2.5 py-0.5 rounded-full flex items-center gap-1 ${track.badgeBg}`}
+                          >
+                            <TrackIcon className="h-3 w-3 shrink-0" />
+                            <span className="truncate max-w-[170px]">{track.badge}</span>
+                          </span>
+                          <span className="text-xs font-bold text-slate-500 flex items-center gap-1 shrink-0">
+                            <Clock className="h-3.5 w-3.5 text-slate-400" /> {track.duration}
+                          </span>
+                        </div>
 
-                <div className="space-y-1.5">
-                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-emerald-950 text-white flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform">
-                    <Stethoscope className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-emerald-400" />
+                        {/* Domain Icon & Title & Description */}
+                        <div className="space-y-2">
+                          <div
+                            className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl ${track.iconBg} flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform`}
+                          >
+                            <TrackIcon className={`h-5 w-5 sm:h-5.5 sm:w-5.5 ${track.iconColor}`} />
+                          </div>
+
+                          <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-brand-red transition-colors leading-snug line-clamp-2">
+                            {track.title}
+                          </h3>
+
+                          <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed line-clamp-2 sm:line-clamp-3">
+                            {track.desc}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Compact Specs Row (Replaces the big 5-module list with clean medium badges) */}
+                      <div className="pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-1.5 text-[10px] sm:text-[11px] font-bold text-slate-600 text-center">
+                        <div className="flex items-center justify-center gap-1 p-1.5 rounded-lg bg-slate-50 border border-slate-100">
+                          <Layers className="h-3 w-3 text-slate-500 shrink-0" />
+                          <span className="text-brand-ink font-extrabold">{track.modulesCount} Modules</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-1 p-1.5 rounded-lg bg-slate-50 border border-slate-100">
+                          <Award className="h-3 w-3 text-emerald-600 shrink-0" />
+                          <span className="text-brand-ink font-extrabold truncate">{track.certLabel}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Pricing & Action Section */}
+                    <div className={`p-3.5 sm:p-4 ${track.bottomBg} border-t flex flex-col gap-2`}>
+                      <div className="flex items-center justify-between text-xs">
+                        {track.isPaid ? (
+                          <div>
+                            <span className="font-black text-slate-900 text-xs sm:text-sm">{track.price}</span>{" "}
+                            {track.wasPrice && (
+                              <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
+                                {track.wasPrice}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="font-black text-slate-900">{track.price}</span>
+                        )}
+
+                        <span className="font-bold text-emerald-700 bg-white border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] flex items-center gap-1">
+                          <Check className="h-3 w-3" /> {track.previewLabel}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`w-full rounded-xl ${track.ctaBg} text-white text-xs sm:text-sm font-black py-2.5 shadow-xs group-hover:shadow-md group-hover:brightness-105 transition-all flex items-center justify-center gap-2 cursor-pointer`}
+                      >
+                        <span>{track.ctaText}</span>
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
-                    AI for Healthcare Professionals
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Clinical decision support, diagnostic deep learning, ambient scribes, healthcare
-                    ethics, and the 10-20-70 implementation framework.
-                  </p>
-                </div>
-
-                {/* Highlights */}
-                <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
-                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between">
-                    <span>9 Clinical Modules</span>
-                    <span className="text-emerald-700 font-bold">Module 1 Free Preview</span>
-                  </div>
-                  <ul className="space-y-1 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
-                        1
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Clinical AI &amp; Diagnostic CNN Foundations
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
-                        2
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Electronic Health Records &amp; Data Realities
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
-                        3
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Case Studies: TB X-ray, Retinopathy &amp; Cry
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
-                        4
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Ambient Generative Clinical Scribing
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-emerald-200">
-                        5
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        10-20-70 Deployment &amp; Hospital Governance
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-3.5 sm:p-5 bg-emerald-50/60 border-t border-emerald-100 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 1,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
-                      NPR 2,999
-                    </span>
-                  </div>
-                  <span className="font-bold text-emerald-700 bg-white border border-emerald-200 px-2 py-0.5 rounded-full text-[10px]">
-                    Module 1 Free
-                  </span>
-                </div>
-                <button
-                  onClick={() => openCourse("healthcare", "home")}
-                  className="w-full rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Explore Healthcare Track</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 3: Finance Level 1 */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-blue-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
-              <div className="bg-blue-600 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                ⭐ Highly Recommended for Banking &amp; FinTech
-              </div>
-
-              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
-                {/* Header Badge */}
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-blue-50 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <Building2 className="h-3 w-3 text-blue-700" />
-                    Level 1 · Banking &amp; FinTech
-                  </span>
-                  <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" /> 7+ Hours
-                  </span>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-blue-950 text-white flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform">
-                    <Building2 className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-blue-400" />
-                  </div>
-                  <h3 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
-                    AI for Financial Professionals
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Credit scoring ML, fraud AML graph detection, generative banking &amp; RAG,
-                    model risk governance, and Nepal Rastra Bank AI Guidelines.
-                  </p>
-                </div>
-
-                {/* Highlights */}
-                <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
-                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between">
-                    <span>8 Financial Modules</span>
-                    <span className="text-blue-700 font-bold">Module 1 Free Preview</span>
-                  </div>
-                  <ul className="space-y-1 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
-                        1
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Banking AI Foundations &amp; Value Levers
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
-                        2
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Credit Risk ML vs Traditional Scorecards
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
-                        3
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Real-Time Fraud &amp; Mule Account Graphs
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
-                        4
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Generative Banking &amp; Policy RAG Search
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-blue-200">
-                        5
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Model Risk Management &amp; NRB Compliance
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-3.5 sm:p-5 bg-blue-50/60 border-t border-blue-100 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 1,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
-                      NPR 2,999
-                    </span>
-                  </div>
-                  <span className="font-bold text-blue-700 bg-white border border-blue-200 px-2 py-0.5 rounded-full text-[10px]">
-                    Module 1 Free
-                  </span>
-                </div>
-                <button
-                  onClick={() => openCourse("finance", "home")}
-                  className="w-full rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Explore Finance Track (Level 1)</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 4: Advanced Finance Level 2 */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-purple-500 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between overflow-hidden group relative">
-              <div className="bg-purple-700 text-white text-center py-0.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                🏆 Advanced Level 2 · Architecture &amp; Leadership
-              </div>
-
-              <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
-                {/* Header Badge */}
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider bg-purple-50 text-purple-800 border border-purple-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <Sparkles className="h-3 w-3 text-purple-700" />
-                    Level 2 · Executive &amp; Architecture
-                  </span>
-                  <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                    <Clock className="h-3.5 w-3.5" /> 10.5+ Hours
-                  </span>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-purple-950 text-white flex items-center justify-center font-bold shadow-xs group-hover:scale-105 transition-transform">
-                    <Sparkles className="h-5 w-5 sm:h-5.5 sm:w-5.5 text-purple-400" />
-                  </div>
-                  <h3 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-purple-700 transition-colors leading-snug">
-                    Advanced AI for Finance Professionals
-                  </h3>
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-                    Advanced follow-on covering capability stacks, MRM validation, deep XAI,
-                    multi-agent systems, systemic risk, and target operating models.
-                  </p>
-                </div>
-
-                {/* Highlights */}
-                <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
-                  <div className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 flex items-center justify-between">
-                    <span>12 Advanced Modules</span>
-                    <span className="text-purple-700 font-bold">Module 1 Free Preview</span>
-                  </div>
-                  <ul className="space-y-1 text-xs text-slate-700 font-medium">
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
-                        1
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        From Practitioner to Enterprise Architect
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
-                        2
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        The AI Capability Stack for Financial Institutions
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
-                        3
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Advanced Model Risk Management &amp; Validation
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
-                        4
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Explainability in Regulated Environments (XAI)
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="h-4.5 w-4.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-black flex items-center justify-center shrink-0 border border-purple-200">
-                        5
-                      </span>
-                      <span className="min-w-0 flex-1 leading-snug">
-                        Agentic AI, Multi-Agent Systems &amp; Macro Risk
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="p-3.5 sm:p-5 bg-purple-50/60 border-t border-purple-100 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-black text-slate-900 text-xs sm:text-sm">NPR 2,499</span>{" "}
-                    <span className="line-through text-slate-400 text-[10px] sm:text-[11px]">
-                      NPR 3,999
-                    </span>
-                  </div>
-                  <span className="font-bold text-purple-700 bg-white border border-purple-200 px-2 py-0.5 rounded-full text-[10px]">
-                    Module 1 Free
-                  </span>
-                </div>
-                <button
-                  onClick={() => openCourse("finance-advanced", "home")}
-                  className="w-full rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs sm:text-sm font-black py-2.5 shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <span>Explore Advanced Finance Track (Level 2)</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
+                </TiltCard>
+              );
+            })}
           </div>
         </section>
 
@@ -1598,11 +1718,11 @@ function AiUnlockedPage() {
                           <span className="text-[8px] bg-emerald-600 text-white px-1 py-0.2 rounded font-black">
                             PASSED
                           </span>
-                        ) : !activeTrackConfig.isPaid ? null : (
+                        ) : activeTrackConfig.isPaid && activeTrackConfig.freePreviewIds?.includes(lesson.id) ? (
                           <span className="text-[8px] bg-emerald-100 text-emerald-800 px-1 rounded font-bold">
-                            FREE
+                            FREE PREVIEW
                           </span>
-                        )}
+                        ) : null}
                       </div>
                       <p className="break-words line-clamp-2 font-bold leading-tight text-[11px]">
                         {lesson.title}
@@ -1748,7 +1868,15 @@ function AiUnlockedPage() {
                         ? "bg-gradient-to-br from-purple-50/90 via-white to-white border-purple-200"
                         : currentTrackId === "finance"
                           ? "bg-gradient-to-br from-blue-50/90 via-white to-white border-blue-200"
-                          : "bg-gradient-to-br from-red-50/70 via-white to-white border-red-200",
+                          : currentTrackId === "education"
+                            ? "bg-gradient-to-br from-teal-50/90 via-white to-white border-teal-200"
+                            : currentTrackId === "management"
+                              ? "bg-gradient-to-br from-amber-50/90 via-white to-white border-amber-200"
+                              : currentTrackId === "agile-developers"
+                                ? "bg-gradient-to-br from-sky-50/90 via-white to-white border-sky-200"
+                                : currentTrackId === "agile-managers"
+                                  ? "bg-gradient-to-br from-teal-50/90 via-white to-white border-teal-200"
+                                  : "bg-gradient-to-br from-red-50/70 via-white to-white border-red-200",
                   ].join(" ")}
                 >
                   {/* Ambient spotlight */}
@@ -1762,7 +1890,15 @@ function AiUnlockedPage() {
                             ? "radial-gradient(circle, #8b5cf6 0%, transparent 70%)"
                             : currentTrackId === "finance"
                               ? "radial-gradient(circle, #3b82f6 0%, transparent 70%)"
-                              : "radial-gradient(circle, var(--brand-red, #C8102E) 0%, transparent 70%)",
+                              : currentTrackId === "education"
+                                ? "radial-gradient(circle, #0d9488 0%, transparent 70%)"
+                                : currentTrackId === "management"
+                                  ? "radial-gradient(circle, #d97706 0%, transparent 70%)"
+                                  : currentTrackId === "agile-developers"
+                                    ? "radial-gradient(circle, #0284c7 0%, transparent 70%)"
+                                    : currentTrackId === "agile-managers"
+                                      ? "radial-gradient(circle, #0f766e 0%, transparent 70%)"
+                                      : "radial-gradient(circle, var(--brand-red, #C8102E) 0%, transparent 70%)",
                     }}
                   />
 
@@ -1777,7 +1913,15 @@ function AiUnlockedPage() {
                                 ? "bg-purple-500"
                                 : currentTrackId === "finance"
                                   ? "bg-blue-500"
-                                  : "bg-brand-red"
+                                  : currentTrackId === "education"
+                                    ? "bg-teal-500"
+                                    : currentTrackId === "management"
+                                      ? "bg-amber-500"
+                                      : currentTrackId === "agile-developers"
+                                        ? "bg-sky-500"
+                                        : currentTrackId === "agile-managers"
+                                          ? "bg-teal-600"
+                                          : "bg-brand-red"
                           }`}
                         />
                         {activeTrackConfig.badge}
@@ -1799,6 +1943,27 @@ function AiUnlockedPage() {
                     <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl font-medium break-words">
                       {activeTrackConfig.description}
                     </p>
+
+                    {/* Track Readiness Callout Card */}
+                    {currentTrackId && TRACK_READINESS_CALLOUTS[currentTrackId] && (
+                      <div
+                        className="rounded-xl p-3 sm:p-3.5 my-1 max-w-2xl border shadow-xs transition-all"
+                        style={{
+                          backgroundColor: TRACK_READINESS_CALLOUTS[currentTrackId].bgColor,
+                          borderColor: TRACK_READINESS_CALLOUTS[currentTrackId].borderColor,
+                        }}
+                      >
+                        <span
+                          className="font-bold text-[11px] sm:text-xs uppercase tracking-wide mr-2 inline"
+                          style={{ color: TRACK_READINESS_CALLOUTS[currentTrackId].titleColor }}
+                        >
+                          {TRACK_READINESS_CALLOUTS[currentTrackId].title}
+                        </span>
+                        <span className="text-xs sm:text-[13px] text-[#E7EEF9] font-normal leading-relaxed">
+                          {TRACK_READINESS_CALLOUTS[currentTrackId].text}
+                        </span>
+                      </div>
+                    )}
 
                     <div className="pt-1 flex flex-wrap items-center gap-2 sm:gap-2.5">
                       <button
@@ -1976,6 +2141,186 @@ function AiUnlockedPage() {
                         </div>
                       </div>
                     </>
+                  ) : currentTrackId === "education" ? (
+                    <>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold shrink-0">
+                          <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Cognitive Science of Learning
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Protect the student's cognitive effort: "the process is the purpose"
+                            applied to AI-assisted classrooms.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                          <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Reclaim Teacher Workload
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Automate administrative overhead: differentiated worksheets, rubrics,
+                            and lesson plans without lowering standards.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                          <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Assessment Redesign &amp; Integrity
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Move beyond unreliable AI detectors to conversational assessment,
+                            student AI literacy, and school safeguarding.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : currentTrackId === "management" ? (
+                    <>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                          <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            The Executive Mental Model
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            ML predicts, GenAI produces, Agentic AI acts. Clear terminology and
+                            decision rights for boards and management teams.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0">
+                          <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            ROI, Budgeting &amp; Use Cases
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Prioritise high-value use cases, budget for true integration costs, and
+                            avoid the 80% data readiness bottleneck.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                          <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            12-Month Transformation Plan
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Stage-gated pilot-to-production discipline, risk tiering, and leading
+                            people through cultural AI change.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : currentTrackId === "agile-developers" ? (
+                    <>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center font-bold shrink-0">
+                          <Code2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Iterative Delivery &amp; Sprints
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Understand why waterfall fails in software, master 2-week sprints, user
+                            stories, Definition of Done, and velocity forecasting.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                          <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            TDD &amp; XP Engineering Practices
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Extreme Programming core practices: Test-Driven Development (Red-Green-Refactor),
+                            automated CI/CD pipelines, and continuous integration.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                          <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Pairing, PR Reviews &amp; Retros
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Code review etiquette, pair programming patterns, effective standups,
+                            and actionable retrospectives for continuous team growth.
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : currentTrackId === "agile-managers" ? (
+                    <>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold shrink-0">
+                          <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Mindset &amp; Servant Leadership
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Doing Agile vs Being Agile, Cynefin complexity decision-making, and transitioning
+                            from command-and-control to impediment removal.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold shrink-0">
+                          <Target className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Budgeting, Contracts &amp; Metrics
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Value-driven dynamic funding vs fixed contracts, lead/cycle time metrics
+                            over vanity targets, and continuous audit compliance.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
+                        <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0">
+                          <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                        </div>
+                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h3 className="font-black text-xs sm:text-xs md:text-sm text-slate-900 leading-tight">
+                            Team Design &amp; Enterprise Scaling
+                          </h3>
+                          <p className="text-[11px] sm:text-[11px] md:text-xs text-slate-600 leading-snug sm:leading-relaxed font-medium">
+                            Cross-functional team dedication, navigating scaling models (SAFe, LeSS,
+                            Spotify), and executing a 12-month change roadmap.
+                          </p>
+                        </div>
+                      </div>
+                    </>
                   ) : (
                     <>
                       <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col items-start gap-1.5 sm:gap-2 min-w-0">
@@ -2128,6 +2473,9 @@ function AiUnlockedPage() {
                     })}
                   </div>
                 </div>
+
+                {/* ── The Next Step: PECP Progression Banner (Bottom of Programme Overview) ── */}
+                <PecpNextStepBanner trackId={currentTrackId} className="mt-4 sm:mt-6" />
               </div>
             )}
 
@@ -2225,12 +2573,37 @@ function AiUnlockedPage() {
                           setLessonFetchError(null);
                           setIsLoadingLesson(true);
                           fetchAiLesson(currentTrackId!, lesson.id, currentTrackState.accessCode)
-                            .then((res) => {
-                              if (res && res.success && res.data) {
-                                setLoadedLessons((prev) => ({ ...prev, [cacheKey]: res.data }));
+                            .then((res: any) => {
+                              const lessonData = res?.sections ? res : res?.data?.sections ? res.data : null;
+                              if (lessonData && lessonData.sections && lessonData.sections.length > 0) {
+                                setLoadedLessons((prev) => ({ ...prev, [cacheKey]: lessonData }));
+                              } else if (res && res.locked) {
+                                updateTrackState(currentTrackId!, (prev) => ({
+                                  ...prev,
+                                  unlocked: false,
+                                  accessCode: undefined,
+                                }));
+                                navigateView("pay");
                               } else {
                                 setLessonFetchError(res?.error || "Failed to load.");
                               }
+                            })
+                            .catch((err) => {
+                              const msg = err instanceof Error ? err.message : String(err);
+                              if (
+                                msg.includes("403") ||
+                                msg.includes("Access denied") ||
+                                msg.includes("enrollment required")
+                              ) {
+                                updateTrackState(currentTrackId!, (prev) => ({
+                                  ...prev,
+                                  unlocked: false,
+                                  accessCode: undefined,
+                                }));
+                                navigateView("pay");
+                                return;
+                              }
+                              setLessonFetchError(msg || "Failed to load.");
                             })
                             .finally(() => setIsLoadingLesson(false));
                         }}
@@ -2518,13 +2891,12 @@ function AiUnlockedPage() {
                                       className={`w-full text-left p-2.5 sm:p-3 rounded-lg sm:rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2.5 cursor-pointer ${btnStyle}`}
                                     >
                                       <span
-                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${
-                                          isAnswered && oIdx === qItem.a
+                                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${isAnswered && oIdx === qItem.a
                                             ? "bg-emerald-500 text-white"
                                             : isThisSelected && !isCorrect
                                               ? "bg-red-500 text-white"
                                               : "bg-slate-100 text-slate-600"
-                                        }`}
+                                          }`}
                                       >
                                         {LETTERS[oIdx]}
                                       </span>
@@ -2539,11 +2911,10 @@ function AiUnlockedPage() {
 
                               {isAnswered && (
                                 <div
-                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${
-                                    isCorrect
+                                  className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${isCorrect
                                       ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
                                       : "bg-red-50 border border-red-200 text-red-900"
-                                  }`}
+                                    }`}
                                 >
                                   <span className="font-bold text-xs leading-none">
                                     {isCorrect ? "✓" : "✗"}
@@ -2620,7 +2991,15 @@ function AiUnlockedPage() {
                     ? FINANCE_ADVANCED_SOURCES
                     : currentTrackId === "finance"
                       ? FINANCE_SOURCES
-                      : HEALTHCARE_SOURCES
+                      : currentTrackId === "education"
+                        ? EDUCATION_SOURCES
+                        : currentTrackId === "management"
+                          ? MANAGEMENT_SOURCES
+                          : currentTrackId === "agile-developers"
+                            ? AGILE_DEVELOPERS_SOURCES
+                            : currentTrackId === "agile-managers"
+                              ? AGILE_MANAGERS_SOURCES
+                              : HEALTHCARE_SOURCES
                   ).map((source, sIdx) => (
                     <div
                       key={sIdx}
@@ -2647,6 +3026,9 @@ function AiUnlockedPage() {
                   treated as indicative of direction. Participants must verify regulatory and
                   ethical requirements with their institution and the relevant national authorities.
                 </div>
+
+                {/* ── The Next Step: PECP Progression Banner ── */}
+                <PecpNextStepBanner trackId={currentTrackId} className="mt-4 sm:mt-6" />
               </div>
             )}
 
@@ -2826,11 +3208,11 @@ function AiUnlockedPage() {
                             <label className="block text-[9px] sm:text-[10px] font-black uppercase text-slate-600 mb-0.5">
                               Upload Payment Screenshot / Receipt
                             </label>
-                            {requestReceiptUrl ? (
+                            {requestReceiptUrl || receiptLocalPreview ? (
                               <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-2 flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2 min-w-0">
                                   <img
-                                    src={requestReceiptUrl}
+                                    src={receiptLocalPreview || requestReceiptUrl}
                                     alt="Payment Screenshot"
                                     className="h-9 w-9 object-cover rounded-md border border-emerald-300 shrink-0"
                                   />
@@ -2839,10 +3221,10 @@ function AiUnlockedPage() {
                                       ✓ Screenshot Attached
                                     </span>
                                     <a
-                                      href={requestReceiptUrl}
+                                      href={receiptLocalPreview || requestReceiptUrl}
                                       target="_blank"
                                       rel="noreferrer"
-                                      className="text-[10px] text-brand-red hover:underline block truncate"
+                                      className="text-[10px] text-brand-red hover:underline block truncate font-medium"
                                     >
                                       Preview Image
                                     </a>
@@ -2850,7 +3232,10 @@ function AiUnlockedPage() {
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() => setRequestReceiptUrl("")}
+                                  onClick={() => {
+                                    setRequestReceiptUrl("");
+                                    setReceiptLocalPreview("");
+                                  }}
                                   className="text-slate-400 hover:text-red-600 p-1 cursor-pointer"
                                   title="Remove screenshot"
                                 >
@@ -2884,9 +3269,17 @@ function AiUnlockedPage() {
 
                           <button
                             type="submit"
-                            className="w-full rounded-lg bg-slate-900 hover:bg-brand-red text-white text-xs font-bold py-2 transition-colors cursor-pointer"
+                            disabled={isSubmittingPayment}
+                            className="w-full rounded-lg bg-slate-900 hover:bg-brand-red disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold py-2 transition-colors cursor-pointer flex items-center justify-center gap-2"
                           >
-                            Submit Verification Request →
+                            {isSubmittingPayment ? (
+                              <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <span>Submitting Details...</span>
+                              </>
+                            ) : (
+                              <span>Submit Verification Request →</span>
+                            )}
                           </button>
                         </form>
                       )}
@@ -3027,9 +3420,8 @@ function AiUnlockedPage() {
                       {currentLessons.map((l) => (
                         <div
                           key={l.id}
-                          className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                            currentTrackState.done?.[l.id] ? "bg-emerald-500" : "bg-slate-200"
-                          }`}
+                          className={`h-2.5 w-2.5 rounded-full transition-colors ${currentTrackState.done?.[l.id] ? "bg-emerald-500" : "bg-slate-200"
+                            }`}
                         />
                       ))}
                     </div>
@@ -3304,50 +3696,8 @@ function AiUnlockedPage() {
                       </div>
                     </div>
 
-                    {/* ── PECP Next Step Banner (From Zip ctaband) ── */}
-                    <div className="print:hidden rounded-2xl bg-gradient-to-br from-[#0F1E3D] via-[#162A53] to-[#24406F] p-6 sm:p-9 text-white shadow-xl border border-white/10 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-                      <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#B8892B]/10 rounded-full blur-2xl pointer-events-none -ml-16 -mb-16" />
-
-                      <div className="relative z-10 max-w-3xl space-y-3">
-                        <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#F0DCB4]">
-                          <span>★ Continue Your Development</span>
-                        </div>
-
-                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
-                          The Next Step: <span className="text-[#FFD8DD]">PECP</span>
-                        </h2>
-
-                        <p className="text-xs sm:text-sm text-[#CFDCEF] leading-relaxed">
-                          This programme is a gateway to the{" "}
-                          <strong>
-                            Professional Excellence &amp; Certification Program (PECP)
-                          </strong>{" "}
-                          from Red Dot Technologies, in partnership with the{" "}
-                          <strong>University of South Carolina Upstate</strong> — instructor-led,
-                          cohort-based professional certification in project management, business
-                          analytics, quality, and leadership, designed for working professionals.
-                        </p>
-
-                        <div className="flex flex-wrap items-center gap-3 pt-3">
-                          <Link
-                            to="/pecp"
-                            className="inline-flex items-center gap-2 rounded-xl bg-brand-red hover:bg-red-700 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 shadow-md transition-all cursor-pointer"
-                          >
-                            <span>Explore PECP</span>
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-
-                          <Link
-                            to="/contact"
-                            search={{ subject: "In-House PECP Cohort Inquiry" }}
-                            className="inline-flex items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm px-5 py-2.5 transition-all cursor-pointer"
-                          >
-                            <span>Enquire About In-House Cohorts</span>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+                    {/* ── The Next Step: PECP Progression Banner ── */}
+                    <PecpNextStepBanner trackId={currentTrackId} className="print:hidden mt-4 sm:mt-6" />
                   </div>
                 )}
               </div>

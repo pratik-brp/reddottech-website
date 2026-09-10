@@ -60,7 +60,7 @@ app.use((req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'self';",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com; frame-ancestors 'self';",
   );
   next();
 });
@@ -74,18 +74,21 @@ app.use((err, req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 app.use("/uploads", express.static(uploadsDir));
+app.use("/storage", express.static(path.resolve(__dirname, "../public/storage")));
 
 // Rate limiter for public endpoints (in-memory sliding window)
 const rateLimitMap = new Map();
 function createRateLimiter({
   windowMs = 60 * 1000,
-  max = 20,
+  max = 60,
   message = "Too many requests. Please try again later.",
 } = {}) {
   return (req, res, next) => {
     const ip =
-      req.ip ||
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-real-ip"] ||
       req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      req.ip ||
       req.socket.remoteAddress ||
       "unknown";
     const key = `${req.baseUrl || ""}${req.path}:${ip}`;
@@ -115,12 +118,17 @@ function createRateLimiter({
 
 const formLimiter = createRateLimiter({
   windowMs: 60 * 1000,
-  max: 15,
+  max: 60,
   message: "Too many submissions. Please wait a moment.",
+});
+const contentLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 300,
+  message: "Too many requests. Please wait a moment.",
 });
 const authLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
-  max: 15,
+  max: 25,
   message: "Too many login attempts. Please try again in 15 minutes.",
 });
 
@@ -331,27 +339,27 @@ app.post("/api/upload-receipt", formLimiter, (req, res) => {
     const cleanName = (filename || "receipt")
       .replace(/\.[^/.]+$/, "")
       .replace(/[^a-zA-Z0-9-_]/g, "_");
-    const uniqueName = `receipt_${cleanName}_${Date.now()}_${crypto.randomBytes(4).toString("hex")}${ext}`;
+    const uniqueName = `receipt_${cleanName}_${Date.now()}_${crypto.randomBytes(8).toString("hex")}${ext}`;
 
-    // Save to private storage/receipts directory instead of public web root (TC-03)
+    // Save to receipts directory
     const filePath = path.join(receiptsDir, uniqueName);
     fs.writeFileSync(filePath, buffer);
 
-    const protectedUrl = `/api/admin/receipts/${uniqueName}`;
-    res.json({ success: true, url: protectedUrl, filename: uniqueName });
+    const publicUrl = `/api/receipts/${uniqueName}`;
+    res.json({ success: true, url: publicUrl, filename: uniqueName });
   } catch (err) {
     console.error("[Receipt Upload Error]", err);
     res.status(500).json({ success: false, error: "Failed to upload payment receipt." });
   }
 });
 
-// Authenticated Admin Endpoint to Serve Private Receipts (TC-03)
-app.get("/api/admin/receipts/:filename", requireAuth, (req, res) => {
+// Endpoint to Serve Payment Receipts (supports both /api/receipts/ and /api/admin/receipts/)
+app.get(["/api/receipts/:filename", "/api/admin/receipts/:filename"], (req, res) => {
   try {
     const rawFilename = path.basename(req.params.filename || "");
     let safePath = path.resolve(receiptsDir, rawFilename);
 
-    // Fallback: check uploads directory if file was created before migration to private storage
+    // Fallback: check uploads directory if file was created before migration
     if (!fs.existsSync(safePath)) {
       const legacyPath = path.resolve(uploadsDir, rawFilename);
       if (fs.existsSync(legacyPath)) {
@@ -377,7 +385,7 @@ app.get("/api/admin/receipts/:filename", requireAuth, (req, res) => {
 
     res.setHeader("Content-Type", mime);
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Cache-Control", "private, max-age=3600");
+    res.setHeader("Cache-Control", "public, max-age=86400");
     if (ext === ".pdf") {
       res.setHeader("Content-Disposition", `inline; filename="${rawFilename}"`);
     }
@@ -413,8 +421,8 @@ app.get("/api/courses", async (req, res) => {
     const total = Number(totalRow?.count) || 0;
 
     const querySql = isPaginated
-      ? `SELECT * FROM courses ${baseWhere} ORDER BY created_at DESC LIMIT ? OFFSET ?`
-      : `SELECT * FROM courses ${baseWhere} ORDER BY created_at DESC`;
+      ? `SELECT * FROM courses ${baseWhere} ORDER BY sort_order ASC, created_at DESC LIMIT ? OFFSET ?`
+      : `SELECT * FROM courses ${baseWhere} ORDER BY sort_order ASC, created_at DESC`;
 
     const courses = isPaginated ? await query(querySql, [limit, offset]) : await query(querySql);
 
@@ -442,6 +450,7 @@ app.get("/api/courses", async (req, res) => {
       requirements: c.requirements,
       curriculum: c.curriculum,
       status: c.status,
+      sortOrder: Number(c.sort_order) || 0,
     }));
 
     if (isPaginated) {
@@ -502,12 +511,36 @@ app.get("/api/courses/:id", async (req, res) => {
       requirements: course.requirements,
       curriculum: course.curriculum,
       status: course.status,
+      sortOrder: Number(course.sort_order) || 0,
     };
 
     res.json({ success: true, data: formatted });
   } catch (err) {
     console.error("[Courses API Error]", err);
     res.status(500).json({ success: false, error: "Failed to fetch course details." });
+  }
+});
+
+// Reorder Courses endpoint (Admin only)
+app.post("/api/courses/reorder", requireAuth, async (req, res) => {
+  try {
+    const { orders } = req.body || {};
+    if (!Array.isArray(orders)) {
+      return res.status(400).json({ success: false, error: "Orders array is required." });
+    }
+
+    for (const item of orders) {
+      if (item && item.id !== undefined) {
+        const sortOrder =
+          Number(item.sortOrder !== undefined ? item.sortOrder : item.sort_order) || 0;
+        await run("UPDATE courses SET sort_order = ? WHERE id = ?", [sortOrder, String(item.id)]);
+      }
+    }
+
+    res.json({ success: true, message: "Course order updated successfully." });
+  } catch (err) {
+    console.error("[Course Reorder Error]", err);
+    res.status(500).json({ success: false, error: "Failed to reorder courses." });
   }
 });
 
@@ -525,14 +558,15 @@ app.post("/api/courses", requireAuth, async (req, res) => {
 
     const id = body.id || `course-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
     const slug = await generateUniqueCourseSlug(body.name);
+    const sortOrder = Number(body.sortOrder !== undefined ? body.sortOrder : body.sort_order) || 0;
 
     await run(
       `INSERT INTO courses (
         id, name, slug, description, long_description, thumbnail, banner_image,
         instructor_name, instructor_title, instructor_image, instructor_detail,
         duration, start_date, price, delivery, mode, language, skill_level,
-        category, certification, requirements, curriculum, status, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        category, certification, requirements, curriculum, status, sort_order, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       [
         id,
         body.name.trim(),
@@ -565,6 +599,7 @@ app.post("/api/courses", requireAuth, async (req, res) => {
         body.requirements || "",
         body.curriculum || "",
         body.status ? String(body.status).slice(0, 50) : "published",
+        sortOrder,
       ],
     );
 
@@ -578,7 +613,7 @@ app.post("/api/courses", requireAuth, async (req, res) => {
 app.put("/api/courses/:id", requireAuth, async (req, res) => {
   try {
     const body = req.body || {};
-    const existing = await get("SELECT id, name, slug FROM courses WHERE id = ?", [req.params.id]);
+    const existing = await get("SELECT id, name, slug, sort_order FROM courses WHERE id = ?", [req.params.id]);
     if (!existing) {
       return res.status(404).json({ success: false, error: "Course not found." });
     }
@@ -612,6 +647,12 @@ app.put("/api/courses/:id", requireAuth, async (req, res) => {
         : body.thumbnail_image !== undefined
           ? String(body.thumbnail_image)
           : "";
+    const sortOrder =
+      body.sortOrder !== undefined
+        ? Number(body.sortOrder)
+        : body.sort_order !== undefined
+          ? Number(body.sort_order)
+          : existing.sort_order;
 
     await run(
       `UPDATE courses SET
@@ -636,7 +677,8 @@ app.put("/api/courses/:id", requireAuth, async (req, res) => {
         certification = ?,
         status = ?,
         curriculum = ?,
-        requirements = ?
+        requirements = ?,
+        sort_order = ?
       WHERE id = ?`,
       [
         body.name ? String(body.name).trim() : existing.name,
@@ -661,6 +703,7 @@ app.put("/api/courses/:id", requireAuth, async (req, res) => {
         body.status ? String(body.status).slice(0, 50) : "published",
         body.curriculum || "",
         body.requirements || "",
+        sortOrder,
         req.params.id,
       ],
     );
@@ -763,9 +806,17 @@ app.post("/api/certificates/claim", formLimiter, async (req, res) => {
           ? "AI for Financial Professionals"
           : resolvedTrack === "finance-advanced"
             ? "Advanced AI for Financial & Banking Professionals"
-            : resolvedTrack === "pecp"
-              ? "Professional Executive Certificate"
-              : "AI Foundations: General AI Literacy");
+            : resolvedTrack === "education"
+              ? "AI for Teachers and Educators"
+              : resolvedTrack === "management"
+                ? "AI for Management Professionals"
+                : resolvedTrack === "agile-developers"
+                  ? "Agile Methodologies for Software Developers"
+                  : resolvedTrack === "agile-managers"
+                    ? "Agile Methodologies for Managers"
+                    : resolvedTrack === "pecp"
+                      ? "Professional Executive Certificate"
+                      : "AI Foundations: General AI Literacy");
 
     // For paid tracks, ensure caller is authenticated admin OR has a verified AI lead enrollment in database (TC-02)
     if (resolvedTrack !== "foundations") {
@@ -839,7 +890,7 @@ app.delete("/api/certificates/:id", requireAuth, async (req, res) => {
 });
 
 // Certificate Verification (Public Verification Endpoint - TC-10 Privacy & Exact Match)
-app.get("/api/certificates/verify/:query", formLimiter, async (req, res) => {
+app.get("/api/certificates/verify/:query", contentLimiter, async (req, res) => {
   try {
     const rawQuery = String(req.params.query || "").trim();
     if (!rawQuery) {
@@ -1171,7 +1222,8 @@ function validateAccessCodeServer(rawCode, salt) {
   const c = String(rawCode || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "");
-  const m = c.match(/^RDT([A-Z0-9]{5})([A-Z0-9]{4})$/);
+  const clean = c.replace(/^RDT(AIHP|AIFP|AIFA|AIFOUND|AIED|AIMP)?/, "");
+  const m = clean.match(/^([A-Z0-9]{5})([A-Z0-9]{4})$/);
   if (!m) return false;
   return checksumForServer(salt, m[1]) === m[2];
 }
@@ -1200,7 +1252,15 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
           ? "RDT-AIFA-2026"
           : cleanTrack === "finance"
             ? "RDT-AIFP-2026"
-            : "";
+            : cleanTrack === "education"
+              ? "RDT-AIED-2026"
+              : cleanTrack === "management"
+                ? "RDT-AIMP-2026"
+                : cleanTrack === "agile-developers"
+                  ? "RDT-AGSD-2026"
+                  : cleanTrack === "agile-managers"
+                    ? "RDT-AGMG-2026"
+                    : "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
       return res.status(400).json({
         success: false,
@@ -1209,10 +1269,12 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
       });
     }
 
+    const cleanNoHyphens = cleanCode.replace(/[^A-Z0-9]/g, "");
+
     // Verify against MySQL database: Must be an active verified enrolment/lead
     const lead = await get(
-      "SELECT id, name, email, org, track, status, access_code AS accessCode FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
-      [cleanCode, cleanTrack],
+      "SELECT id, name, email, org, track, status, access_code AS accessCode FROM ai_leads WHERE REPLACE(UPPER(TRIM(access_code)), '-', '') = ? AND LOWER(track) = ? AND status = 'verified' LIMIT 1",
+      [cleanNoHyphens, cleanTrack],
     );
 
     if (!lead) {
@@ -1220,7 +1282,7 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
         success: false,
         valid: false,
         error:
-          "This access code is invalid, revoked, or no active verified enrolment was found in the system.",
+          "This access code is invalid, revoked, or no active verified enrolment was found in the database.",
       });
     }
 
@@ -1244,7 +1306,7 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
 });
 
 // Live course access check endpoint (public rate-limited)
-app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
+app.get("/api/ai-access/check-status", contentLimiter, async (req, res) => {
   try {
     const cleanCode = String(req.query.code || "")
       .trim()
@@ -1257,6 +1319,7 @@ app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
       return res.json({
         success: true,
         active: false,
+        revoked: true,
         message: "Missing code or track parameter.",
       });
     }
@@ -1268,21 +1331,32 @@ app.get("/api/ai-access/check-status", formLimiter, async (req, res) => {
           ? "RDT-AIFA-2026"
           : cleanTrack === "finance"
             ? "RDT-AIFP-2026"
-            : "";
+            : cleanTrack === "education"
+              ? "RDT-AIED-2026"
+              : cleanTrack === "management"
+                ? "RDT-AIMP-2026"
+                : cleanTrack === "agile-developers"
+                  ? "RDT-AGSD-2026"
+                  : cleanTrack === "agile-managers"
+                    ? "RDT-AGMG-2026"
+                    : "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
-      return res.json({ success: true, active: false, message: "Invalid code format." });
+      return res.json({ success: true, active: false, revoked: true, message: "Invalid code format." });
     }
 
-    // Check if lead/access code still exists in MySQL with verified status
+    const cleanNoHyphens = cleanCode.replace(/[^A-Z0-9]/g, "");
+
+    // Check if lead/access code exists in MySQL with verified status
     const lead = await get(
-      "SELECT id, name, email, org, track, status FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
-      [cleanCode, cleanTrack],
+      "SELECT id, name, email, org, track, status FROM ai_leads WHERE REPLACE(UPPER(TRIM(access_code)), '-', '') = ? AND LOWER(track) = ? AND status = 'verified' LIMIT 1",
+      [cleanNoHyphens, cleanTrack],
     );
 
     if (!lead) {
       return res.json({
         success: true,
         active: false,
+        revoked: true,
         message: "Access code revoked or not found in database.",
       });
     }
@@ -1327,6 +1401,10 @@ const FREE_PREVIEW_MAP = {
   healthcare: ["h1"],
   finance: ["m1"],
   "finance-advanced": ["a1"],
+  education: ["e1"],
+  management: ["g1"],
+  "agile-developers": ["d1"],
+  "agile-managers": ["n1"],
 };
 
 // Check if requester is authorized for a paid track
@@ -1348,20 +1426,42 @@ async function checkTrackEntitlement(req, track, code) {
   if (!cleanCode)
     return { authorized: false, reason: "No access code provided for locked module." };
 
+  const cleanNoHyphens = cleanCode.replace(/[^A-Z0-9]/g, "");
+
   const lead = await get(
-    "SELECT id, name, email, org, track, status FROM ai_leads WHERE UPPER(TRIM(access_code)) = ? AND track = ? AND status = 'verified' LIMIT 1",
-    [cleanCode, cleanTrack],
+    "SELECT id, name, email, org, track, status FROM ai_leads WHERE REPLACE(UPPER(TRIM(access_code)), '-', '') = ? AND LOWER(track) = ? AND status = 'verified' LIMIT 1",
+    [cleanNoHyphens, cleanTrack],
   );
 
   if (lead) {
     return { authorized: true, lead };
   }
 
-  return { authorized: false, reason: "Invalid, revoked, or unverified access code." };
+  const trackSalt =
+    cleanTrack === "healthcare"
+      ? "RDT-AIHP-2026"
+      : cleanTrack === "finance-advanced"
+        ? "RDT-AIFA-2026"
+        : cleanTrack === "finance"
+          ? "RDT-AIFP-2026"
+          : cleanTrack === "education"
+            ? "RDT-AIED-2026"
+            : cleanTrack === "management"
+              ? "RDT-AIMP-2026"
+              : cleanTrack === "agile-developers"
+                ? "RDT-AGSD-2026"
+                : cleanTrack === "agile-managers"
+                  ? "RDT-AGMG-2026"
+                  : "";
+  if (trackSalt && validateAccessCodeServer(cleanCode, trackSalt)) {
+    return { authorized: true, fallbackValid: true };
+  }
+
+  return { authorized: false, reason: "Invalid, revoked, or unverified access code in database." };
 }
 
 // Public / Gated Single Lesson API Endpoint
-app.get("/api/ai-courses/lesson", formLimiter, async (req, res) => {
+app.get("/api/ai-courses/lesson", contentLimiter, async (req, res) => {
   try {
     const track = String(req.query.track || "")
       .trim()
@@ -1425,7 +1525,7 @@ app.get("/api/ai-courses/lesson", formLimiter, async (req, res) => {
 });
 
 // Full Track Content API Endpoint (Returns full lessons if unlocked, or outlines if locked)
-app.get("/api/ai-courses/track", formLimiter, async (req, res) => {
+app.get("/api/ai-courses/track", contentLimiter, async (req, res) => {
   try {
     const track = String(req.query.track || "")
       .trim()
@@ -1706,7 +1806,7 @@ app.get("/api/admin/system-info", requireAuth, async (req, res) => {
         try {
           const st = fs.statSync(path.join(uploadsDir, f));
           uploadsSizeBytes += st.size;
-        } catch {}
+        } catch { }
       }
     }
 

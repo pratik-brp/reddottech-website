@@ -21,6 +21,8 @@ export interface Course {
   price?: string | number;
   curriculum?: string;
   requirements?: string;
+  status?: string;
+  sortOrder?: number;
   modules?: {
     title: string;
     lessons: string[];

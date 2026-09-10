@@ -36,9 +36,9 @@ const tabs = [
     subtitle:
       "Through academic partnerships with global institutions like University of South Carolina Upstate (USA), we deliver high-quality programs combining global credibility with local accessibility.",
     points: [
-      "Transcripts & badging co-developed with US university faculty",
-      "Dual certification for PECP & Six Sigma Black Belt graduates",
-      "Direct pathway for global higher education and overseas careers",
+      "PECP courses developed in collaboration with U.S. university faculty",
+      "Joint globally recognized certification for PECP graduates",
+      "International learning experience with accessible online delivery",
     ],
   },
   {
@@ -50,9 +50,9 @@ const tabs = [
     subtitle:
       "Our focus is creating opportunities for students, early-career professionals, and working employees to upskill, earn credentials, and thrive in competitive domestic & global tech markets.",
     points: [
-      "100% live instructor-led weekend & online cohorts",
-      "Comprehensive downloadable study guides & toolkits",
-      "Free AI Unlocked community initiatives across Nepal",
+      "100% online, self-paced learning",
+      "Comprehensive downloadable study guides and learning resources",
+      "AI-focused learning pathways through AI Unlocked",
     ],
   },
 ];
@@ -150,7 +150,7 @@ export function HomeAboutSection() {
                             International Recognition
                           </p>
                           <p className="text-[10px] text-slate-300 font-medium truncate mt-0.5">
-                            Co-Certified with U.S. University Standard
+                            Global Academic Collaboration
                           </p>
                         </div>
                       </div>
