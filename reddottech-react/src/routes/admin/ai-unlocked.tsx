@@ -22,8 +22,7 @@ import {
 import { toast } from "sonner";
 import { requireAdminRoute, getToken } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
-import { getAiLeads, createAiLead, updateAiLead, deleteAiLead } from "@/lib/api";
-import { TRACK_CONFIGS, generateAccessCode } from "@/lib/ai-course-utils";
+import { getAiLeads, createAiLead, updateAiLead, deleteAiLead, generateServerAccessCode } from "@/lib/api";
 
 function getResolvedReceiptUrl(rawUrl?: string): string {
   if (!rawUrl) return "";
@@ -214,22 +213,16 @@ function AdminAiUnlockedPage() {
   };
 
   const handleVerifyLead = async (lead: AiPaymentLead) => {
-    const salt =
-      lead.track === "healthcare"
-        ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
-        : lead.track === "finance-advanced"
-          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-          : lead.track === "education"
-            ? TRACK_CONFIGS.education?.salt || "RDT-AIED-2026"
-            : lead.track === "management"
-              ? TRACK_CONFIGS.management?.salt || "RDT-AIMP-2026"
-              : lead.track === "agile-developers"
-                ? TRACK_CONFIGS["agile-developers"]?.salt || "RDT-AGSD-2026"
-                : lead.track === "agile-managers"
-                  ? TRACK_CONFIGS["agile-managers"]?.salt || "RDT-AGMG-2026"
-                  : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
-
-    const newCode = lead.accessCode || generateAccessCode(salt);
+    // Generate code server-side via HMAC-SHA256 (secure) unless one already exists
+    let newCode = lead.accessCode;
+    if (!newCode) {
+      try {
+        newCode = await generateServerAccessCode(lead.track);
+      } catch (err: any) {
+        toast.error(`Failed to generate access code: ${err?.message || "Check server secret configuration"}`);
+        return;
+      }
+    }
 
     const trackName =
       lead.track === "healthcare"
@@ -335,22 +328,14 @@ function AdminAiUnlockedPage() {
       return;
     }
 
-    const salt =
-      newTrack === "healthcare"
-        ? TRACK_CONFIGS.healthcare.salt || "RDT-AIHP-2026"
-        : newTrack === "finance-advanced"
-          ? TRACK_CONFIGS["finance-advanced"]?.salt || "RDT-AIFA-2026"
-          : newTrack === "education"
-            ? TRACK_CONFIGS.education?.salt || "RDT-AIED-2026"
-            : newTrack === "management"
-              ? TRACK_CONFIGS.management?.salt || "RDT-AIMP-2026"
-              : newTrack === "agile-developers"
-                ? TRACK_CONFIGS["agile-developers"]?.salt || "RDT-AGSD-2026"
-                : newTrack === "agile-managers"
-                  ? TRACK_CONFIGS["agile-managers"]?.salt || "RDT-AGMG-2026"
-                  : TRACK_CONFIGS.finance.salt || "RDT-AIFP-2026";
-
-    const generated = generateAccessCode(salt);
+    // Generate code server-side via HMAC-SHA256
+    let generated: string;
+    try {
+      generated = await generateServerAccessCode(newTrack);
+    } catch (err: any) {
+      toast.error(`Failed to generate access code: ${err?.message || "Check server secret configuration"}`);
+      return;
+    }
 
     const newLead: AiPaymentLead = {
       id: `lead-${Date.now()}`,
@@ -388,6 +373,7 @@ function AdminAiUnlockedPage() {
     } catch (err: any) {
       toast.error(`Database error: ${err?.message || "Could not register enrollment"}`);
     }
+
   };
 
   // Metrics

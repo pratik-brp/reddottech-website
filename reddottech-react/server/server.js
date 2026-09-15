@@ -354,7 +354,8 @@ app.post("/api/upload-receipt", formLimiter, (req, res) => {
 });
 
 // Endpoint to Serve Payment Receipts (supports both /api/receipts/ and /api/admin/receipts/)
-app.get(["/api/receipts/:filename", "/api/admin/receipts/:filename"], (req, res) => {
+// Serve payment receipts — admin-only to protect student PII / financial data (Finding #2)
+app.get(["/api/receipts/:filename", "/api/admin/receipts/:filename"], requireAuth, (req, res) => {
   try {
     const rawFilename = path.basename(req.params.filename || "");
     let safePath = path.resolve(receiptsDir, rawFilename);
@@ -385,7 +386,7 @@ app.get(["/api/receipts/:filename", "/api/admin/receipts/:filename"], (req, res)
 
     res.setHeader("Content-Type", mime);
     res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
     if (ext === ".pdf") {
       res.setHeader("Content-Disposition", `inline; filename="${rawFilename}"`);
     }
@@ -1199,21 +1200,49 @@ app.post("/api/settings", requireAuth, async (req, res) => {
 // -------------------------------------------------------------------
 const B32_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
-function fnv32(str) {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 0x01000193) >>> 0;
-  }
-  return h >>> 0;
-}
+// Per-track salts (public label only — security now comes from the HMAC secret, not this salt).
+const TRACK_SALTS = {
+  healthcare: "RDT-AIHP-2026",
+  "finance-advanced": "RDT-AIFA-2026",
+  finance: "RDT-AIFP-2026",
+  education: "RDT-AIED-2026",
+  management: "RDT-AIMP-2026",
+  "agile-developers": "RDT-AGSD-2026",
+  "agile-managers": "RDT-AGMG-2026",
+};
 
+const TRACK_CODE_PREFIX = {
+  healthcare: "AIHP",
+  "finance-advanced": "AIFA",
+  finance: "AIFP",
+  education: "AIED",
+  management: "AIMP",
+  "agile-developers": "AGSD",
+  "agile-managers": "AGMG",
+};
+
+/**
+ * Compute a 4-char B32 checksum using HMAC-SHA256 and the ACCESS_CODE_HMAC_SECRET env variable.
+ * Returns null when the secret is not configured — callers must treat null as a validation failure.
+ */
 function checksumForServer(salt, body) {
-  let h = fnv32(salt + "|" + body);
+  const secret = process.env.ACCESS_CODE_HMAC_SECRET || "";
+  if (!secret) {
+    console.error(
+      "[Access Code] ACCESS_CODE_HMAC_SECRET is not set. " +
+      "Access code validation is disabled until the secret is configured.",
+    );
+    return null;
+  }
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(`${salt}|${body}`);
+  const digest = hmac.digest();
+  // Extract 20 bits (4 × 5) from the first 3 bytes of the HMAC digest.
+  let bits = (digest[0] << 16) | (digest[1] << 8) | digest[2];
   let o = "";
   for (let i = 0; i < 4; i++) {
-    o += B32_ALPHABET[h % 32];
-    h = Math.floor(h / 32);
+    o += B32_ALPHABET[bits & 0x1f];
+    bits >>>= 5;
   }
   return o;
 }
@@ -1222,11 +1251,50 @@ function validateAccessCodeServer(rawCode, salt) {
   const c = String(rawCode || "")
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "");
-  const clean = c.replace(/^RDT(AIHP|AIFP|AIFA|AIFOUND|AIED|AIMP)?/, "");
+  const clean = c.replace(/^RDT(AIHP|AIFP|AIFA|AIFOUND|AIED|AIMP|AGSD|AGMG)?/, "");
   const m = clean.match(/^([A-Z0-9]{5})([A-Z0-9]{4})$/);
   if (!m) return false;
-  return checksumForServer(salt, m[1]) === m[2];
+  const expected = checksumForServer(salt, m[1]);
+  if (expected === null) return false; // secret not configured — fail safe
+  return expected === m[2];
 }
+
+// -------------------------------------------------------------------
+// ADMIN: Server-side HMAC access code generation (replaces client-side FNV-32)
+// -------------------------------------------------------------------
+app.post("/api/admin/generate-access-code", requireAuth, (req, res) => {
+  try {
+    const { track } = req.body || {};
+    const cleanTrack = String(track || "").trim().toLowerCase();
+    const salt = TRACK_SALTS[cleanTrack];
+    const prefix = TRACK_CODE_PREFIX[cleanTrack];
+
+    if (!salt || !prefix) {
+      return res.status(400).json({ success: false, error: `Unknown track: '${cleanTrack}'.` });
+    }
+
+    // Generate a cryptographically random 5-char B32 body.
+    const randomBytes = crypto.randomBytes(5);
+    let body = "";
+    for (const byte of randomBytes) {
+      body += B32_ALPHABET[byte % 32];
+    }
+
+    const checksum = checksumForServer(salt, body);
+    if (!checksum) {
+      return res.status(500).json({
+        success: false,
+        error: "ACCESS_CODE_HMAC_SECRET is not configured on this server. Cannot generate codes.",
+      });
+    }
+
+    const code = `RDT${prefix}${body}${checksum}`;
+    return res.json({ success: true, code, track: cleanTrack });
+  } catch (err) {
+    console.error("[Generate Access Code Error]", err);
+    return res.status(500).json({ success: false, error: "Failed to generate access code." });
+  }
+});
 
 // Access code validation endpoint (public rate-limited)
 app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
@@ -1245,22 +1313,7 @@ app.post("/api/ai-access/verify-code", formLimiter, async (req, res) => {
         .json({ success: false, valid: false, error: "Track and access code are required." });
     }
 
-    const salt =
-      cleanTrack === "healthcare"
-        ? "RDT-AIHP-2026"
-        : cleanTrack === "finance-advanced"
-          ? "RDT-AIFA-2026"
-          : cleanTrack === "finance"
-            ? "RDT-AIFP-2026"
-            : cleanTrack === "education"
-              ? "RDT-AIED-2026"
-              : cleanTrack === "management"
-                ? "RDT-AIMP-2026"
-                : cleanTrack === "agile-developers"
-                  ? "RDT-AGSD-2026"
-                  : cleanTrack === "agile-managers"
-                    ? "RDT-AGMG-2026"
-                    : "";
+    const salt = TRACK_SALTS[cleanTrack] || "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
       return res.status(400).json({
         success: false,
@@ -1324,22 +1377,7 @@ app.get("/api/ai-access/check-status", contentLimiter, async (req, res) => {
       });
     }
 
-    const salt =
-      cleanTrack === "healthcare"
-        ? "RDT-AIHP-2026"
-        : cleanTrack === "finance-advanced"
-          ? "RDT-AIFA-2026"
-          : cleanTrack === "finance"
-            ? "RDT-AIFP-2026"
-            : cleanTrack === "education"
-              ? "RDT-AIED-2026"
-              : cleanTrack === "management"
-                ? "RDT-AIMP-2026"
-                : cleanTrack === "agile-developers"
-                  ? "RDT-AGSD-2026"
-                  : cleanTrack === "agile-managers"
-                    ? "RDT-AGMG-2026"
-                    : "";
+    const salt = TRACK_SALTS[cleanTrack] || "";
     if (!salt || !validateAccessCodeServer(cleanCode, salt)) {
       return res.json({ success: true, active: false, revoked: true, message: "Invalid code format." });
     }
@@ -1437,26 +1475,8 @@ async function checkTrackEntitlement(req, track, code) {
     return { authorized: true, lead };
   }
 
-  const trackSalt =
-    cleanTrack === "healthcare"
-      ? "RDT-AIHP-2026"
-      : cleanTrack === "finance-advanced"
-        ? "RDT-AIFA-2026"
-        : cleanTrack === "finance"
-          ? "RDT-AIFP-2026"
-          : cleanTrack === "education"
-            ? "RDT-AIED-2026"
-            : cleanTrack === "management"
-              ? "RDT-AIMP-2026"
-              : cleanTrack === "agile-developers"
-                ? "RDT-AGSD-2026"
-                : cleanTrack === "agile-managers"
-                  ? "RDT-AGMG-2026"
-                  : "";
-  if (trackSalt && validateAccessCodeServer(cleanCode, trackSalt)) {
-    return { authorized: true, fallbackValid: true };
-  }
-
+  // No fallback checksum-only path: revoked codes must stay revoked.
+  // Authorization requires a live verified record in the database.
   return { authorized: false, reason: "Invalid, revoked, or unverified access code in database." };
 }
 
@@ -1765,9 +1785,7 @@ app.get("/api/stats", requireAuth, async (req, res) => {
     const contactsRow = await get("SELECT COUNT(*) as count FROM contacts");
     const subscriptionsRow = await get("SELECT COUNT(*) as count FROM subscriptions");
     const certificatesRow = await get("SELECT COUNT(*) as count FROM certificates");
-    const coursesRow = await get(
-      "SELECT COUNT(*) as count FROM courses WHERE status = 'published'",
-    );
+    const coursesRow = await get("SELECT COUNT(*) as count FROM courses");
 
     res.json({
       success: true,
@@ -1781,6 +1799,36 @@ app.get("/api/stats", requireAuth, async (req, res) => {
   } catch (err) {
     console.error("[Stats API Error]", err);
     res.status(500).json({ success: false, error: "Failed to fetch dashboard stats." });
+  }
+});
+
+// -------------------------------------------------------------------
+// 7.1 PUBLIC ABOUT PAGE STATISTICS API (Live Computed Counts)
+// -------------------------------------------------------------------
+app.get("/api/about-stats", contentLimiter, async (req, res) => {
+  try {
+    const pecpRow = await get(
+      "SELECT COUNT(*) as count FROM courses WHERE status = 'published' AND LOWER(certification) = 'pecp'",
+    );
+    const pecpCourses = Number(pecpRow?.count) || 0;
+
+    const aiCatalog = getAiCoursesData();
+    const aiUnlockedPathways = Object.keys(aiCatalog).filter(
+      (track) => Array.isArray(aiCatalog[track]) && aiCatalog[track].length > 0,
+    ).length;
+
+    res.json({
+      success: true,
+      data: {
+        pecpCourses,
+        aiUnlockedPathways,
+        careerPathways: pecpCourses + aiUnlockedPathways,
+        courseAccess: "24/7",
+      },
+    });
+  } catch (err) {
+    console.error("[About Stats API Error]", err);
+    res.status(500).json({ success: false, error: "Failed to fetch site statistics." });
   }
 });
 

@@ -219,6 +219,10 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
             padding-top: 4px;
             min-width: 170px;
           }
+          .date-col {
+            padding-top: 4px;
+            min-width: 170px;
+          }
           .sign-title {
             color: #0F1E3D;
             font-size: 12px;
@@ -265,7 +269,7 @@ export function printOfficialCertificate(options: CertificatePrintOptions) {
                 <span class="sign-title">Red Dot Technologies Pvt. Ltd.</span>
                 <span class="sign-sub">Baluwatar, Kathmandu, Nepal</span>
               </div>
-              <div class="sign-col" style="text-align: right;">
+              <div class="date-col" style="text-align: right;">
                 <span class="sign-title">${certDate}</span>
                 <span class="sign-sub">Date of completion</span>
               </div>

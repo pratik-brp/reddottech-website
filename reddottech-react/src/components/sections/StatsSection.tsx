@@ -2,26 +2,24 @@ import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Reveal } from "@/components/motion/Reveal";
 import { GraduationCap, Bot, Route, Clock, Sparkles } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
-import { getCourses, getCachedCourses } from "@/lib/api";
+import { getAboutStats, type AboutStats } from "@/lib/api";
 
 export function StatsSection() {
-  const [coursesCount, setCoursesCount] = useState<number>(() => {
-    const cached = getCachedCourses();
-    return Array.isArray(cached) && cached.length > 0 ? cached.length : 9;
+  const [aboutStats, setAboutStats] = useState<AboutStats>({
+    pecpCourses: 9,
+    aiUnlockedPathways: 8,
+    careerPathways: 17,
+    courseAccess: "24/7",
   });
 
   useEffect(() => {
-    getCourses().then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        setCoursesCount(data.length);
-      }
+    getAboutStats().then((data) => {
+      if (data) setAboutStats(data);
     });
 
     const handleCoursesUpdated = () => {
-      getCourses().then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setCoursesCount(data.length);
-        }
+      getAboutStats().then((data) => {
+        if (data) setAboutStats(data);
       });
     };
 
@@ -32,7 +30,7 @@ export function StatsSection() {
   const stats = useMemo(
     () => [
       {
-        value: coursesCount,
+        value: aboutStats.pecpCourses,
         suffix: "",
         label: "PECP Courses",
         description: "Specialized courses designed around professional and industry needs",
@@ -43,7 +41,7 @@ export function StatsSection() {
         decimals: 0,
       },
       {
-        value: 4,
+        value: aboutStats.aiUnlockedPathways,
         suffix: "",
         label: "AI Unlocked Courses",
         description: "Practical AI learning pathways for different levels and career goals",
@@ -54,7 +52,7 @@ export function StatsSection() {
         decimals: 0,
       },
       {
-        value: 10,
+        value: aboutStats.careerPathways,
         suffix: "+",
         label: "Career Pathways",
         description: "Structured learning pathways to help you build relevant, future-ready skills",
@@ -76,7 +74,7 @@ export function StatsSection() {
         decimals: 0,
       },
     ],
-    [coursesCount],
+    [aboutStats],
   );
 
   return (

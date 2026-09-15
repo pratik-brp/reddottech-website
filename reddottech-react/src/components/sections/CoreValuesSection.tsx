@@ -45,9 +45,9 @@ export function CoreValuesSection() {
       id: "excellence",
       number: "01",
       title: "Excellence",
-      badge: "Quality Standard",
-      tagline: "Setting Nepal's Benchmark for World-Class Executive Training",
-      desc: "We uphold uncompromising standards across every course, syllabus design, instructor selection, and certification exam—ensuring learners receive education on par with international tier-1 universities.",
+      badge: "Quality Learning",
+      tagline: "Quality Learning, Built with Purpose",
+      desc: "We focus on creating structured learning experiences that combine relevant knowledge, practical application, and clear learning outcomes.",
       icon: Award,
       image: "/images/about/core-excellence.jpg",
       accentGradient: "from-rose-500 via-brand-red to-rose-700",
@@ -56,23 +56,29 @@ export function CoreValuesSection() {
       badgeStyle: "bg-rose-50 text-brand-red border-rose-200/80",
       glowBg: "bg-brand-red/10 border-brand-red/20",
       pillars: [
-        { title: "Curriculum Rigor", desc: "Built alongside USC Upstate academic benchmarks." },
         {
-          title: "Expert Faculty",
-          desc: "Led by industry practitioners & patented professionals.",
+          title: "Practical Content",
+          desc: "Relevant concepts and workplace applications.",
         },
-        { title: "Quality Audits", desc: "100% course evaluation & verifiable credentials." },
+        {
+          title: "Structured Learning",
+          desc: "Clear courses and learning pathways.",
+        },
+        {
+          title: "Quality Resources",
+          desc: "Accessible learning materials and supporting resources.",
+        },
       ],
       quote:
-        "Excellence is not an act, but a habit embedded in every lab, module, and certification we issue.",
+        "We believe professional learning should be practical, relevant, and built to a high standard.",
     },
     {
       id: "innovation",
       number: "02",
       title: "Innovation",
       badge: "Future-Ready",
-      tagline: "Adapting to AI, Automation & Emerging Industry Shifts",
-      desc: "Technology moves fast. We continuously refresh our program offerings with real-world AI tools, machine learning pipelines, and hands-on capstone laboratory scenarios.",
+      tagline: "Preparing for a Changing Workplace",
+      desc: "Technology and industries continue to evolve. We focus on emerging technologies and relevant skills that help learners stay adaptable and prepared for what comes next.",
       icon: Sparkles,
       image: "/images/about/core-innovation.png",
       accentGradient: "from-amber-500 via-orange-500 to-amber-600",
@@ -82,28 +88,28 @@ export function CoreValuesSection() {
       glowBg: "bg-amber-500/10 border-amber-500/20",
       pillars: [
         {
-          title: "AI Integration",
-          desc: "Generative & Machine Learning modules embedded in courses.",
+          title: "Emerging Technologies",
+          desc: "Learning pathways covering relevant technologies and modern tools.",
         },
         {
-          title: "Live Capstone Labs",
-          desc: "Real corporate scenario simulations instead of pure theory.",
+          title: "AI & Digital Skills",
+          desc: "Dedicated learning through AI Unlocked and technology-focused programs.",
         },
         {
-          title: "Agile Curriculum",
-          desc: "Quarterly updates matching global technology standards.",
+          title: "Continuous Learning",
+          desc: "Programs designed to support ongoing professional development.",
         },
       ],
       quote:
-        "We don't teach yesterday's methods; we prepare our learners for tomorrow's tech landscape.",
+        "We prepare learners to keep learning as technology and workplaces evolve.",
     },
     {
       id: "accessibility",
       number: "03",
       title: "Accessibility",
       badge: "Local Impact",
-      tagline: "Bringing International Tier-1 Education Directly to Nepal",
-      desc: "We believe world-class education should not require leaving Nepal. We break financial and geographical barriers through hybrid schedules and accessible Nepalese rupee tuition rates.",
+      tagline: "International Learning, Accessible Locally",
+      desc: "We bring international academic collaboration and globally oriented learning opportunities to learners in Nepal through accessible online programs.",
       icon: Globe2,
       image: "/images/about/core-accessibility.png",
       accentGradient: "from-emerald-500 via-teal-500 to-emerald-700",
@@ -113,28 +119,28 @@ export function CoreValuesSection() {
       glowBg: "bg-emerald-500/10 border-emerald-500/20",
       pillars: [
         {
-          title: "Hybrid Learning",
-          desc: "Live weekend masterclasses & flexible self-paced video modules.",
+          title: "Online Access",
+          desc: "Learn from anywhere through online, self-paced programs.",
         },
         {
-          title: "Affordable Tuition",
-          desc: "Premium international certification at local Nepalese rates.",
+          title: "Local Accessibility",
+          desc: "Programs designed for learners in Nepal.",
         },
         {
-          title: "Kathmandu HQ",
-          desc: "Modern physical learning center & nationwide online reach.",
+          title: "Flexible Learning",
+          desc: "Study around work, education, and other commitments.",
         },
       ],
       quote:
-        "Global credentials, delivered locally—empowering Nepalese professionals right here at home.",
+        "Global learning opportunities should be accessible to learners in Nepal.",
     },
     {
       id: "growth",
       number: "04",
       title: "Growth",
       badge: "Career Momentum",
-      tagline: "Transforming Knowledge into Promotions, Hires & Leadership Roles",
-      desc: "Education is measured by real outcomes. We track and support every learner’s professional progress, connecting them with hiring partners, career counseling, and senior mentorship.",
+      tagline: "Turning Learning into Professional Growth",
+      desc: "We believe professional development is an ongoing journey. Our programs help learners build relevant skills, earn credentials, and prepare for new responsibilities and opportunities.",
       icon: TrendingUp,
       image: "/images/about/core-growth.png",
       accentGradient: "from-blue-500 via-indigo-500 to-blue-700",
@@ -143,27 +149,29 @@ export function CoreValuesSection() {
       badgeStyle: "bg-blue-50 text-blue-700 border-blue-200/80",
       glowBg: "bg-blue-500/10 border-blue-500/20",
       pillars: [
-        { title: "Career Referrals", desc: "Direct placement pipeline to 40+ corporate partners." },
         {
-          title: "Leadership Focus",
-          desc: "Management frameworks, DMAIC Six Sigma, & soft skills.",
+          title: "Workplace Skills",
+          desc: "Build knowledge and skills relevant to today’s workplace.",
         },
         {
-          title: "Verifiable Badges",
-          desc: "Sharable digital credentials for LinkedIn & corporate recruiters.",
+          title: "Professional Development",
+          desc: "Continue growing through structured learning pathways.",
+        },
+        {
+          title: "Recognized Credentials",
+          desc: "Earn credentials that validate your learning and development.",
         },
       ],
       quote:
-        "Our success is measured exclusively by the promotions and breakthroughs of our alumni.",
+        "Learning should help people keep moving forward.",
     },
     {
       id: "community",
       number: "05",
       title: "Community",
-      badge: "Network & Alumni",
-      tagline: "A Thriving Ecosystem of 1,000+ Certified Leaders & Mentors",
-
-      desc: "When you join Red Dot, you gain a lifelong professional network of engineers, managers, and corporate leaders across Nepal and abroad.",
+      badge: "Learning Community",
+      tagline: "Creating Connections Through Learning",
+      desc: "We believe learning is strengthened through shared ideas, discussions, and opportunities to stay connected with others on a similar professional journey.",
       icon: Users,
       image: "/images/about/core-community.png",
       accentGradient: "from-purple-500 via-violet-500 to-purple-700",
@@ -173,20 +181,20 @@ export function CoreValuesSection() {
       glowBg: "bg-purple-500/10 border-purple-500/20",
       pillars: [
         {
-          title: "1k+ Alumni Network",
-          desc: "Connect with certified professionals across tech and business.",
+          title: "Peer Learning",
+          desc: "Exchange perspectives and ideas through learning discussions.",
         },
         {
-          title: "Peer Masterclasses",
-          desc: "Guest lectures, alumni roundtables, and networking events.",
+          title: "Knowledge Sharing",
+          desc: "Learn from different experiences, approaches, and viewpoints.",
         },
         {
-          title: "Lifelong Access",
-          desc: "Permanent access to course updates and alumni privileges.",
+          title: "Continued Learning",
+          desc: "Stay connected with new programs, resources, and learning opportunities.",
         },
       ],
       quote:
-        "You enter as a learner, and remain forever part of Nepal's premier certified professional network.",
+        "Learning doesn’t end with a course - it can be the beginning of continued growth and connection.",
     },
   ];
 
@@ -198,13 +206,13 @@ export function CoreValuesSection() {
   };
 
   const handleNext = () => {
-    handleSelect(activeIndex === values.length - 1 ? 0 : activeIndex + 1);
+    handleSelect((activeIndex + 1) % values.length);
   };
 
   return (
     <section
-      id="core-values"
-      className="relative py-10 sm:py-20 lg:py-28 overflow-hidden bg-slate-50/80 border-y border-slate-200/80"
+      id="values"
+      className="relative py-12 sm:py-20 lg:py-28 overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 border-t border-slate-200/80"
     >
       {/* Background Texture & Ambient Radial Glows */}
       <div
@@ -235,13 +243,13 @@ export function CoreValuesSection() {
 
           <ScrollReveal direction="up" delay={0.1}>
             <h2 className="display-font text-xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
-              Our Core <span className="gradient-text">Values</span>
+              Our Guiding <span className="gradient-text">Principles</span>
             </h2>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.2}>
             <p className="text-xs sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-              Explore the 5 foundational pillars that guide our training programs, quality
+              Explore the 5 foundational principles that guide our training programs, quality
               benchmarks, and learner community across Nepal.
             </p>
           </ScrollReveal>
@@ -326,7 +334,7 @@ export function CoreValuesSection() {
                     {current.badge}
                   </span>
                   <span className="text-[10px] sm:text-xs font-mono font-bold text-slate-300">
-                    Pillar {current.number} / 05
+                    Principle {current.number} / 05
                   </span>
                 </div>
               </div>
@@ -399,15 +407,15 @@ export function CoreValuesSection() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handlePrev}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
-                    aria-label="Previous core value"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all cursor-pointer"
+                    aria-label="Previous principle"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
                   <button
                     onClick={handleNext}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all"
-                    aria-label="Next core value"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-brand-red hover:text-white hover:border-brand-red transition-all cursor-pointer"
+                    aria-label="Next principle"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
@@ -415,9 +423,9 @@ export function CoreValuesSection() {
 
                 <button
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-ink px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-brand-red"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-ink px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-brand-red cursor-pointer"
                 >
-                  <span>Next Core Value</span>
+                  <span>Next Principle</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>

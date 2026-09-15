@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { CoreValuesSection } from "@/components/sections/CoreValuesSection";
 import { WhatWeDoSection } from "@/components/sections/WhatWeDoSection";
@@ -7,18 +8,8 @@ import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Magnetic } from "@/components/motion/Magnetic";
-import {
-  Award,
-  Zap,
-  TrendingUp,
-  ShieldCheck,
-  Target,
-  ArrowRight,
-  Sparkles,
-  GraduationCap,
-  PhoneCall,
-  Building2,
-} from "lucide-react";
+import { getAboutStats } from "@/lib/api";
+import { Target, ArrowRight, Sparkles, PhoneCall, Globe, BookOpen, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -31,17 +22,50 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
+  loader: async () => {
+    try {
+      const stats = await getAboutStats();
+      return { stats };
+    } catch {
+      return { stats: null };
+    }
+  },
   component: AboutPage,
 });
 
 function AboutPage() {
+  const loaderData = Route.useLoaderData();
+  const [stats, setStats] = useState(() => {
+    return (
+      loaderData?.stats || {
+        pecpCourses: 9,
+        aiUnlockedPathways: 8,
+        careerPathways: 17,
+        courseAccess: "24/7",
+      }
+    );
+  });
+
+  useEffect(() => {
+    getAboutStats().then((data) => {
+      if (data) setStats(data);
+    });
+    const handleCoursesUpdated = () => {
+      getAboutStats().then((data) => {
+        if (data) setStats(data);
+      });
+    };
+    window.addEventListener("courses-updated", handleCoursesUpdated);
+    return () => window.removeEventListener("courses-updated", handleCoursesUpdated);
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen overflow-x-hidden">
       {/* Page Hero */}
       <PageHero
         badge="About Red Dot Technologies"
-        title="Building Nepal's Premier Talent & Executive Workforce"
-        subtitle="Red Dot Technologies Pvt. Ltd. is Kathmandu's premier professional certification hub—empowering engineers, executives, and organizations with globally recognized credentials and workforce-ready skills."
+        title="Building Skills for a Changing Workforce"
+        subtitle="Red Dot Technologies Pvt. Ltd. is a professional learning and certification provider in Nepal, helping students, graduates, professionals, and organizations build practical, industry-relevant skills and earn globally recognized credentials."
         actions={
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Magnetic>
@@ -59,67 +83,43 @@ function AboutPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white hover:bg-slate-50 text-brand-ink font-bold text-xs sm:text-sm py-3.5 px-6 transition-all duration-300 shadow-sm w-full sm:w-auto"
               >
                 <PhoneCall className="h-4 w-4 text-brand-red" />
-                <span>Speak to Academic Advisor</span>
+                <span>Contact Us</span>
               </Link>
             </Magnetic>
           </div>
         }
       >
-        {/* Feature Pills & Trust Stat Bar */}
-        <div className="max-w-4xl mx-auto space-y-8 pt-4">
-          {/* Feature Badges Strip — 2-Column Mobile Grid */}
-          <div
-            id="partnership"
-            className="grid grid-cols-2 sm:flex items-center justify-center gap-2 sm:gap-3 text-xs font-semibold text-slate-700"
-          >
-            <span className="col-span-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-xs text-[10px] sm:text-xs truncate">
-              <GraduationCap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-brand-red shrink-0" />
-              <span className="truncate">USC Upstate USA</span>
-            </span>
-            <span className="col-span-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-xs text-[10px] sm:text-xs truncate">
-              <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600 shrink-0" />
-              <span className="truncate">Six Sigma &amp; PMI®</span>
-            </span>
-            <span className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-xs text-[10px] sm:text-xs">
-              <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 shrink-0" />
-              <span>Kathmandu HQ &amp; Nationwide Hubs</span>
-            </span>
-          </div>
-
-          {/* Stat Bar */}
+        {/* Stat Bar */}
+        <div className="max-w-4xl mx-auto pt-4">
           <div className="rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-6 shadow-xs sm:shadow-md grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/60">
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink">
-                <AnimatedCounter value={1} suffix="k+" />
+                <AnimatedCounter value={stats.pecpCourses} />
               </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
-                Alumni &amp; Professionals
-              </p>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">PECP Courses</p>
             </div>
 
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-ink">
-                <AnimatedCounter value={10} suffix="+" />
+                <AnimatedCounter value={stats.aiUnlockedPathways} />
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
-                Corporate Partners
+                AI Unlocked Pathways
               </p>
             </div>
 
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
               <div className="display-font text-xl sm:text-3xl font-extrabold text-emerald-600">
-                <AnimatedCounter value={98} suffix="%" />
+                <AnimatedCounter value={stats.careerPathways} />
               </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">
-                Career Impact Rate
-              </p>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Career Pathways</p>
             </div>
 
             <div className="pt-1.5 sm:pt-0 sm:px-2 space-y-0.5 text-center">
-              <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-red flex items-center justify-center gap-1">
-                <AnimatedCounter value={4.9} decimals={1} suffix="★" />
+              <div className="display-font text-xl sm:text-3xl font-extrabold text-brand-red">
+                {stats.courseAccess}
               </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Student Rating</p>
+              <p className="text-[10px] sm:text-xs text-slate-500 font-medium">Course Access</p>
             </div>
           </div>
         </div>
@@ -154,60 +154,63 @@ function AboutPage() {
                 </div>
 
                 <h2 className="display-font text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
-                  <span className="text-brand-red">Who</span> We Are
+                  Learning That Connects{" "}
+                  <span className="text-brand-red">Skills with Opportunity</span>
                 </h2>
               </div>
 
               <p className="text-slate-600 text-xs sm:text-base leading-relaxed font-normal">
-                Red Dot Technologies Pvt. Ltd. is a Kathmandu-based training and certification
-                provider committed to bridging the gap between education and employability. We
-                design and deliver globally recognized programs that equip learners with the skills,
-                certifications, and confidence required to succeed in today’s competitive workforce.
+                Red Dot Technologies Pvt. Ltd. is a Kathmandu-based professional learning and
+                certification provider committed to making relevant, accessible, and practical
+                education available to learners in Nepal.
               </p>
 
               <p className="text-slate-600 text-xs sm:text-base leading-relaxed font-normal">
-                Our focus is on creating opportunities for students, early-career professionals, and
-                working employees to grow, upskill, and succeed in Nepal and beyond.
+                Through our programs and academic collaborations, we help students, graduates,
+                early-career professionals, and working employees build workplace-ready skills,
+                pursue recognized credentials, and continue growing throughout their careers.
               </p>
 
-              {/* Core Pillars Feature Grid — 2-Column Mobile Grid */}
+              {/* Core Pillars Feature Grid */}
               <div
                 id="faculty"
-                className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4 pt-3 sm:pt-6 border-t border-slate-200/80"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-3 sm:pt-6 border-t border-slate-200/80"
               >
-                <div className="col-span-1 group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 sm:p-4 transition-all duration-300 hover:bg-white hover:border-brand-red/30 hover:shadow-xs">
-                  <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-brand-red/10 text-brand-red mb-1.5 sm:mb-3 group-hover:bg-brand-red group-hover:text-white transition-colors">
-                    <Award className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 stroke-[2.2]" />
+                <div className="group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3.5 sm:p-4 transition-all duration-300 hover:bg-white hover:border-brand-red/30 hover:shadow-xs">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-brand-red/10 text-brand-red mb-2 sm:mb-3 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                    <Globe className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                   </div>
                   <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">
-                    Global Standard
+                    Global Perspective
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 leading-snug font-medium line-clamp-2 sm:line-clamp-none">
-                    US institutional tie-ups &amp; verifiable badges.
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">
+                    International academic collaboration and globally oriented credentials.
                   </p>
                 </div>
 
-                <div className="col-span-1 group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 sm:p-4 transition-all duration-300 hover:bg-white hover:border-amber-400/40 hover:shadow-xs">
-                  <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-amber-500/10 text-amber-600 mb-1.5 sm:mb-3 group-hover:bg-amber-500 group-hover:text-white transition-colors">
-                    <Zap className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 stroke-[2.2]" />
+                <div className="group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3.5 sm:p-4 transition-all duration-300 hover:bg-white hover:border-amber-400/40 hover:shadow-xs">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-amber-500/10 text-amber-600 mb-2 sm:mb-3 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                   </div>
                   <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">
-                    Practical Mastery
+                    Practical Learning
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 leading-snug font-medium line-clamp-2 sm:line-clamp-none">
-                    Live laboratory capstones &amp; case audits.
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">
+                    Projects, examples, discussions, and resources connected to workplace
+                    applications.
                   </p>
                 </div>
 
-                <div className="col-span-2 sm:col-span-1 group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3 sm:p-4 transition-all duration-300 hover:bg-white hover:border-emerald-400/40 hover:shadow-xs">
-                  <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 mb-1.5 sm:mb-3 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                    <TrendingUp className="h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 stroke-[2.2]" />
+                <div className="group rounded-xl sm:rounded-2xl border border-slate-200/80 bg-slate-50/80 p-3.5 sm:p-4 transition-all duration-300 hover:bg-white hover:border-emerald-400/40 hover:shadow-xs">
+                  <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-emerald-500/10 text-emerald-600 mb-2 sm:mb-3 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 stroke-[2.2]" />
                   </div>
                   <h4 className="text-xs sm:text-sm font-extrabold text-brand-ink tracking-tight">
-                    Career Outcomes
+                    Flexible Access
                   </h4>
-                  <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 leading-snug font-medium line-clamp-2 sm:line-clamp-none">
-                    Workforce mentorship &amp; direct industry guidance.
+                  <p className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug font-medium">
+                    Online, self-paced learning designed to fit around work, study, and other
+                    commitments.
                   </p>
                 </div>
               </div>

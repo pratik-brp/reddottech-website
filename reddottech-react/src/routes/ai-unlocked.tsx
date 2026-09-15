@@ -75,6 +75,7 @@ import {
   type TrackConfig,
 } from "@/lib/ai-course-utils";
 import { printOfficialCertificate } from "@/lib/certificate-print";
+import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
 
 interface AiUnlockedSearch {
   track?:
@@ -669,13 +670,7 @@ function AiUnlockedPage() {
   ]);
 
   const openCourse = (
-    track:
-      | "foundations"
-      | "healthcare"
-      | "finance"
-      | "finance-advanced"
-      | "education"
-      | "management",
+    track: NonNullable<AiUnlockedSearch["track"]>,
     initialView: string = "home",
   ) => {
     const isSpecial =
@@ -1341,14 +1336,14 @@ function AiUnlockedPage() {
                     <div className="p-4 sm:p-5 space-y-3 flex-1 flex flex-col justify-between">
                       <div>
                         {/* Header Row: Badge & Duration */}
-                        <div className="flex items-center justify-between gap-2 mb-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 mb-2.5">
                           <span
-                            className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider border px-2.5 py-0.5 rounded-full flex items-center gap-1 ${track.badgeBg}`}
+                            className={`text-[9.5px] sm:text-[10.5px] font-black uppercase tracking-wider border px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5 ${track.badgeBg}`}
                           >
                             <TrackIcon className="h-3 w-3 shrink-0" />
-                            <span className="truncate max-w-[170px]">{track.badge}</span>
+                            <span>{track.badge}</span>
                           </span>
-                          <span className="text-xs font-bold text-slate-500 flex items-center gap-1 shrink-0">
+                          <span className="text-xs font-bold text-slate-500 flex items-center gap-1 shrink-0 ml-auto">
                             <Clock className="h-3.5 w-3.5 text-slate-400" /> {track.duration}
                           </span>
                         </div>
@@ -1590,15 +1585,16 @@ function AiUnlockedPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 items-start w-full min-w-0">
           {/* ── Left Sidebar (Mobile Drawer / Desktop Sticky Sidebar) ── */}
           <aside
+            data-lenis-prevent
             className={[
-              "rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/90 bg-white",
+              "rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white custom-scrollbar",
               mobileSideOpen
                 ? "fixed inset-x-3 top-16 bottom-4 z-50 overflow-y-auto block shadow-2xl lg:relative lg:inset-auto lg:top-20 lg:bottom-auto lg:z-auto lg:max-h-[calc(100vh-6rem)] lg:shadow-2xs lg:col-span-1 lg:sticky"
                 : "hidden lg:block lg:col-span-1 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:shadow-2xs",
             ].join(" ")}
           >
             {/* Sidebar header */}
-            <div className="px-3.5 sm:px-4 py-3 bg-slate-50/90 border-b border-slate-100">
+            <div className="sticky top-0 z-10 px-3.5 sm:px-4 py-3 bg-slate-50/95 backdrop-blur-xs border-b border-slate-100">
               <div className="flex items-center justify-between gap-2">
                 <div>
                   <span className="text-[9px] font-black uppercase tracking-wider text-brand-red">
@@ -3591,6 +3587,15 @@ function AiUnlockedPage() {
                           <Printer className="h-3.5 w-3.5" />
                           <span>Print / Save PDF</span>
                         </button>
+
+                        <ShareOnLinkedInButton
+                          variant="primary"
+                          certificateTitle={activeTrackConfig?.certTitle || "AI Course Certificate"}
+                          certificateId={certReference}
+                          recipientName={certName.trim() || undefined}
+                          issueDate={new Date().toISOString()}
+                          label="Share on LinkedIn"
+                        />
                       </div>
                     </div>
 
@@ -3666,7 +3671,7 @@ function AiUnlockedPage() {
                             </div>
 
                             <div className="text-right">
-                              <div className="border-t border-[#0F1E3D] pt-1.5 min-w-[180px]">
+                              <div className="pt-1.5 min-w-[180px]">
                                 <b className="text-[#0F1E3D] text-xs sm:text-[13px] block">
                                   {new Date().toLocaleDateString("en-GB", {
                                     day: "numeric",

@@ -11,7 +11,7 @@ import {
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { Link } from "@tanstack/react-router";
 import { Magnetic } from "@/components/motion/Magnetic";
-import { getCourses, getCachedCourses } from "@/lib/api";
+import { getAboutStats, type AboutStats } from "@/lib/api";
 
 const features = [
   {
@@ -22,13 +22,13 @@ const features = [
     title: "International Recognition",
     badge: "GLOBAL CREDENTIALS",
     description:
-      "Earn globally oriented credentials through programs offered in collaboration with internationally recognized academic partners.",
+      "Earn recognized credentials through programs developed through international academic collaboration.",
     highlights: [
       "Joint USC Upstate & Red Dot credentials",
-      "Verifiable digital credentials",
+      "Digital credential verification",
       "International academic collaboration",
     ],
-    tagline: "Jointly certified with USC Upstate (USA)",
+    tagline: "Joint Credentials with USC Upstate (USA)",
   },
   {
     id: "02",
@@ -38,67 +38,65 @@ const features = [
     title: "Industry-Relevant Skills",
     badge: "INDUSTRY-RELEVANT",
     description:
-      "Build practical knowledge through structured courses, real-world examples, projects, and guided learning resources.",
+      "Build practical knowledge through structured courses, projects, examples, discussions, and workplace-focused learning resources.",
     highlights: [
-      "Practical projects & case studies",
-      "Workplace-focused learning",
-      "Downloadable study resources",
+      "Practical projects & activities",
+      "Real-world examples & discussions",
+      "Downloadable learning resources",
     ],
-    tagline: "Practical, project-driven skill building",
+    tagline: "Learning designed for real-world application",
   },
   {
     id: "03",
     icon: Globe,
     svg: "/images/about/choose-us-3.svg",
     image: "/images/about/career-advancement.png",
-    title: "Career-Ready Skills",
-    badge: "CAREER-READY",
+    title: "Workplace-Ready Skills",
+    badge: "WORKPLACE-READY",
     description:
-      "Build relevant skills and credentials to support your professional growth and prepare for evolving career opportunities.",
+      "Develop relevant knowledge and professional skills to support continuous learning, career development, and workplace readiness.",
     highlights: [
       "Workplace-ready skills",
       "Professional development",
       "Career-focused learning pathways",
     ],
-    tagline: "Skills built for real career growth",
+    tagline: "Build skills for today’s evolving workplace",
   },
   {
     id: "04",
     icon: Briefcase,
     svg: "/images/about/choose-us-4.svg",
     image: "/images/about/flexible-learning.png",
-    title: "Flexible Learning Models",
-    badge: "FLEXIBLE LEARNING",
+    title: "Online & Self-Paced",
+    badge: "ONLINE & SELF-PACED",
     description:
-      "Learn online and at your own pace with flexible programs designed to fit around your work, studies, and other commitments.",
+      "Access structured online programs at your own pace, designed to fit around work, study, and other commitments.",
     highlights: [
       "100% online learning",
       "Self-paced course access",
-      "Flexible study schedule",
+      "24/7 learning access",
     ],
-    tagline: "100% online, self-paced programs",
+    tagline: "Learn on your schedule",
   },
 ];
 
 export function WhyChooseUsSection() {
   const [active, setActive] = useState(0);
-  const [coursesCount, setCoursesCount] = useState<number>(() => {
-    const cached = getCachedCourses();
-    return Array.isArray(cached) && cached.length > 0 ? cached.length : 9;
+  const [aboutStats, setAboutStats] = useState<AboutStats>({
+    pecpCourses: 9,
+    aiUnlockedPathways: 8,
+    careerPathways: 17,
+    courseAccess: "24/7",
   });
 
   useEffect(() => {
-    getCourses().then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        setCoursesCount(data.length);
-      }
+    getAboutStats().then((data) => {
+      if (data) setAboutStats(data);
     });
 
     const handleCoursesUpdated = () => {
-      getCourses().then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setCoursesCount(data.length);
-        }
+      getAboutStats().then((data) => {
+        if (data) setAboutStats(data);
       });
     };
 
@@ -154,17 +152,15 @@ export function WhyChooseUsSection() {
                   key={feature.title}
                   type="button"
                   onClick={() => setActive(index)}
-                  className={`group relative flex-1 min-h-[96px] sm:min-h-[112px] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 rounded-xl sm:rounded-2xl p-2.5 sm:px-5 sm:py-3.5 text-left transition-all duration-200 border overflow-hidden cursor-pointer select-none ${
-                    isActive
+                  className={`group relative flex-1 min-h-[96px] sm:min-h-[112px] flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 rounded-xl sm:rounded-2xl p-2.5 sm:px-5 sm:py-3.5 text-left transition-all duration-200 border overflow-hidden cursor-pointer select-none ${isActive
                       ? "bg-white border-brand-red/40 shadow-xs sm:shadow-xl shadow-slate-200/70 ring-1 ring-brand-red/30"
                       : "bg-white/70 border-slate-200/70 hover:bg-white hover:border-slate-300 hover:shadow-xs"
-                  }`}
+                    }`}
                 >
                   {/* Left Active Glow Indicator Bar */}
                   <div
-                    className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 transition-colors duration-200 ${
-                      isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
-                    }`}
+                    className={`absolute left-0 top-0 bottom-0 w-1 sm:w-1.5 transition-colors duration-200 ${isActive ? "bg-brand-red" : "bg-transparent group-hover:bg-slate-300"
+                      }`}
                   />
 
                   {/* Card Thumbnail Image */}
@@ -178,11 +174,10 @@ export function WhyChooseUsSection() {
                     />
                     <div className="absolute inset-0 bg-slate-900/15 group-hover:bg-transparent transition-colors" />
                     <div
-                      className={`absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded sm:rounded-lg transition-colors ${
-                        isActive
+                      className={`absolute bottom-0.5 right-0.5 sm:bottom-1 sm:right-1 flex h-4 w-4 sm:h-6 sm:w-6 items-center justify-center rounded sm:rounded-lg transition-colors ${isActive
                           ? "bg-brand-red text-white shadow-xs"
                           : "bg-slate-900/80 text-white"
-                      }`}
+                        }`}
                     >
                       <FIcon className="h-2 w-2 sm:h-3.5 sm:w-3.5" />
                     </div>
@@ -192,16 +187,14 @@ export function WhyChooseUsSection() {
                   <div className="flex-1 min-w-0 w-full flex flex-col justify-center">
                     <div className="flex items-center justify-between gap-1">
                       <h3
-                        className={`display-font text-xs sm:text-base font-extrabold tracking-tight transition-colors duration-200 truncate ${
-                          isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
-                        }`}
+                        className={`display-font text-xs sm:text-base font-extrabold tracking-tight transition-colors duration-200 truncate ${isActive ? "text-brand-red" : "text-brand-ink group-hover:text-brand-red"
+                          }`}
                       >
                         {feature.title}
                       </h3>
                       <span
-                        className={`text-[8px] sm:text-[10px] font-black transition-colors shrink-0 ${
-                          isActive ? "text-brand-red" : "text-slate-400 group-hover:text-brand-red"
-                        }`}
+                        className={`text-[8px] sm:text-[10px] font-black transition-colors shrink-0 ${isActive ? "text-brand-red" : "text-slate-400 group-hover:text-brand-red"
+                          }`}
                       >
                         {feature.id}
                       </span>
@@ -295,7 +288,7 @@ export function WhyChooseUsSection() {
                   <div className="grid grid-cols-3 gap-4 sm:gap-6 text-center sm:text-left w-full sm:w-auto">
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={coursesCount} />
+                        <AnimatedCounter value={aboutStats.pecpCourses} />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
                         PECP Courses
@@ -303,19 +296,19 @@ export function WhyChooseUsSection() {
                     </div>
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={4} />
+                        <AnimatedCounter value={aboutStats.aiUnlockedPathways} />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
-                        AI Unlocked Courses
+                        AI Unlocked Pathways
                       </p>
                     </div>
 
                     <div>
                       <p className="display-font text-lg sm:text-2xl font-extrabold text-brand-red">
-                        <AnimatedCounter value={10} suffix="+" />
+                        <AnimatedCounter value={aboutStats.careerPathways} suffix="+" />
                       </p>
                       <p className="text-[9px] sm:text-[10px] text-slate-400 font-extrabold uppercase mt-0.5">
-                        Career-ready Pathways
+                        Career Pathways
                       </p>
                     </div>
                   </div>

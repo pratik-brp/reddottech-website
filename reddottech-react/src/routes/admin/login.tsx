@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff, AlertCircle, Loader2, KeyRound, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { adminLogin, requestPasswordReset, resetPasswordWithToken } from "@/lib/api";
-import { setToken } from "@/lib/auth";
+import { setToken, isAdminAuthed } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -26,6 +26,12 @@ function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAdminAuthed()) {
+      navigate({ to: "/admin/dashboard" });
+    }
+  }, [navigate]);
 
   // Forgot password workflow states
   const [showForgotModal, setShowForgotModal] = useState(false);

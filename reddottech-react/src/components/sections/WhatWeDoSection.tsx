@@ -1,26 +1,26 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Globe2, Zap, Award, Briefcase, ArrowRight } from "lucide-react";
+import { Globe2, Zap, Award, Clock, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export function WhatWeDoSection() {
   const services = [
     {
       number: "01",
-      title: "Global Recognition",
-      desc: "Deliver globally recognized training programs in IT, business, and professional development.",
-      badge: "Worldwide Standard",
+      title: "Recognized Credentials",
+      desc: "Offer professional learning programs with globally oriented credentials and international academic collaboration.",
+      badge: "Global Learning",
       icon: Globe2,
       color: "from-rose-500 via-brand-red to-rose-700",
       badgeStyle: "bg-rose-50 text-brand-red border-rose-200/80",
       iconBg: "bg-brand-red/10 text-brand-red border-brand-red/20",
       glowBorder: "hover:border-brand-red/40 hover:shadow-xl hover:shadow-brand-red/10",
-      link: "/pecp",
+      link: "/courses",
     },
     {
       number: "02",
-      title: "Real Preparation",
-      desc: "Offer hands-on, practical learning that prepares learners for real-world challenges.",
-      badge: "Practical Mastery",
+      title: "Workplace Preparation",
+      desc: "Build relevant knowledge and practical skills through projects, examples, discussions, and structured learning resources.",
+      badge: "Practical Skills",
       icon: Zap,
       color: "from-amber-500 via-orange-500 to-amber-600",
       badgeStyle: "bg-amber-50 text-amber-700 border-amber-200/80",
@@ -30,9 +30,9 @@ export function WhatWeDoSection() {
     },
     {
       number: "03",
-      title: "Global Partnership",
-      desc: "Partner with international institutions to bring world-class programs like the Professional Excellence and Certification Program (PECP) to Nepal.",
-      badge: "Academic Ties",
+      title: "USC Upstate Partnership",
+      desc: "Work with international academic partners to bring programs such as the Professional Excellence & Certification Program (PECP) to Nepal.",
+      badge: "Academic Collaboration",
       icon: Award,
       color: "from-emerald-500 via-teal-500 to-emerald-700",
       badgeStyle: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
@@ -42,15 +42,15 @@ export function WhatWeDoSection() {
     },
     {
       number: "04",
-      title: "Career Excellence",
-      desc: "Support individuals and organizations in achieving professional excellence through mentorship, guidance, and career-focused outcomes.",
-      badge: "Workforce Support",
-      icon: Briefcase,
+      title: "Online & Self-Paced",
+      desc: "Make professional learning accessible through flexible online programs designed around learners’ schedules.",
+      badge: "Flexible Learning",
+      icon: Clock,
       color: "from-blue-500 via-indigo-500 to-blue-700",
       badgeStyle: "bg-blue-50 text-blue-700 border-blue-200/80",
       iconBg: "bg-blue-500/10 text-blue-600 border-blue-500/20",
       glowBorder: "hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-500/10",
-      link: "/contact",
+      link: "/courses",
     },
   ];
 
@@ -88,7 +88,7 @@ export function WhatWeDoSection() {
 
           <ScrollReveal direction="up" delay={0.1}>
             <h2 className="display-font text-xl sm:text-3xl lg:text-5xl font-extrabold tracking-tight text-brand-ink leading-tight">
-              What <span className="gradient-text">We Do</span>
+              Services &amp; <span className="gradient-text">Offerings</span>
             </h2>
           </ScrollReveal>
 

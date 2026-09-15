@@ -111,6 +111,7 @@ function SmoothScroll({ children }: { children: ReactNode }) {
         touchMultiplier: 1,
         wheelMultiplier: 1,
         autoRaf: true,
+        allowNestedScroll: true,
       }}
     >
       <LenisBridge />

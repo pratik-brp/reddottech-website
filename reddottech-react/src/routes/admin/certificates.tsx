@@ -17,12 +17,20 @@ import {
   Sparkles,
   GraduationCap,
   Briefcase,
+  Code2,
+  Users,
+  Check,
+  Layers,
+  Brain,
+  Linkedin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { getCertificates, claimCertificate, deleteCertificate } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { printOfficialCertificate } from "@/lib/certificate-print";
+import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
+import { shareCertificateOnLinkedIn } from "@/lib/linkedin-share";
 
 export const Route = createFileRoute("/admin/certificates")({
   beforeLoad: requireAdminRoute,
@@ -261,6 +269,57 @@ export const CERT_TRACK_CONFIGS: Record<CertTrackKey, CertTrackConfig> = {
   },
 };
 
+function getInitials(name?: string) {
+  if (!name) return "ST";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+const AVATAR_COLORS = [
+  "from-blue-600 to-indigo-700 text-white",
+  "from-emerald-600 to-teal-700 text-white",
+  "from-purple-600 to-indigo-700 text-white",
+  "from-rose-600 to-red-700 text-white",
+  "from-amber-600 to-orange-700 text-white",
+  "from-sky-600 to-cyan-700 text-white",
+];
+
+function getAvatarColor(name?: string) {
+  if (!name) return AVATAR_COLORS[0];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+}
+
+function getTrackIcon(trackKey: CertTrackKey, className = "h-3.5 w-3.5") {
+  switch (trackKey) {
+    case "healthcare":
+      return <Stethoscope className={className} />;
+    case "finance":
+      return <Building2 className={className} />;
+    case "finance-advanced":
+      return <Sparkles className={className} />;
+    case "education":
+      return <GraduationCap className={className} />;
+    case "management":
+      return <Briefcase className={className} />;
+    case "agile-developers":
+      return <Code2 className={className} />;
+    case "agile-managers":
+      return <Users className={className} />;
+    case "foundations":
+      return <Brain className={className} />;
+    case "pecp":
+      return <Award className={className} />;
+    default:
+      return <Award className={className} />;
+  }
+}
+
 function AdminCertificatesPage() {
   const [certs, setCerts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -269,6 +328,14 @@ function AdminCertificatesPage() {
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [trackFilter, setTrackFilter] = useState<"all" | CertTrackKey>("all");
+  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCodeId(code);
+    toast.success(`Copied certificate code: ${code}`);
+    setTimeout(() => setCopiedCodeId(null), 2000);
+  };
 
   const [newCertName, setNewCertName] = useState("");
   const [newCertEmail, setNewCertEmail] = useState("");
@@ -343,6 +410,19 @@ function AdminCertificatesPage() {
     )
       return "education";
     if (
+      txt.includes("agile-dev") ||
+      txt.includes("agsd") ||
+      txt.includes("software developer") ||
+      (txt.includes("agile") && (txt.includes("developer") || txt.includes("software")))
+    )
+      return "agile-developers";
+    if (
+      txt.includes("agile-man") ||
+      txt.includes("agmg") ||
+      (txt.includes("agile") && (txt.includes("manage") || txt.includes("leader")))
+    )
+      return "agile-managers";
+    if (
       txt.includes("manage") ||
       txt.includes("leadership") ||
       txt.includes("aimp") ||
@@ -370,6 +450,36 @@ function AdminCertificatesPage() {
       );
     });
   }, [certs, searchQuery, trackFilter]);
+
+  const trackCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    certs.forEach((c) => {
+      const t = detectTrack(c);
+      counts[t] = (counts[t] || 0) + 1;
+    });
+    return counts;
+  }, [certs]);
+
+  const uniqueInstitutionsCount = useMemo(() => {
+    const set = new Set(
+      certs
+        .map((c) => (c.school || c.organization || "").trim())
+        .filter(Boolean)
+    );
+    return Math.max(set.size, certs.length > 0 ? 1 : 0);
+  }, [certs]);
+
+  const topTrackKey = useMemo(() => {
+    let topKey: CertTrackKey = "foundations";
+    let max = -1;
+    for (const [k, v] of Object.entries(trackCounts)) {
+      if (v > max) {
+        max = v;
+        topKey = k as CertTrackKey;
+      }
+    }
+    return topKey;
+  }, [trackCounts]);
 
   const handleOpenPreview = (cert: any) => {
     const detected = detectTrack(cert);
@@ -531,7 +641,7 @@ function AdminCertificatesPage() {
     <AdminLayout
       title="Certificates Registry"
       mobileTitle="Certificates"
-      subtitle="Issue, preview in all 6 AI course tracks + PECP format, and download official credentials."
+      subtitle="Issue, preview in all 8 AI & Applied course tracks + PECP format, and download official credentials."
       actions={
         <div className="flex items-center gap-1.5 sm:gap-2">
           <button
@@ -555,103 +665,215 @@ function AdminCertificatesPage() {
       }
     >
       <div className="space-y-4 sm:space-y-6">
-        {/* ── 7 Course Track Metric Cards (Responsive Grid) ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2 sm:gap-3.5">
-          {(
-            [
-              "healthcare",
-              "finance",
-              "finance-advanced",
-              "education",
-              "management",
-              "foundations",
-              "pecp",
-            ] as CertTrackKey[]
-          ).map((tKey) => {
-            const cfg = CERT_TRACK_CONFIGS[tKey];
-            const count = certs.filter((c) => detectTrack(c) === tKey).length;
-            const isSelected = trackFilter === tKey;
-            return (
-              <div
-                key={tKey}
-                onClick={() => setTrackFilter(isSelected ? "all" : tKey)}
-                className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? "bg-slate-900 text-white border-slate-900 shadow-md ring-2 ring-brand-red/50"
-                    : "bg-white text-slate-800 border-slate-200 hover:border-slate-300 shadow-2xs"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span
-                    className={`text-[9px] sm:text-[10px] font-black uppercase px-1.5 sm:px-2 py-0.5 rounded-full truncate ${
-                      isSelected ? "bg-white/20 text-white" : cfg.accentColor
-                    }`}
-                  >
-                    {cfg.badge}
-                  </span>
-                  <Award
-                    className={`h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0 ${isSelected ? "text-amber-400" : "text-slate-400"}`}
-                  />
-                </div>
-                <div className="mt-2 sm:mt-3">
-                  <div className="text-base sm:text-2xl font-black">{count}</div>
-                  <div
-                    className={`text-[10px] sm:text-xs font-semibold mt-0.5 truncate ${
-                      isSelected ? "text-slate-300" : "text-slate-500"
-                    }`}
-                    title={cfg.title}
-                  >
-                    {cfg.title}
-                  </div>
-                </div>
+        {/* ── 1. Executive KPI Cards (2x2 Grid on Mobile, 4 Columns on Desktop) ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+          {/* Card 1: Total Credentials */}
+          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                Total Credentials
+              </span>
+              <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0 border border-red-100">
+                <Award className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
               </div>
-            );
-          })}
+            </div>
+            <div className="mt-1.5 sm:mt-3">
+              <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
+                {isLoading ? "—" : certs.length}
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                Verified credentials
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: Curriculum Tracks */}
+          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                Curriculum
+              </span>
+              <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 border border-indigo-100">
+                <Layers className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="mt-1.5 sm:mt-3">
+              <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
+                9 Tracks
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                8 AI + 1 Executive
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: Partner Organizations */}
+          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                Organizations
+              </span>
+              <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0 border border-emerald-100">
+                <Building2 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="mt-1.5 sm:mt-3">
+              <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
+                {isLoading ? "—" : uniqueInstitutionsCount}
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                Institutions &amp; partners
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Top Track */}
+          <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+                Top Track
+              </span>
+              <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0 border border-amber-100">
+                <Sparkles className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+              </div>
+            </div>
+            <div className="mt-1.5 sm:mt-3">
+              <div
+                className="text-base sm:text-xl font-black text-slate-900 truncate leading-tight"
+                title={CERT_TRACK_CONFIGS[topTrackKey]?.title}
+              >
+                {CERT_TRACK_CONFIGS[topTrackKey]?.badge || "AI Foundations"}
+              </div>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+                {trackCounts[topTrackKey] || 0} issued
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* ── Search & Filter Toolbar ── */}
-        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
+        {/* ── 2. Track Segmented Switcher Tabs ── */}
+        <div className="bg-white rounded-2xl p-1.5 sm:p-2 border border-slate-200/90 shadow-2xs">
+          <div
+            data-lenis-prevent
+            className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 px-0.5 custom-scrollbar overscroll-x-contain touch-pan-x"
+          >
+            <button
+              onClick={() => setTrackFilter("all")}
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${
+                trackFilter === "all"
+                  ? "bg-slate-900 text-white shadow-xs"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+            >
+              <Layers className="h-3.5 w-3.5 shrink-0" />
+              <span>All Tracks</span>
+              <span
+                className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                  trackFilter === "all"
+                    ? "bg-white/20 text-white"
+                    : "bg-slate-100 text-slate-600"
+                }`}
+              >
+                {certs.length}
+              </span>
+            </button>
+
+            <div className="h-5 w-px bg-slate-200 shrink-0 mx-0.5 sm:mx-1" />
+
+            {(
+              [
+                "healthcare",
+                "finance",
+                "finance-advanced",
+                "education",
+                "management",
+                "agile-developers",
+                "agile-managers",
+                "foundations",
+                "pecp",
+              ] as CertTrackKey[]
+            ).map((tKey) => {
+              const cfg = CERT_TRACK_CONFIGS[tKey];
+              const count = trackCounts[tKey] || 0;
+              const isSelected = trackFilter === tKey;
+              return (
+                <button
+                  key={tKey}
+                  onClick={() => setTrackFilter(isSelected ? "all" : tKey)}
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${
+                    isSelected
+                      ? "bg-brand-red text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                  }`}
+                >
+                  {getTrackIcon(
+                    tKey,
+                    isSelected ? "h-3.5 w-3.5 text-white shrink-0" : "h-3.5 w-3.5 text-slate-500 shrink-0",
+                  )}
+                  <span className="whitespace-nowrap">{cfg.badge}</span>
+                  <span
+                    className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                      isSelected
+                        ? "bg-white/25 text-white"
+                        : count > 0
+                          ? "bg-slate-200 text-slate-800"
+                          : "bg-slate-100 text-slate-400"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── 3. Search & Filter Toolbar ── */}
+        <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by student, institution, or code..."
-              className="w-full rounded-xl border border-slate-200 pl-9 pr-8 py-2 text-xs font-semibold text-slate-800 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+              placeholder="Search candidates, tracks, institutions, IDs..."
+              className="w-full rounded-xl border border-slate-200 pl-9 pr-8 py-2 text-sm sm:text-xs font-semibold text-slate-800 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer rounded-full hover:bg-slate-100"
+                title="Clear search"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <select
-              value={trackFilter}
-              onChange={(e) => setTrackFilter(e.target.value as any)}
-              className="w-full sm:w-auto rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
-            >
-              <option value="all">All Tracks ({certs.length})</option>
-              <option value="healthcare">AI Healthcare (9 Modules)</option>
-              <option value="finance">AI Finance Level 1 (8 Modules)</option>
-              <option value="finance-advanced">Advanced AI Finance Level 2 (12 Modules)</option>
-              <option value="education">AI for Teachers & Educators (12 Modules)</option>
-              <option value="management">AI for Management Professionals (12 Modules)</option>
-              <option value="foundations">AI Foundations (5 Modules)</option>
-              <option value="pecp">PECP Executive</option>
-            </select>
+          <div className="flex items-center gap-2 justify-between sm:justify-end text-xs">
+            <span className="text-slate-500 font-medium text-[11px] sm:text-xs">
+              Showing <b className="text-slate-900 font-extrabold">{filteredCerts.length}</b> of{" "}
+              <b className="text-slate-900 font-extrabold">{certs.length}</b>
+            </span>
+
+            {(trackFilter !== "all" || searchQuery) && (
+              <button
+                onClick={() => {
+                  setTrackFilter("all");
+                  setSearchQuery("");
+                }}
+                className="text-[11px] font-bold text-brand-red hover:underline ml-2 cursor-pointer"
+              >
+                Reset Filters
+              </button>
+            )}
           </div>
         </div>
 
-        {/* ── Certificate Records Dual View ── */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
-          {/* Mobile Card List View (Visible on screens < md) */}
-          <div className="block md:hidden divide-y divide-slate-100 font-medium">
+        {/* ── 4. Polished Registry Table & Mobile Card View ── */}
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+          {/* Mobile Card List View (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100">
             {isLoading ? (
               <div className="p-10 text-center flex items-center justify-center">
                 <BrandSpinner size="sm" message="Loading certificates..." />
@@ -659,9 +881,12 @@ function AdminCertificatesPage() {
             ) : filteredCerts.length === 0 ? (
               <div className="p-8 text-center text-xs text-slate-400 space-y-2">
                 <p>No certificate records found matching your filters.</p>
-                {trackFilter !== "all" && (
+                {(trackFilter !== "all" || searchQuery) && (
                   <button
-                    onClick={() => setTrackFilter("all")}
+                    onClick={() => {
+                      setTrackFilter("all");
+                      setSearchQuery("");
+                    }}
                     className="inline-flex items-center gap-1 text-xs text-brand-red font-bold hover:underline cursor-pointer"
                   >
                     View all certificates ({certs.length})
@@ -677,75 +902,109 @@ function AdminCertificatesPage() {
 
                 return (
                   <div key={cert.id} className="p-3.5 space-y-2.5 bg-white">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="font-bold text-slate-900 text-xs truncate">{cert.name}</div>
-                        <div className="text-[11px] text-slate-500 truncate">
-                          {cert.email || "—"}
+                    {/* Candidate Identity Row */}
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`h-9 w-9 rounded-full bg-gradient-to-br ${getAvatarColor(cert.name)} flex items-center justify-center font-black text-xs shrink-0 shadow-2xs`}
+                        >
+                          {getInitials(cert.name)}
                         </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5 truncate">
-                          {cert.school || "Red Dot Technologies"}
+                        <div className="min-w-0">
+                          <div className="font-bold text-slate-900 text-xs sm:text-sm truncate">
+                            {cert.name}
+                          </div>
+                          <div className="text-[11px] text-slate-500 truncate">
+                            {cert.email || "—"}
+                          </div>
                         </div>
                       </div>
-                      <div className="shrink-0 flex flex-col items-end gap-1">
-                        <span
-                          className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-black ${cfg.accentColor}`}
-                        >
-                          {cTrack === "healthcare" && <Stethoscope className="h-2.5 w-2.5" />}
-                          {cTrack === "finance" && <Building2 className="h-2.5 w-2.5" />}
-                          {cTrack === "finance-advanced" && (
-                            <Sparkles className="h-2.5 w-2.5 text-purple-600" />
-                          )}
-                          {cTrack === "education" && (
-                            <GraduationCap className="h-2.5 w-2.5 text-amber-600" />
-                          )}
-                          {cTrack === "management" && (
-                            <Briefcase className="h-2.5 w-2.5 text-indigo-600" />
-                          )}
-                          {cTrack === "foundations" && <Sparkles className="h-2.5 w-2.5" />}
-                          {cTrack === "pecp" && <Award className="h-2.5 w-2.5" />}
-                          <span>{cfg.badge}</span>
-                        </span>
-                        <span className="text-[9px] text-slate-400">
-                          {cert.created_at
-                            ? new Date(cert.created_at).toLocaleDateString("en-GB", {
-                                day: "numeric",
-                                month: "short",
-                              })
-                            : "Verified"}
-                        </span>
+                      <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        Verified
+                      </span>
+                    </div>
+
+                    {/* Track Badge & Organization */}
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-black ${cfg.accentColor} shrink-0`}
+                      >
+                        {getTrackIcon(cTrack, "h-2.5 w-2.5 shrink-0")}
+                        <span className="truncate max-w-[140px]">{cfg.badge}</span>
+                      </span>
+                      <div className="text-[10px] text-slate-500 truncate flex items-center gap-1 min-w-0">
+                        <Building2 className="h-3 w-3 text-slate-400 shrink-0" />
+                        <span className="truncate">{cert.school || cert.organization || "Red Dot"}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-[11px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-slate-400 text-[10px]">Code:</span>
-                        <span className="font-mono font-bold text-slate-800 text-[10px] bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">
-                          {certCode}
-                        </span>
+                    {/* Certificate Code & Action Buttons */}
+                    <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-slate-100 text-[11px]">
+                      <div className="flex items-center gap-1 min-w-0">
                         <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(certCode);
-                            toast.success(`Copied: ${certCode}`);
-                          }}
-                          className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
-                          title="Copy code"
+                          onClick={() => handleCopyCode(certCode)}
+                          className="inline-flex items-center gap-1 font-mono font-bold text-slate-800 text-[10px] bg-slate-50 hover:bg-slate-100 active:scale-95 px-1.5 py-1 rounded border border-slate-200 transition-all cursor-pointer min-w-0"
+                          title="Copy certificate ID"
                         >
-                          <Copy className="h-3 w-3" />
+                          <span className="truncate max-w-[110px] xs:max-w-[150px]">{certCode}</span>
+                          {copiedCodeId === certCode ? (
+                            <Check className="h-3 w-3 text-emerald-600 stroke-[3] shrink-0" />
+                          ) : (
+                            <Copy className="h-3 w-3 text-slate-400 shrink-0" />
+                          )}
                         </button>
                       </div>
 
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 shrink-0">
                         <button
                           onClick={() => handleOpenPreview(cert)}
-                          className="rounded-lg bg-slate-900 hover:bg-brand-red text-white font-bold text-[10px] px-2.5 py-1 transition-colors cursor-pointer flex items-center gap-1"
+                          className="rounded-lg bg-slate-900 hover:bg-brand-red text-white font-bold text-[10px] px-2 py-1.5 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-2xs"
                         >
                           <Eye className="h-3 w-3" />
                           <span>Preview</span>
                         </button>
                         <button
+                          onClick={() => {
+                            setSelectedCert(cert);
+                            printOfficialCertificate({
+                              name: cert.name,
+                              certificateId: certCode,
+                              track: cTrack,
+                              courseName: cert.course_name,
+                              organization: cert.school || cert.organization,
+                              role: cert.role,
+                              department: cert.department,
+                              completedAt: cert.completed_at,
+                              issuedAt: cert.created_at,
+                            });
+                          }}
+                          className="rounded-lg border border-slate-200 hover:bg-slate-100 p-1.5 text-slate-600 transition-colors cursor-pointer"
+                          title="Direct Print PDF"
+                        >
+                          <Printer className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            const success = shareCertificateOnLinkedIn({
+                              certificateTitle: cert.course_name,
+                              certificateId: certCode,
+                              recipientName: cert.name,
+                            });
+                            if (!success) {
+                              toast.error("Certificate link is unavailable to share.");
+                            } else {
+                              toast.success("Opening LinkedIn share dialog in a new tab...");
+                            }
+                          }}
+                          className="rounded-lg border border-slate-200 hover:border-[#0A66C2] hover:bg-blue-50 p-1.5 text-slate-600 hover:text-[#0A66C2] transition-colors cursor-pointer"
+                          title="Share on LinkedIn"
+                        >
+                          <Linkedin className="h-3.5 w-3.5 fill-current" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(cert.id)}
-                          className="rounded-lg p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                          className="rounded-lg p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                           title="Delete record"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -758,23 +1017,24 @@ function AdminCertificatesPage() {
             )}
           </div>
 
-          {/* Desktop Table Data (Visible on md and above) */}
+          {/* Desktop Table (Visible on md and above) */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-600">
-              <thead className="bg-slate-50/80 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-100">
+              <thead className="bg-slate-50/80 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200/80">
                 <tr>
                   <th className="px-5 py-3.5">Candidate / Scholar</th>
-                  <th className="px-4 py-3.5">Institution</th>
+                  <th className="px-4 py-3.5">Affiliation / Institution</th>
                   <th className="px-4 py-3.5">Course Track</th>
-                  <th className="px-4 py-3.5">Certificate Code</th>
+                  <th className="px-4 py-3.5">Certificate ID</th>
                   <th className="px-4 py-3.5">Issued Date</th>
+                  <th className="px-4 py-3.5">Status</th>
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center">
+                    <td colSpan={7} className="px-5 py-12 text-center">
                       <div className="flex items-center justify-center">
                         <BrandSpinner size="sm" message="Loading certificates from database..." />
                       </div>
@@ -783,18 +1043,31 @@ function AdminCertificatesPage() {
                 ) : filteredCerts.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
-                      className="px-5 py-12 text-center text-slate-400 font-medium space-y-2"
+                      colSpan={7}
+                      className="px-5 py-16 text-center text-slate-400 font-medium space-y-2"
                     >
-                      <p>No certificate records found matching your filters.</p>
-                      {trackFilter !== "all" && (
-                        <button
-                          onClick={() => setTrackFilter("all")}
-                          className="inline-flex items-center gap-1 text-xs text-brand-red font-bold hover:underline cursor-pointer"
-                        >
-                          View all certificates ({certs.length})
-                        </button>
-                      )}
+                      <div className="max-w-sm mx-auto space-y-2.5">
+                        <div className="h-11 w-11 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                          <Award className="h-5 w-5" />
+                        </div>
+                        <h4 className="font-bold text-slate-800 text-sm">No certificates found</h4>
+                        <p className="text-xs text-slate-500">
+                          {searchQuery || trackFilter !== "all"
+                            ? "Try adjusting your search query or selected track filter."
+                            : "No certificates have been issued yet."}
+                        </p>
+                        {(searchQuery || trackFilter !== "all") && (
+                          <button
+                            onClick={() => {
+                              setTrackFilter("all");
+                              setSearchQuery("");
+                            }}
+                            className="inline-flex items-center gap-1 text-xs text-brand-red font-bold hover:underline cursor-pointer pt-1"
+                          >
+                            Reset filters
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ) : (
@@ -805,66 +1078,103 @@ function AdminCertificatesPage() {
                       cert.certificate_id || cert.code || `RDT-${cTrack.toUpperCase()}-${cert.id}`;
 
                     return (
-                      <tr key={cert.id} className="hover:bg-slate-50/60 transition-colors">
+                      <tr key={cert.id} className="hover:bg-slate-50/70 transition-colors">
                         <td className="px-5 py-3.5">
-                          <div className="font-bold text-slate-900 text-xs">{cert.name}</div>
-                          <div className="text-[11px] text-slate-500">{cert.email || "—"}</div>
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`h-8 w-8 rounded-full bg-gradient-to-br ${getAvatarColor(cert.name)} flex items-center justify-center font-black text-[11px] shrink-0 shadow-2xs`}
+                            >
+                              {getInitials(cert.name)}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-bold text-slate-900 text-xs truncate">
+                                {cert.name}
+                              </div>
+                              <div className="text-[11px] text-slate-500 truncate">
+                                {cert.email || "—"}
+                              </div>
+                            </div>
+                          </div>
                         </td>
 
-                        <td className="px-4 py-3.5 text-xs text-slate-700">
-                          {cert.school || "Red Dot Technologies"}
+                        <td className="px-4 py-3.5 text-xs text-slate-700 font-medium">
+                          <div className="flex items-center gap-1.5 max-w-[190px]">
+                            <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                            <span className="truncate" title={cert.school || cert.organization || "Red Dot Technologies"}>
+                              {cert.school || cert.organization || "Red Dot Technologies"}
+                            </span>
+                          </div>
                         </td>
 
                         <td className="px-4 py-3.5">
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold ${cfg.accentColor}`}
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold ${cfg.accentColor}`}
                           >
-                            {cTrack === "healthcare" && <Stethoscope className="h-3 w-3" />}
-                            {cTrack === "finance" && <Building2 className="h-3 w-3" />}
-                            {cTrack === "finance-advanced" && (
-                              <Sparkles className="h-3 w-3 text-purple-600" />
-                            )}
-                            {cTrack === "education" && (
-                              <GraduationCap className="h-3 w-3 text-amber-600" />
-                            )}
-                            {cTrack === "management" && (
-                              <Briefcase className="h-3 w-3 text-indigo-600" />
-                            )}
-                            {cTrack === "foundations" && <Sparkles className="h-3 w-3" />}
-                            {cTrack === "pecp" && <Award className="h-3 w-3" />}
-                            <span>{cfg.title}</span>
+                            {getTrackIcon(cTrack, "h-3 w-3 shrink-0")}
+                            <span className="truncate max-w-[210px]" title={cfg.title}>
+                              {cfg.title}
+                            </span>
                           </span>
                         </td>
 
                         <td className="px-4 py-3.5 font-mono text-[11px] font-bold text-slate-900">
-                          <div className="flex items-center gap-1.5">
+                          <div className="inline-flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
                             <span>{certCode}</span>
                             <button
-                              onClick={() => {
-                                navigator.clipboard.writeText(certCode);
-                                toast.success(`Copied: ${certCode}`);
-                              }}
-                              className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                              title="Copy code"
+                              onClick={() => handleCopyCode(certCode)}
+                              className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer transition-colors"
+                              title="Copy certificate ID"
                             >
-                              <Copy className="h-3 w-3" />
+                              {copiedCodeId === certCode ? (
+                                <Check className="h-3 w-3 text-emerald-600 stroke-[3]" />
+                              ) : (
+                                <Copy className="h-3 w-3" />
+                              )}
                             </button>
                           </div>
                         </td>
 
-                        <td className="px-4 py-3.5 text-[11px] text-slate-500">
-                          {cert.created_at || "Verified"}
+                        <td className="px-4 py-3.5 text-[11px] text-slate-600 font-medium whitespace-nowrap">
+                          {formatDisplayDate(cert.created_at)}
+                        </td>
+
+                        <td className="px-4 py-3.5">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Verified
+                          </span>
                         </td>
 
                         <td className="px-5 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => handleOpenPreview(cert)}
-                              className="rounded-lg bg-slate-900 hover:bg-brand-red text-white font-bold text-[11px] px-3 py-1.5 shadow-2xs transition-colors cursor-pointer flex items-center gap-1"
-                              title="Preview official certificate in all formats"
+                              className="rounded-lg bg-slate-900 hover:bg-brand-red text-white font-bold text-[11px] px-2.5 py-1.5 shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                              title="Preview certificate parchment"
                             >
                               <Eye className="h-3.5 w-3.5" />
                               <span>Preview</span>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setSelectedCert(cert);
+                                printOfficialCertificate({
+                                  name: cert.name,
+                                  certificateId: certCode,
+                                  track: cTrack,
+                                  courseName: cert.course_name,
+                                  organization: cert.school || cert.organization,
+                                  role: cert.role,
+                                  department: cert.department,
+                                  completedAt: cert.completed_at,
+                                  issuedAt: cert.created_at,
+                                });
+                              }}
+                              className="rounded-lg border border-slate-200 hover:bg-slate-100 p-1.5 text-slate-600 transition-colors cursor-pointer"
+                              title="Direct Print Official PDF"
+                            >
+                              <Printer className="h-3.5 w-3.5" />
                             </button>
 
                             <button
@@ -926,7 +1236,7 @@ function AdminCertificatesPage() {
                   value={newCertName}
                   onChange={(e) => setNewCertName(e.target.value)}
                   placeholder="e.g. Dr. Aarav Shrestha"
-                  className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 p-2.5 sm:p-2.5 text-sm sm:text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
               </div>
 
@@ -938,7 +1248,7 @@ function AdminCertificatesPage() {
                   value={newCertEmail}
                   onChange={(e) => setNewCertEmail(e.target.value)}
                   placeholder="aarav@hospital.org.np"
-                  className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 p-2.5 sm:p-2.5 text-sm sm:text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
               </div>
 
@@ -951,7 +1261,7 @@ function AdminCertificatesPage() {
                   value={newCertSchool}
                   onChange={(e) => setNewCertSchool(e.target.value)}
                   placeholder="e.g. Bir Hospital / Nabil Bank / TU"
-                  className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 p-2.5 sm:p-2.5 text-sm sm:text-xs font-semibold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none"
                 />
               </div>
 
@@ -960,7 +1270,7 @@ function AdminCertificatesPage() {
                 <select
                   value={newCertTrack}
                   onChange={(e) => setNewCertTrack(e.target.value as CertTrackKey)}
-                  className="w-full rounded-xl border border-slate-300 p-2 sm:p-2.5 text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none cursor-pointer"
+                  className="w-full rounded-xl border border-slate-300 p-2.5 sm:p-2.5 text-sm sm:text-xs font-bold text-slate-900 bg-slate-50/70 focus:bg-white focus:border-brand-red focus:outline-none cursor-pointer"
                 >
                   <option value="agile-developers">
                     Agile Methodologies for Software Developers (12 Modules)
@@ -986,18 +1296,18 @@ function AdminCertificatesPage() {
                 </select>
               </div>
 
-              <div className="flex justify-end gap-2 sm:gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 sm:gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowIssueModal(false)}
-                  className="rounded-xl border border-slate-300 px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                  className="flex-1 sm:flex-none rounded-xl border border-slate-300 px-4 sm:px-5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-xl bg-brand-red hover:bg-red-700 text-white font-extrabold text-xs px-4 sm:px-6 py-2 sm:py-2.5 shadow-md disabled:opacity-60 cursor-pointer"
+                  className="flex-1 sm:flex-none rounded-xl bg-brand-red hover:bg-red-700 text-white font-extrabold text-xs px-4 sm:px-6 py-2.5 shadow-md disabled:opacity-60 cursor-pointer"
                 >
                   {isSubmitting ? "Issuing..." : "Issue Official Certificate"}
                 </button>
@@ -1012,16 +1322,16 @@ function AdminCertificatesPage() {
           data-lenis-prevent
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-2 sm:p-4 backdrop-blur-xs overflow-y-auto"
         >
-          <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl border border-slate-200 p-3.5 sm:p-8 space-y-4 sm:space-y-6 my-2 sm:my-8 max-h-[94vh] overflow-y-auto animate-fade-in-up">
-            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 border-b border-slate-100 pb-3 sm:pb-4">
+          <div className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-white shadow-2xl border border-slate-200 p-3 sm:p-8 space-y-3 sm:space-y-6 my-1 sm:my-8 max-h-[95vh] overflow-y-auto animate-fade-in-up">
+            <div className="flex items-center justify-between gap-2 sm:gap-4 border-b border-slate-100 pb-2.5 sm:pb-4">
               <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
                 <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600 shrink-0" />
                 <div className="min-w-0">
-                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base truncate">
-                    Official Certificate Verification &amp; Preview
+                  <h3 className="font-extrabold text-slate-900 text-xs sm:text-base truncate">
+                    Official Certificate Verification
                   </h3>
                   <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate">
-                    Verified Digital Credential · Red Dot Technologies Pvt. Ltd.
+                    Verified Digital Credential · Red Dot Technologies
                   </p>
                 </div>
               </div>
@@ -1029,7 +1339,7 @@ function AdminCertificatesPage() {
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   onClick={handlePrintCertificate}
-                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white text-[11px] sm:text-xs font-bold px-3 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer"
                   title="Print or Save Certificate as High-Res PDF"
                 >
                   <Printer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -1047,8 +1357,11 @@ function AdminCertificatesPage() {
             </div>
 
             {/* Track Switcher Bar in Preview Modal */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-100">
-              <span className="text-[10px] font-bold uppercase text-slate-400 mr-1">
+            <div
+              data-lenis-prevent
+              className="flex items-center gap-1.5 overflow-x-auto pb-1.5 border-b border-slate-100 custom-scrollbar touch-pan-x"
+            >
+              <span className="text-[10px] font-bold uppercase text-slate-400 mr-1 shrink-0">
                 Preview Track:
               </span>
               {(
@@ -1058,6 +1371,8 @@ function AdminCertificatesPage() {
                   "finance-advanced",
                   "education",
                   "management",
+                  "agile-developers",
+                  "agile-managers",
                   "foundations",
                   "pecp",
                 ] as CertTrackKey[]
@@ -1065,7 +1380,7 @@ function AdminCertificatesPage() {
                 <button
                   key={k}
                   onClick={() => setActivePreviewTrack(k)}
-                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer shrink-0 ${
+                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
                     activePreviewTrack === k
                       ? "bg-slate-900 text-white shadow-xs"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
@@ -1078,45 +1393,45 @@ function AdminCertificatesPage() {
 
             <div
               id="admin-certificate-parchment"
-              className="relative mx-auto w-full max-w-[860px] bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)]"
+              className="relative mx-auto w-full max-w-[860px] bg-white border-2 border-[#0F1E3D] p-0 shadow-[0_10px_34px_rgba(15,30,61,0.13)] overflow-hidden"
             >
-              <div className="border border-[#B8892B] m-2 sm:m-2.5 p-6 sm:p-10 text-center relative bg-white">
+              <div className="border border-[#B8892B] m-1 sm:m-2.5 p-3 sm:p-10 text-center relative bg-white">
                 <img
                   src="/logo.png"
                   alt="Red Dot Technologies"
-                  className="h-10 sm:h-12 w-auto mx-auto mb-4 object-contain"
+                  className="h-8 sm:h-12 w-auto mx-auto mb-2 sm:mb-4 object-contain"
                 />
-                <div className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[3.5px] sm:tracking-[4.5px] text-[#B8892B]">
+                <div className="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[2.5px] sm:tracking-[4.5px] text-[#B8892B]">
                   Certificate of Completion
                 </div>
                 <h2
-                  className="text-2xl sm:text-[28px] text-[#0F1E3D] my-2 leading-tight tracking-tight font-serif font-medium"
+                  className="text-lg sm:text-[28px] text-[#0F1E3D] my-1.5 sm:my-2 leading-tight tracking-tight font-serif font-medium"
                   style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
                 >
                   {previewTrackConfig.title}
                 </h2>
-                <div className="text-[#C8102E] font-bold text-[10px] sm:text-[11.5px] uppercase tracking-[1.6px]">
+                <div className="text-[#C8102E] font-bold text-[9.5px] sm:text-[11.5px] uppercase tracking-[1.2px] sm:tracking-[1.6px]">
                   {previewTrackConfig.subtitle}
                 </div>
 
-                <div className="text-[#6B7C96] text-xs sm:text-[13px] italic mt-5 mb-1">
+                <div className="text-[#6B7C96] text-[11px] sm:text-[13px] italic mt-3 sm:mt-5 mb-1">
                   This is to certify that
                 </div>
 
                 <div
-                  className="text-xl sm:text-[28px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-6 sm:px-10 pb-1.5 mb-1.5 font-serif"
+                  className="text-lg sm:text-[28px] font-medium text-[#1B3566] border-b border-slate-300 inline-block px-4 sm:px-10 pb-1 mb-1 font-serif max-w-full truncate"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   {selectedCert.name || "Candidate Name"}
                 </div>
 
                 {selectedCert.school && (
-                  <div className="text-xs sm:text-[13.5px] text-[#6B7C96] mb-3 sm:mb-4 font-medium">
+                  <div className="text-[11px] sm:text-[13.5px] text-[#6B7C96] mb-2.5 sm:mb-4 font-medium truncate">
                     {selectedCert.school}
                   </div>
                 )}
 
-                <div className="max-w-[620px] mx-auto text-[#1A233A] text-xs sm:text-[13.5px] leading-relaxed">
+                <div className="max-w-[620px] mx-auto text-[#1A233A] text-[11px] sm:text-[13.5px] leading-relaxed">
                   {previewTrackConfig.descriptionTemplate(
                     selectedCert.name,
                     selectedCert.school || "Red Dot Technologies",
@@ -1124,43 +1439,43 @@ function AdminCertificatesPage() {
                 </div>
 
                 {/* Module badges */}
-                <div className="flex flex-wrap gap-1.5 justify-center mt-4 sm:mt-5 mb-2 max-w-[660px] mx-auto">
+                <div className="flex flex-wrap gap-1 sm:gap-1.5 justify-center mt-3 sm:mt-5 mb-2 max-w-[660px] mx-auto">
                   {previewTrackConfig.modules.map((m, idx) => (
                     <span
                       key={idx}
-                      className="text-[9px] sm:text-[10.5px] bg-[#F1F4F9] text-[#1B3566] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-xs font-semibold"
+                      className="text-[8.5px] sm:text-[10.5px] bg-[#F1F4F9] text-[#1B3566] px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-xs font-semibold"
                     >
                       {m}
                     </span>
                   ))}
                 </div>
 
-                {/* Authority Signature & Date Row */}
-                <div className="flex flex-wrap justify-between items-end mt-6 sm:mt-7 text-xs text-[#6B7C96] gap-3 sm:gap-4 pt-2">
-                  <div className="text-left">
-                    <div className="border-t border-[#0F1E3D] pt-1.5 min-w-[160px] sm:min-w-[180px]">
-                      <b className="text-[#0F1E3D] text-xs sm:text-[13px] block">
-                        Red Dot Technologies Pvt. Ltd.
+                {/* Authority Signature & Date Row (Side-by-side on all screens) */}
+                <div className="flex flex-row justify-between items-end mt-4 sm:mt-7 text-xs text-[#6B7C96] gap-2 sm:gap-4 pt-2">
+                  <div className="text-left flex-1 min-w-0">
+                    <div className="border-t border-[#0F1E3D] pt-1">
+                      <b className="text-[#0F1E3D] text-[10px] sm:text-[13px] block truncate">
+                        Red Dot Technologies
                       </b>
-                      <span className="text-[9.5px] sm:text-[11px] text-[#6B7C96]">
-                        Baluwatar, Kathmandu, Nepal
+                      <span className="text-[8.5px] sm:text-[11px] text-[#6B7C96] block truncate">
+                        Baluwatar, Kathmandu
                       </span>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="border-t border-[#0F1E3D] pt-1.5 min-w-[160px] sm:min-w-[180px]">
-                      <b className="text-[#0F1E3D] text-xs sm:text-[13px] block">
+                  <div className="text-right flex-1 min-w-0">
+                    <div className="pt-1">
+                      <b className="text-[#0F1E3D] text-[10px] sm:text-[13px] block truncate">
                         {formatDisplayDate(selectedCert.created_at || selectedCert.completed_at)}
                       </b>
-                      <span className="text-[9.5px] sm:text-[11px] text-[#6B7C96]">
+                      <span className="text-[8.5px] sm:text-[11px] text-[#6B7C96] block truncate">
                         Date of completion
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 sm:mt-4 text-[9.5px] sm:text-[10.5px] text-[#6B7C96] tracking-[0.8px] font-mono">
+                <div className="mt-3 sm:mt-4 text-[8.5px] sm:text-[10.5px] text-[#6B7C96] tracking-[0.5px] sm:tracking-[0.8px] font-mono truncate">
                   Certificate reference:{" "}
                   {selectedCert.certificate_id ||
                     selectedCert.code ||
@@ -1169,24 +1484,37 @@ function AdminCertificatesPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 pt-1 sm:pt-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 pt-1 sm:pt-2">
               <div className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
                 Recipient:{" "}
                 <strong className="text-slate-800">
                   {selectedCert.email || selectedCert.name}
                 </strong>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <ShareOnLinkedInButton
+                  variant="secondary"
+                  certificateTitle={selectedCert.course_name}
+                  certificateId={
+                    selectedCert.certificate_id ||
+                    selectedCert.code ||
+                    `RDT-${detectTrack(selectedCert).toUpperCase()}-${selectedCert.id}`
+                  }
+                  recipientName={selectedCert.name}
+                  issueDate={selectedCert.created_at || selectedCert.completed_at}
+                  label="Share on LinkedIn"
+                  className="flex-1 sm:flex-none justify-center px-3.5 sm:px-4 py-2.5"
+                />
                 <button
                   onClick={handlePrintCertificate}
-                  className="rounded-xl bg-brand-red hover:bg-red-700 text-white font-bold text-xs px-4 sm:px-5 py-2 sm:py-2.5 shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="flex-1 sm:flex-none justify-center rounded-xl bg-brand-red hover:bg-red-700 text-white font-bold text-xs px-4 sm:px-5 py-2.5 shadow-2xs transition-colors cursor-pointer flex items-center gap-1.5"
                 >
                   <Printer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Print PDF</span>
                 </button>
                 <button
                   onClick={() => setSelectedCert(null)}
-                  className="rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 sm:px-5 py-2 sm:py-2.5 transition-colors cursor-pointer"
+                  className="flex-1 sm:flex-none justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 sm:px-5 py-2.5 transition-colors cursor-pointer"
                 >
                   Close
                 </button>

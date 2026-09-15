@@ -2,9 +2,15 @@ import { getToken, clearAuth, setAdminEmail } from "./auth";
 
 // Same-origin by default (served behind the Vite dev proxy in development and a
 // reverse proxy / API route in production). Override with VITE_API_BASE_URL.
-const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string) ||
-  (typeof window === "undefined" ? "http://127.0.0.1:5000/api" : "/api");
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL as string;
+  if (typeof window === "undefined") {
+    const port = (typeof process !== "undefined" && process.env?.PORT) || "5000";
+    return `http://127.0.0.1:${port}/api`;
+  }
+  return "/api";
+};
+const API_BASE_URL = getApiBaseUrl();
 
 interface FetchOptions extends RequestInit {
   /** When true, throws on HTTP errors even for reads (default: writes throw, reads fall back). */
@@ -212,6 +218,25 @@ export async function getDashboardStats() {
   );
 }
 
+export interface AboutStats {
+  pecpCourses: number;
+  aiUnlockedPathways: number;
+  careerPathways: number;
+  courseAccess: string;
+}
+
+export async function getAboutStats(): Promise<AboutStats> {
+  const data = await fetchApi<AboutStats>("/about-stats");
+  return (
+    data || {
+      pecpCourses: 9,
+      aiUnlockedPathways: 8,
+      careerPathways: 17,
+      courseAccess: "24/7",
+    }
+  );
+}
+
 // 2. Courses API
 let cachedCourses: any[] | null = null;
 
@@ -224,7 +249,7 @@ export function getCachedCourses(): any[] | null {
         cachedCourses = JSON.parse(raw);
         return cachedCourses;
       }
-    } catch {}
+    } catch { }
   }
   return null;
 }
@@ -237,7 +262,7 @@ export async function getCourses() {
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem("rdt_db_courses", JSON.stringify(data));
-        } catch {}
+        } catch { }
       }
       return data;
     }
@@ -255,7 +280,7 @@ export async function createCourse(course: any) {
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("rdt_db_courses");
-    } catch {}
+    } catch { }
     window.dispatchEvent(new CustomEvent("courses-updated"));
   }
   return res;
@@ -269,7 +294,7 @@ export async function updateCourse(id: string | number, course: any) {
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("rdt_db_courses");
-    } catch {}
+    } catch { }
     window.dispatchEvent(new CustomEvent("courses-updated"));
   }
   return res;
@@ -282,7 +307,7 @@ export async function deleteCourse(id: string | number) {
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("rdt_db_courses");
-    } catch {}
+    } catch { }
     window.dispatchEvent(new CustomEvent("courses-updated"));
   }
   return res;
@@ -296,7 +321,7 @@ export async function reorderCourses(orders: { id: string | number; sortOrder: n
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("rdt_db_courses");
-    } catch {}
+    } catch { }
     window.dispatchEvent(new CustomEvent("courses-updated"));
   }
   return res;
@@ -410,7 +435,7 @@ export function getCachedSettings(): Record<string, string> | null {
         cachedSettings = JSON.parse(raw);
         return cachedSettings;
       }
-    } catch {}
+    } catch { }
   }
   return null;
 }
@@ -423,7 +448,7 @@ export async function getSettings() {
       if (typeof window !== "undefined") {
         try {
           localStorage.setItem("rdt_db_settings", JSON.stringify(data));
-        } catch {}
+        } catch { }
       }
       return data;
     }
@@ -455,7 +480,7 @@ export async function updateSettings(settings: Record<string, string>) {
       cachedSettings = updated;
       localStorage.setItem("rdt_db_settings", JSON.stringify(updated));
       window.dispatchEvent(new CustomEvent("rdt_settings_updated", { detail: updated }));
-    } catch {}
+    } catch { }
   }
 
   return result;
@@ -523,6 +548,20 @@ export async function getAiLeads(): Promise<any[]> {
   return [];
 }
 
+/**
+ * Generate a new access code for a given track via the server-side HMAC endpoint.
+ * This replaces the old client-side FNV-32 `generateAccessCode(salt)` function.
+ */
+export async function generateServerAccessCode(track: string): Promise<string> {
+  const res = await fetchApi<{ code: string }>("/admin/generate-access-code", {
+    method: "POST",
+    body: JSON.stringify({ track }),
+    throwOnError: true,
+  });
+  if (!res?.code) throw new Error("Server did not return an access code.");
+  return res.code;
+}
+
 export async function createAiLead(lead: any) {
   try {
     if (typeof window !== "undefined") {
@@ -533,7 +572,7 @@ export async function createAiLead(lead: any) {
         JSON.stringify([lead, ...existing.filter((l: any) => l.id !== lead.id)]),
       );
     }
-  } catch {}
+  } catch { }
   return await fetchApi("/ai-leads", {
     method: "POST",
     body: JSON.stringify(lead),
@@ -548,7 +587,7 @@ export async function updateAiLead(id: string, updates: any) {
       const updated = existing.map((l: any) => (l.id === id ? { ...l, ...updates } : l));
       localStorage.setItem("rdt_ai_payment_leads", JSON.stringify(updated));
     }
-  } catch {}
+  } catch { }
   return await fetchApi(`/ai-leads/${id}`, {
     method: "PUT",
     body: JSON.stringify(updates),
@@ -565,7 +604,7 @@ export async function deleteAiLead(id: string) {
         JSON.stringify(existing.filter((l: any) => l.id !== id)),
       );
     }
-  } catch {}
+  } catch { }
   return await fetchApi(`/ai-leads/${id}`, {
     method: "DELETE",
   });

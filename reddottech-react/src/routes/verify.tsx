@@ -22,6 +22,8 @@ import { verifyCertificate } from "@/lib/api";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { printOfficialCertificate } from "@/lib/certificate-print";
+import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
+import { getCertificateShareUrl } from "@/lib/linkedin-share";
 
 interface VerifySearch {
   id?: string;
@@ -35,18 +37,53 @@ export const Route = createFileRoute("/verify")({
     code: typeof search.code === "string" ? search.code : undefined,
     q: typeof search.q === "string" ? search.q : undefined,
   }),
-  head: () => ({
-    meta: [
-      {
-        title: "Official Certificate Verification Portal | Red Dot Technologies",
-      },
-      {
-        name: "description",
-        content:
-          "Verify the authenticity of professional certifications issued by Red Dot Technologies in collaboration with the University of South Carolina Upstate (USA).",
-      },
-    ],
-  }),
+  loaderDeps: ({ search: { id, code, q } }) => ({ id, code, q }),
+  loader: async ({ deps }) => {
+    const query = (deps.id || deps.code || deps.q || "").trim();
+    if (!query) return { cert: null };
+    try {
+      const res = await verifyCertificate(query);
+      return { cert: res || null };
+    } catch {
+      return { cert: null };
+    }
+  },
+  head: ({ loaderData }) => {
+    const cert = loaderData?.cert;
+    const title = cert?.courseName
+      ? `Certificate of Completion: ${cert.courseName} | Red Dot Technologies`
+      : "Official Certificate Verification Portal | Red Dot Technologies";
+    const recipient = cert?.name ? `awarded to ${cert.name}` : "issued by Red Dot Technologies";
+    const certId = cert?.certificateId ? ` (Ref: ${cert.certificateId})` : "";
+    const desc = `Officially verified digital credential ${recipient}${certId} in academic collaboration with University of South Carolina Upstate (USA).`;
+    const image = "https://reddottech.com.np/certificate-og-banner.jpg";
+    const canonical = cert?.certificateId
+      ? `https://reddottech.com.np/verify?id=${encodeURIComponent(cert.certificateId)}`
+      : "https://reddottech.com.np/verify";
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:site_name", content: "Red Dot Technologies" },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: canonical },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:image", content: image },
+        { property: "og:image:secure_url", content: image },
+        { property: "og:image:type", content: "image/jpeg" },
+        { property: "og:image:width", content: "1280" },
+        { property: "og:image:height", content: "720" },
+        { property: "og:image:alt", content: `Certificate of Completion - ${cert?.courseName || "Red Dot Technologies"}` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: desc },
+        { name: "twitter:image", content: image },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+    };
+  },
   component: CertificateVerificationPage,
 });
 
@@ -70,11 +107,12 @@ interface VerifiedData {
 
 function CertificateVerificationPage() {
   const searchParams = Route.useSearch();
+  const loaderData = Route.useLoaderData();
   const initialQuery = searchParams.id || searchParams.code || searchParams.q || "";
 
   const [queryInput, setQueryInput] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<VerifiedData | null>(null);
+  const [result, setResult] = useState<VerifiedData | null>(loaderData?.cert || null);
   const [notFound, setNotFound] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -124,9 +162,10 @@ function CertificateVerificationPage() {
   };
 
   const copyShareLink = () => {
-    const url = `${window.location.origin}/verify?id=${encodeURIComponent(
-      result?.certificateId || String(result?.id || ""),
-    )}`;
+    const certId = result?.certificateId || String(result?.id || "");
+    const url =
+      getCertificateShareUrl(certId) ||
+      `${window.location.origin}/verify?id=${encodeURIComponent(certId)}`;
     navigator.clipboard.writeText(url);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
@@ -237,40 +276,6 @@ function CertificateVerificationPage() {
                 </button>
               </div>
 
-              {/* Sample helper tags */}
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500">
-                <span className="font-semibold text-slate-400">Quick test:</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQueryInput("RDT-FOUNDATIONS-2");
-                    handleVerify("RDT-FOUNDATIONS-2");
-                  }}
-                  className="rounded-lg bg-white/90 border border-slate-200/80 px-2.5 py-1 font-mono text-[11px] font-bold text-slate-700 hover:text-brand-red hover:border-brand-red/40 transition-colors"
-                >
-                  RDT-FOUNDATIONS-2
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQueryInput("RDT-FOUNDATIONS-3");
-                    handleVerify("RDT-FOUNDATIONS-3");
-                  }}
-                  className="rounded-lg bg-white/90 border border-slate-200/80 px-2.5 py-1 font-mono text-[11px] font-bold text-slate-700 hover:text-brand-red hover:border-brand-red/40 transition-colors"
-                >
-                  RDT-FOUNDATIONS-3
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQueryInput("Raunak Bhattarai");
-                    handleVerify("Raunak Bhattarai");
-                  }}
-                  className="rounded-lg bg-white/90 border border-slate-200/80 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:text-brand-red hover:border-brand-red/40 transition-colors"
-                >
-                  Raunak Bhattarai
-                </button>
-              </div>
             </form>
           </ScrollReveal>
         </div>
@@ -307,7 +312,15 @@ function CertificateVerificationPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <ShareOnLinkedInButton
+                    variant="pill"
+                    certificateTitle={result.courseName}
+                    certificateId={result.certificateId || (result.id ? `RDT-AI-${result.id}` : undefined)}
+                    recipientName={result.name}
+                    issueDate={result.completedAt || result.issuedAt}
+                    label="Share on LinkedIn"
+                  />
                   <button
                     onClick={copyShareLink}
                     className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 text-xs font-extrabold text-white transition-colors cursor-pointer"
@@ -473,7 +486,7 @@ function CertificateVerificationPage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2.5 shrink-0 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
                     <button
                       onClick={handlePrintCertificate}
                       className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-brand-red hover:bg-red-700 text-white px-5 py-2.5 text-xs sm:text-sm font-extrabold shadow-md transition-all cursor-pointer"
@@ -481,9 +494,19 @@ function CertificateVerificationPage() {
                       <Printer className="h-4 w-4" />
                       <span>Print / Save as PDF</span>
                     </button>
+                    <ShareOnLinkedInButton
+                      variant="primary"
+                      certificateTitle={result.courseName}
+                      certificateId={result.certificateId || (result.id ? `RDT-AI-${result.id}` : undefined)}
+                      recipientName={result.name}
+                      issueDate={result.completedAt || result.issuedAt}
+                      label="Share on LinkedIn"
+                      className="flex-1 sm:flex-initial"
+                    />
                     <button
                       onClick={copyShareLink}
                       className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
+                      title="Copy public verification link"
                     >
                       {copiedLink ? (
                         <Check className="h-4 w-4 text-emerald-400" />

@@ -111,6 +111,38 @@ async function runTests() {
     assert.strictEqual(json.success, true);
   });
 
+  // 9. Payment Receipt Security - Unauthenticated access returns 401
+  await test("GET /api/receipts/:filename without auth returns 401 Unauthorized", async () => {
+    const res = await fetch(`${BASE_URL}/api/receipts/private_student_receipt.png`);
+    assert.strictEqual(res.status, 401);
+    const json = await res.json();
+    assert.strictEqual(json.success, false);
+  });
+
+  // 10. Access Code Generation Protection - Unauthenticated request returns 401
+  await test("POST /api/admin/generate-access-code without auth returns 401 Unauthorized", async () => {
+    const res = await fetch(`${BASE_URL}/api/admin/generate-access-code`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ track: "healthcare" }),
+    });
+    assert.strictEqual(res.status, 401);
+    const json = await res.json();
+    assert.strictEqual(json.success, false);
+  });
+
+  // 11. Access Code DRM - Tampered/forged codes rejected with 400
+  await test("POST /api/ai-access/verify-code rejects invalid/forged codes with 400", async () => {
+    const res = await fetch(`${BASE_URL}/api/ai-access/verify-code`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ track: "healthcare", code: "FORGEDCODE123" }),
+    });
+    assert.strictEqual(res.status, 400);
+    const json = await res.json();
+    assert.strictEqual(json.valid, false);
+  });
+
   console.log(`\n========================================`);
   console.log(`Test Results: ${passed} passed, ${failed} failed`);
   console.log(`========================================\n`);

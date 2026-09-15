@@ -34,7 +34,7 @@ function copyRecursive(src, dest) {
   }
 }
 
-const deployItems = ["dist", "server", "public", ".env.example"];
+const deployItems = ["dist", "server", "public", ".env.example", "package-lock.json"];
 for (const item of deployItems) {
   const src = path.join(rootDir, item);
   const dest = path.join(stagingDir, item);

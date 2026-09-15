@@ -4,28 +4,26 @@ import { ArrowRight, PlayCircle, ChevronDown } from "lucide-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
-import { getCourses, getCachedCourses } from "@/lib/api";
+import { getAboutStats, type AboutStats } from "@/lib/api";
 import hero3d from "@/assets/hero-3d.webp";
 
 export function NewHeroSection() {
   const container = useRef<HTMLElement>(null);
-  const [coursesCount, setCoursesCount] = useState<number>(() => {
-    const cached = getCachedCourses();
-    return Array.isArray(cached) && cached.length > 0 ? cached.length : 9;
+  const [aboutStats, setAboutStats] = useState<AboutStats>({
+    pecpCourses: 9,
+    aiUnlockedPathways: 8,
+    careerPathways: 17,
+    courseAccess: "24/7",
   });
 
   useEffect(() => {
-    getCourses().then((data) => {
-      if (Array.isArray(data) && data.length > 0) {
-        setCoursesCount(data.length);
-      }
+    getAboutStats().then((data) => {
+      if (data) setAboutStats(data);
     });
 
     const handleCoursesUpdated = () => {
-      getCourses().then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setCoursesCount(data.length);
-        }
+      getAboutStats().then((data) => {
+        if (data) setAboutStats(data);
       });
     };
 
@@ -151,9 +149,9 @@ export function NewHeroSection() {
           {/* Stats */}
           <dl className="hero-reveal-item mt-8 sm:mt-10 lg:mt-12 flex flex-wrap items-center gap-6 sm:gap-12">
             {[
-              { value: coursesCount, suffix: "", label: "PECP Courses", decimals: 0 },
-              { value: 4, suffix: "", label: "AI Unlocked Courses", decimals: 0 },
-              { value: 10, suffix: "+", label: "Career-ready Pathways", decimals: 0 },
+              { value: aboutStats.pecpCourses, suffix: "", label: "PECP Courses", decimals: 0 },
+              { value: aboutStats.aiUnlockedPathways, suffix: "", label: "AI Unlocked Pathways", decimals: 0 },
+              { value: aboutStats.careerPathways, suffix: "+", label: "Career Pathways", decimals: 0 },
             ].map((s) => (
               <div key={s.label}>
                 <dt className="display-font text-2xl sm:text-4xl font-bold text-brand-ink tracking-tight">
