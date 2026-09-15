@@ -968,7 +968,7 @@
   body {
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
   }
 
@@ -1041,6 +1041,22 @@
   h4,
   .display-font {
     font-family: var(--font-display);
+  }
+}
+
+/* ──────────────────────────────────────────────
+   COURSE SYLLABUS STICKY SIDEBAR (AI Unlocked)
+   ────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .course-sidebar-sticky {
+    position: -webkit-sticky !important;
+    position: sticky !important;
+    top: 5.5rem !important;
+    max-height: calc(100vh - 6.5rem) !important;
+    overflow-y: auto !important;
+    align-self: start !important;
+    z-index: 20 !important;
+    overscroll-behavior: contain !important;
   }
 }
 

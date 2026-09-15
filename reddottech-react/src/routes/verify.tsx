@@ -17,11 +17,12 @@ import {
   Lock,
   QrCode,
   Printer,
+  Download,
 } from "lucide-react";
 import { verifyCertificate } from "@/lib/api";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { printOfficialCertificate } from "@/lib/certificate-print";
+import { printOfficialCertificate, downloadOfficialCertificatePdf } from "@/lib/certificate-print";
 import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
 import { getCertificateShareUrl } from "@/lib/linkedin-share";
 
@@ -185,6 +186,26 @@ function CertificateVerificationPage() {
       completedAt: result.completedAt,
       issuedAt: result.issuedAt,
     });
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!result) return;
+    try {
+      await downloadOfficialCertificatePdf({
+        name: result.name,
+        certificateId:
+          result.certificateId || `RDT-${String(result.track || "AI").toUpperCase()}-${result.id}`,
+        track: result.track,
+        courseName: result.courseName,
+        organization: result.organization || result.school,
+        role: result.role,
+        department: result.department,
+        completedAt: result.completedAt,
+        issuedAt: result.issuedAt,
+      });
+    } catch (err) {
+      console.error("PDF download error:", err);
+    }
   };
 
   const formattedDate = (dateStr?: string) => {
@@ -447,13 +468,28 @@ function CertificateVerificationPage() {
                   </div>
 
                   {/* Issuer Authority */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200/70 p-4 space-y-1">
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200/70 p-4 space-y-1 relative overflow-hidden">
                     <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
                       <Building2 className="h-3 w-3" />
                       <span>Issuing Authority</span>
                     </div>
-                    <div className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
-                      Red Dot Technologies &amp; USC Upstate
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <div className="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">
+                          Red Dot Technologies Pvt. Ltd.
+                        </div>
+                        <div className="text-[10.5px] text-slate-500 font-medium">
+                          Baluwatar, Kathmandu, Nepal
+                        </div>
+                      </div>
+                      <img
+                        src="/reddotstamp.png"
+                        alt="Red Dot Technologies Stamp"
+                        className="h-8 sm:h-9 w-auto object-contain shrink-0 opacity-90"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = "/images/reddotstamp.png";
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -489,11 +525,20 @@ function CertificateVerificationPage() {
 
                   <div className="flex flex-wrap items-center gap-2.5 shrink-0 w-full sm:w-auto">
                     <button
-                      onClick={handlePrintCertificate}
+                      onClick={handleDownloadPdf}
                       className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-brand-red hover:bg-red-700 text-white px-5 py-2.5 text-xs sm:text-sm font-extrabold shadow-md transition-all cursor-pointer"
+                      title="Directly download high-resolution A4 landscape PDF"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Download PDF</span>
+                    </button>
+                    <button
+                      onClick={handlePrintCertificate}
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2.5 text-xs sm:text-sm font-extrabold transition-all cursor-pointer"
+                      title="Open print preview dialog"
                     >
                       <Printer className="h-4 w-4" />
-                      <span>Print / Save as PDF</span>
+                      <span>Print</span>
                     </button>
                     <ShareOnLinkedInButton
                       variant="primary"

@@ -1,6 +1,6 @@
+/* eslint-disable */
 // @ts-nocheck
 // SVG Diagrams for AI for Teachers & Educators and AI for Management Professionals
-/* eslint-disable */
 
 export const EDUCATION_FIG: Record<string, () => string> = {
   e1(){ // the two-question test

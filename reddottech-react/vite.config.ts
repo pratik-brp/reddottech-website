@@ -12,6 +12,9 @@ export default defineConfig({
     react(),
   ],
   resolve: {
+    alias: {
+      html2canvas: "html2canvas-pro",
+    },
     dedupe: ["react", "react-dom", "react/jsx-runtime"],
     tsconfigPaths: true,
   },

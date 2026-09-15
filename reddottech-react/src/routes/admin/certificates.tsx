@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { getCertificates, claimCertificate, deleteCertificate } from "@/lib/api";
 import { requireAdminRoute } from "@/lib/auth";
 import { BrandSpinner } from "@/components/ui/BrandSpinner";
-import { printOfficialCertificate } from "@/lib/certificate-print";
+import { printOfficialCertificate, downloadOfficialCertificatePdf } from "@/lib/certificate-print";
 import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
 import { shareCertificateOnLinkedIn } from "@/lib/linkedin-share";
 
@@ -634,6 +634,32 @@ function AdminCertificatesPage() {
     });
   };
 
+  const handleDownloadPdf = async (cert = selectedCert) => {
+    if (!cert) return;
+    const certTrack = detectTrack(cert);
+    const tId = toast.loading("Generating high-resolution landscape certificate...");
+    try {
+      await downloadOfficialCertificatePdf({
+        name: cert.name,
+        certificateId:
+          cert.certificate_id ||
+          cert.code ||
+          `RDT-${certTrack.toUpperCase()}-${cert.id}`,
+        track: certTrack,
+        courseName: cert.course_name,
+        organization: cert.school || cert.organization,
+        role: cert.role,
+        department: cert.department,
+        completedAt: cert.completed_at,
+        issuedAt: cert.created_at,
+      });
+      toast.success("Certificate PDF downloaded in landscape orientation!", { id: tId });
+    } catch (err) {
+      console.error("PDF download error:", err);
+      toast.error("Could not generate certificate PDF.", { id: tId });
+    }
+  };
+
   const previewTrackConfig =
     CERT_TRACK_CONFIGS[activePreviewTrack] || CERT_TRACK_CONFIGS.foundations;
 
@@ -759,20 +785,18 @@ function AdminCertificatesPage() {
           >
             <button
               onClick={() => setTrackFilter("all")}
-              className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${
-                trackFilter === "all"
+              className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${trackFilter === "all"
                   ? "bg-slate-900 text-white shadow-xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-              }`}
+                }`}
             >
               <Layers className="h-3.5 w-3.5 shrink-0" />
               <span>All Tracks</span>
               <span
-                className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                  trackFilter === "all"
+                className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${trackFilter === "all"
                     ? "bg-white/20 text-white"
                     : "bg-slate-100 text-slate-600"
-                }`}
+                  }`}
               >
                 {certs.length}
               </span>
@@ -800,11 +824,10 @@ function AdminCertificatesPage() {
                 <button
                   key={tKey}
                   onClick={() => setTrackFilter(isSelected ? "all" : tKey)}
-                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${
-                    isSelected
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer select-none ${isSelected
                       ? "bg-brand-red text-white shadow-xs"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
+                    }`}
                 >
                   {getTrackIcon(
                     tKey,
@@ -812,13 +835,12 @@ function AdminCertificatesPage() {
                   )}
                   <span className="whitespace-nowrap">{cfg.badge}</span>
                   <span
-                    className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                      isSelected
+                    className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${isSelected
                         ? "bg-white/25 text-white"
                         : count > 0
                           ? "bg-slate-200 text-slate-800"
                           : "bg-slate-100 text-slate-400"
-                    }`}
+                      }`}
                   >
                     {count}
                   </span>
@@ -967,6 +989,16 @@ function AdminCertificatesPage() {
                         <button
                           onClick={() => {
                             setSelectedCert(cert);
+                            handleDownloadPdf(cert);
+                          }}
+                          className="rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-1.5 transition-colors cursor-pointer"
+                          title="Download Landscape PDF"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedCert(cert);
                             printOfficialCertificate({
                               name: cert.name,
                               certificateId: certCode,
@@ -980,7 +1012,7 @@ function AdminCertificatesPage() {
                             });
                           }}
                           className="rounded-lg border border-slate-200 hover:bg-slate-100 p-1.5 text-slate-600 transition-colors cursor-pointer"
-                          title="Direct Print PDF"
+                          title="Print Certificate (Landscape)"
                         >
                           <Printer className="h-3.5 w-3.5" />
                         </button>
@@ -1159,6 +1191,17 @@ function AdminCertificatesPage() {
                             <button
                               onClick={() => {
                                 setSelectedCert(cert);
+                                handleDownloadPdf(cert);
+                              }}
+                              className="rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 p-1.5 transition-colors cursor-pointer"
+                              title="Download Landscape PDF"
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setSelectedCert(cert);
                                 printOfficialCertificate({
                                   name: cert.name,
                                   certificateId: certCode,
@@ -1172,7 +1215,7 @@ function AdminCertificatesPage() {
                                 });
                               }}
                               className="rounded-lg border border-slate-200 hover:bg-slate-100 p-1.5 text-slate-600 transition-colors cursor-pointer"
-                              title="Direct Print Official PDF"
+                              title="Direct Print (Landscape)"
                             >
                               <Printer className="h-3.5 w-3.5" />
                             </button>
@@ -1338,13 +1381,21 @@ function AdminCertificatesPage() {
 
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
+                  onClick={() => handleDownloadPdf()}
+                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer"
+                  title="Download true A4 landscape PDF file"
+                >
+                  <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>Download PDF</span>
+                </button>
+
+                <button
                   onClick={handlePrintCertificate}
-                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white text-[11px] sm:text-xs font-bold px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer"
-                  title="Print or Save Certificate as High-Res PDF"
+                  className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-[11px] sm:text-xs font-bold px-2.5 sm:px-3 py-1.5 sm:py-2 shadow-2xs transition-colors cursor-pointer"
+                  title="Open browser print dialog (Landscape)"
                 >
                   <Printer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Download / Print PDF</span>
-                  <span className="inline sm:hidden">Print PDF</span>
+                  <span className="hidden sm:inline">Print</span>
                 </button>
 
                 <button
@@ -1380,11 +1431,10 @@ function AdminCertificatesPage() {
                 <button
                   key={k}
                   onClick={() => setActivePreviewTrack(k)}
-                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                    activePreviewTrack === k
+                  className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors cursor-pointer shrink-0 whitespace-nowrap ${activePreviewTrack === k
                       ? "bg-slate-900 text-white shadow-xs"
                       : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
+                    }`}
                 >
                   {CERT_TRACK_CONFIGS[k].badge}
                 </button>
@@ -1453,12 +1503,22 @@ function AdminCertificatesPage() {
                 {/* Authority Signature & Date Row (Side-by-side on all screens) */}
                 <div className="flex flex-row justify-between items-end mt-4 sm:mt-7 text-xs text-[#6B7C96] gap-2 sm:gap-4 pt-2">
                   <div className="text-left flex-1 min-w-0">
+                    <div className="mb-1 flex items-end">
+                      <img
+                        src="/reddotstamp.png"
+                        alt="Red Dot Technologies Pvt. Ltd. Official Stamp"
+                        className="h-10 sm:h-14 w-auto object-contain pointer-events-none select-none ml-5 sm:ml-7"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = "/images/reddotstamp.png";
+                        }}
+                      />
+                    </div>
                     <div className="border-t border-[#0F1E3D] pt-1">
                       <b className="text-[#0F1E3D] text-[10px] sm:text-[13px] block truncate">
-                        Red Dot Technologies
+                        Red Dot Technologies Pvt. Ltd.
                       </b>
                       <span className="text-[8.5px] sm:text-[11px] text-[#6B7C96] block truncate">
-                        Baluwatar, Kathmandu
+                        Baluwatar, Kathmandu, Nepal
                       </span>
                     </div>
                   </div>

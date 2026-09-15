@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   Printer,
+  Download,
   GraduationCap,
   Zap,
   Brain,
@@ -74,19 +75,19 @@ import {
   AGILE_MANAGERS_SOURCES,
   type TrackConfig,
 } from "@/lib/ai-course-utils";
-import { printOfficialCertificate } from "@/lib/certificate-print";
+import { printOfficialCertificate, downloadOfficialCertificatePdf } from "@/lib/certificate-print";
 import { ShareOnLinkedInButton } from "@/components/ShareOnLinkedInButton";
 
 interface AiUnlockedSearch {
   track?:
-    | "foundations"
-    | "healthcare"
-    | "finance"
-    | "finance-advanced"
-    | "education"
-    | "management"
-    | "agile-developers"
-    | "agile-managers";
+  | "foundations"
+  | "healthcare"
+  | "finance"
+  | "finance-advanced"
+  | "education"
+  | "management"
+  | "agile-developers"
+  | "agile-managers";
   lesson?: string;
   view?: string;
 }
@@ -147,14 +148,14 @@ function useTabFade(key: string) {
 
 interface AiTrackCard {
   id:
-    | "foundations"
-    | "healthcare"
-    | "finance"
-    | "finance-advanced"
-    | "education"
-    | "management"
-    | "agile-developers"
-    | "agile-managers";
+  | "foundations"
+  | "healthcare"
+  | "finance"
+  | "finance-advanced"
+  | "education"
+  | "management"
+  | "agile-developers"
+  | "agile-managers";
   title: string;
   category: string;
   filterCategory: "Free" | "Healthcare" | "Finance" | "Leadership" | "Agile";
@@ -1274,26 +1275,23 @@ function AiUnlockedPage() {
                   key={cat.id}
                   onClick={() => setCatalogFilter(cat.id)}
                   aria-pressed={isActive}
-                  className={`group relative shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-full px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${
-                    isActive
-                      ? "bg-slate-950 text-white shadow-md shadow-slate-950/20 scale-[1.02] border border-slate-800"
-                      : "bg-white text-slate-600 border border-slate-200/90 hover:border-slate-300 hover:text-brand-ink hover:bg-slate-50"
-                  }`}
+                  className={`group relative shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-full px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${isActive
+                    ? "bg-slate-950 text-white shadow-md shadow-slate-950/20 scale-[1.02] border border-slate-800"
+                    : "bg-white text-slate-600 border border-slate-200/90 hover:border-slate-300 hover:text-brand-ink hover:bg-slate-50"
+                    }`}
                 >
                   <FilterIcon
-                    className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-300 ${
-                      isActive
-                        ? "text-brand-red scale-110"
-                        : "text-slate-400 group-hover:text-brand-ink group-hover:scale-110"
-                    }`}
+                    className={`h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-300 ${isActive
+                      ? "text-brand-red scale-110"
+                      : "text-slate-400 group-hover:text-brand-ink group-hover:scale-110"
+                      }`}
                   />
                   <span>{cat.label}</span>
                   <span
-                    className={`inline-flex items-center justify-center min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 px-1 sm:px-1.5 rounded-full text-[9px] sm:text-[10px] font-black transition-colors ${
-                      isActive
-                        ? "bg-brand-red text-white"
-                        : "bg-slate-100 border border-slate-200/80 text-slate-600 group-hover:bg-slate-200"
-                    }`}
+                    className={`inline-flex items-center justify-center min-w-[18px] sm:min-w-[20px] h-4 sm:h-5 px-1 sm:px-1.5 rounded-full text-[9px] sm:text-[10px] font-black transition-colors ${isActive
+                      ? "bg-brand-red text-white"
+                      : "bg-slate-100 border border-slate-200/80 text-slate-600 group-hover:bg-slate-200"
+                      }`}
                   >
                     {count}
                   </span>
@@ -1587,10 +1585,10 @@ function AiUnlockedPage() {
           <aside
             data-lenis-prevent
             className={[
-              "rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white custom-scrollbar",
+              "rounded-xl sm:rounded-2xl border border-slate-200/90 bg-white custom-scrollbar course-sidebar-sticky",
               mobileSideOpen
-                ? "fixed inset-x-3 top-16 bottom-4 z-50 overflow-y-auto block shadow-2xl lg:relative lg:inset-auto lg:top-20 lg:bottom-auto lg:z-auto lg:max-h-[calc(100vh-6rem)] lg:shadow-2xs lg:col-span-1 lg:sticky"
-                : "hidden lg:block lg:col-span-1 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:shadow-2xs",
+                ? "fixed inset-x-3 top-16 bottom-4 z-50 overflow-y-auto block shadow-2xl lg:shadow-2xs lg:col-span-1"
+                : "hidden lg:block lg:col-span-1 lg:shadow-2xs",
             ].join(" ")}
           >
             {/* Sidebar header */}
@@ -1902,23 +1900,22 @@ function AiUnlockedPage() {
                     <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                       <span className="inline-flex items-center gap-1 rounded-full bg-white border border-slate-200/90 px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-slate-800 shadow-2xs shrink-0">
                         <span
-                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${
-                            currentTrackId === "healthcare"
-                              ? "bg-emerald-500"
-                              : currentTrackId === "finance-advanced"
-                                ? "bg-purple-500"
-                                : currentTrackId === "finance"
-                                  ? "bg-blue-500"
-                                  : currentTrackId === "education"
-                                    ? "bg-teal-500"
-                                    : currentTrackId === "management"
-                                      ? "bg-amber-500"
-                                      : currentTrackId === "agile-developers"
-                                        ? "bg-sky-500"
-                                        : currentTrackId === "agile-managers"
-                                          ? "bg-teal-600"
-                                          : "bg-brand-red"
-                          }`}
+                          className={`h-1.5 w-1.5 rounded-full animate-pulse ${currentTrackId === "healthcare"
+                            ? "bg-emerald-500"
+                            : currentTrackId === "finance-advanced"
+                              ? "bg-purple-500"
+                              : currentTrackId === "finance"
+                                ? "bg-blue-500"
+                                : currentTrackId === "education"
+                                  ? "bg-teal-500"
+                                  : currentTrackId === "management"
+                                    ? "bg-amber-500"
+                                    : currentTrackId === "agile-developers"
+                                      ? "bg-sky-500"
+                                      : currentTrackId === "agile-managers"
+                                        ? "bg-teal-600"
+                                        : "bg-brand-red"
+                            }`}
                         />
                         {activeTrackConfig.badge}
                       </span>
@@ -2888,10 +2885,10 @@ function AiUnlockedPage() {
                                     >
                                       <span
                                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[10px] font-black ${isAnswered && oIdx === qItem.a
-                                            ? "bg-emerald-500 text-white"
-                                            : isThisSelected && !isCorrect
-                                              ? "bg-red-500 text-white"
-                                              : "bg-slate-100 text-slate-600"
+                                          ? "bg-emerald-500 text-white"
+                                          : isThisSelected && !isCorrect
+                                            ? "bg-red-500 text-white"
+                                            : "bg-slate-100 text-slate-600"
                                           }`}
                                       >
                                         {LETTERS[oIdx]}
@@ -2908,8 +2905,8 @@ function AiUnlockedPage() {
                               {isAnswered && (
                                 <div
                                   className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl text-xs font-semibold flex items-start gap-2 ${isCorrect
-                                      ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
-                                      : "bg-red-50 border border-red-200 text-red-900"
+                                    ? "bg-emerald-50 border border-emerald-200 text-emerald-900"
+                                    : "bg-red-50 border border-red-200 text-red-900"
                                     }`}
                                 >
                                   <span className="font-bold text-xs leading-none">
@@ -3569,6 +3566,35 @@ function AiUnlockedPage() {
 
                         <button
                           type="button"
+                          onClick={async () => {
+                            if (!activeTrackConfig) return;
+                            const tId = toast.loading("Generating high-resolution landscape certificate...");
+                            try {
+                              await downloadOfficialCertificatePdf({
+                                name: certName.trim() || "Candidate Name",
+                                certificateId: certReference,
+                                track: currentTrackId,
+                                courseName: activeTrackConfig.certTitle,
+                                organization: certOrg.trim() || "Red Dot Technologies",
+                                role: certRole.trim(),
+                                department: certDept.trim(),
+                                completedAt: new Date().toISOString(),
+                              });
+                              toast.success("Certificate PDF downloaded in landscape orientation!", { id: tId });
+                            } catch (err) {
+                              console.error("PDF download error:", err);
+                              toast.error("Could not generate certificate PDF.", { id: tId });
+                            }
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-red hover:bg-red-700 text-white text-xs font-bold px-4 py-2 transition-colors cursor-pointer shadow-2xs"
+                          title="Download true A4 landscape PDF file"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          <span>Download PDF (Landscape)</span>
+                        </button>
+
+                        <button
+                          type="button"
                           onClick={() => {
                             if (!activeTrackConfig) return;
                             printOfficialCertificate({
@@ -3582,10 +3608,11 @@ function AiUnlockedPage() {
                               completedAt: new Date().toISOString(),
                             });
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-brand-red text-white text-xs font-bold px-4 py-2 transition-colors cursor-pointer shadow-2xs"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold px-3 py-2 transition-colors cursor-pointer shadow-2xs"
+                          title="Print or Save via browser dialog"
                         >
                           <Printer className="h-3.5 w-3.5" />
-                          <span>Print / Save PDF</span>
+                          <span>Print</span>
                         </button>
 
                         <ShareOnLinkedInButton
@@ -3660,6 +3687,16 @@ function AiUnlockedPage() {
                           {/* Authority Signature & Date Row */}
                           <div className="flex flex-wrap justify-between items-end mt-7 text-xs text-[#6B7C96] gap-4 pt-2">
                             <div className="text-left">
+                              <div className="mb-1 flex items-end">
+                                <img
+                                  src="/reddotstamp.png"
+                                  alt="Red Dot Technologies Pvt. Ltd. Official Stamp"
+                                  className="h-12 sm:h-16 w-auto object-contain pointer-events-none select-none drop-shadow-xs ml-5 sm:ml-7"
+                                  onError={(e) => {
+                                    (e.currentTarget as HTMLImageElement).src = "/images/reddotstamp.png";
+                                  }}
+                                />
+                              </div>
                               <div className="border-t border-[#0F1E3D] pt-1.5 min-w-[180px]">
                                 <b className="text-[#0F1E3D] text-xs sm:text-[13px] block">
                                   Red Dot Technologies Pvt. Ltd.
