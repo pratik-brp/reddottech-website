@@ -946,7 +946,7 @@ export const Navbar = memo(function Navbar() {
                               <div className="flex flex-wrap items-center gap-1.5 mb-1">
                                 {item.badge && (
                                   <span
-                                    className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[8.5px] font-black tracking-tight uppercase truncate max-w-[140px] ${
+                                    className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[8.5px] font-black tracking-tight uppercase whitespace-normal leading-tight ${
                                       item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                     }`}
                                   >
@@ -1155,11 +1155,11 @@ export const Navbar = memo(function Navbar() {
                             <Icon className="h-3.5 w-3.5" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="truncate">{item.title}</span>
+                            <div className="flex items-start justify-between gap-1.5">
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
                               {item.badge && (
                                 <span
-                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${
                                     item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                   }`}
                                 >
@@ -1221,11 +1221,11 @@ export const Navbar = memo(function Navbar() {
                             <Icon className="h-3.5 w-3.5" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="truncate">{item.title}</span>
+                            <div className="flex items-start justify-between gap-1.5">
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
                               {item.badge && (
                                 <span
-                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${
                                     item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                   }`}
                                 >
@@ -1358,11 +1358,11 @@ export const Navbar = memo(function Navbar() {
                             <Icon className="h-3.5 w-3.5" />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="truncate">{item.title}</span>
+                            <div className="flex items-start justify-between gap-1.5">
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
                               {item.badge && (
                                 <span
-                                  className={`shrink-0 rounded-full border px-1.5 py-0.2 text-[8px] font-black ${
+                                  className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${
                                     item.badgeColor || "bg-red-50 text-brand-red border-red-200"
                                   }`}
                                 >

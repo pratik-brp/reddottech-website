@@ -1374,7 +1374,7 @@ function AiUnlockedPage() {
                         </div>
                         <div className="flex items-center justify-center gap-1 p-1.5 rounded-lg bg-slate-50 border border-slate-100">
                           <Award className="h-3 w-3 text-emerald-600 shrink-0" />
-                          <span className="text-brand-ink font-extrabold truncate">{track.certLabel}</span>
+                          <span className="text-brand-ink font-extrabold leading-tight">{track.certLabel}</span>
                         </div>
                       </div>
                     </div>
@@ -1548,7 +1548,7 @@ function AiUnlockedPage() {
                 <span className="text-[9px] font-black uppercase tracking-wider text-brand-red block leading-none">
                   Active Track
                 </span>
-                <h2 className="text-xs sm:text-sm font-black text-slate-900 leading-tight truncate">
+                <h2 className="text-xs sm:text-sm font-black text-slate-900 leading-tight line-clamp-2">
                   {activeTrackConfig.name}
                 </h2>
               </div>
@@ -1757,7 +1757,7 @@ function AiUnlockedPage() {
                     <BookMarked className="h-3 w-3" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-extrabold truncate text-xs">Sources &amp; Reading</p>
+                    <p className="font-extrabold text-xs leading-snug">Sources &amp; Reading</p>
                   </div>
                 </button>
               )}
@@ -1784,8 +1784,8 @@ function AiUnlockedPage() {
                     <QrCode className="h-3 w-3" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-extrabold truncate text-xs">Unlock Full Access</p>
-                    <p className="text-[9px] font-medium opacity-80 truncate">
+                    <p className="font-extrabold text-xs leading-snug">Unlock Full Access</p>
+                    <p className="text-[9px] font-medium opacity-80 leading-snug">
                       {activeTrackConfig.price?.currency} {activeTrackConfig.price?.amount}
                     </p>
                   </div>
@@ -1820,7 +1820,7 @@ function AiUnlockedPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
-                    <p className="font-extrabold truncate text-xs">Certificate</p>
+                    <p className="font-extrabold text-xs leading-snug">Certificate</p>
                     {isCourseComplete ? (
                       <span className="text-[8px] bg-white text-emerald-800 px-1 py-0.2 rounded font-black">
                         READY
@@ -1829,7 +1829,7 @@ function AiUnlockedPage() {
                       <Lock className="h-2.5 w-2.5 opacity-50" />
                     )}
                   </div>
-                  <p className="text-[9px] font-normal opacity-70 truncate">
+                  <p className="text-[9px] font-normal opacity-70 leading-snug">
                     {isCourseComplete
                       ? "Ready to claim"
                       : `${completedCount}/${totalLessons} completed`}
@@ -2368,11 +2368,11 @@ function AiUnlockedPage() {
                 {/* Course Curriculum List */}
                 <div className="space-y-3 w-full min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 px-0.5">
-                    <div className="min-w-0">
-                      <h2 className="text-sm sm:text-base font-black text-slate-900 truncate">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-sm sm:text-base font-black text-slate-900 leading-snug line-clamp-2">
                         {activeTrackConfig.name} Curriculum
                       </h2>
-                      <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate">
+                      <p className="text-[11px] sm:text-xs text-slate-500 font-medium leading-snug">
                         {currentLessons.length} structured modules designed for real-world mastery
                       </p>
                     </div>

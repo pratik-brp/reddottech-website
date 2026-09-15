@@ -968,6 +968,8 @@
   body {
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   html.lenis,

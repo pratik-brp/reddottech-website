@@ -49,9 +49,9 @@ function CourseCardComponent({ course }: CourseCardProps) {
           <div>
             {/* Category & Price Header Row (Cleanly placed in body so image graphic text is 100% visible) */}
             <div className="flex items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-              <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[11px] font-extrabold text-brand-red">
+              <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-brand-red/10 border border-brand-red/20 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[11px] font-extrabold text-brand-red min-w-0">
                 <Award className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 text-brand-red shrink-0" />
-                <span className="truncate max-w-[110px] sm:max-w-[170px]">
+                <span className="line-clamp-1 leading-tight">
                   {course.category || "Professional Course"}
                 </span>
               </span>
@@ -119,7 +119,7 @@ function CourseCardComponent({ course }: CourseCardProps) {
                     {course.instructorName}
                   </p>
                   {course.instructorTitle && (
-                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold truncate leading-tight mt-0.5 max-w-[80px] sm:max-w-[130px] hidden sm:block">
+                    <p className="text-[9px] sm:text-[10px] text-slate-500 font-semibold line-clamp-1 leading-tight mt-0.5 hidden sm:block">
                       {course.instructorTitle}
                     </p>
                   )}

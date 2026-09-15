@@ -118,7 +118,7 @@ function CourseDetailPage() {
               Courses
             </Link>
             <span>/</span>
-            <span className="text-slate-700 truncate max-w-[200px]">{course.name}</span>
+            <span className="text-slate-700 truncate max-w-[180px] sm:max-w-md lg:max-w-xl">{course.name}</span>
           </div>
         </ScrollReveal>
 

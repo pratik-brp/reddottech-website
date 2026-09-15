@@ -122,7 +122,7 @@ export function WhatWeDoSection() {
 
                   <div>
                     {/* Header Row: Icon & Badge */}
-                    <div className="flex items-center justify-between gap-1 mb-2.5 sm:mb-6 relative z-10">
+                    <div className="flex items-center justify-between gap-1.5 mb-2.5 sm:mb-6 relative z-10">
                       <div
                         className={`flex h-8 w-8 sm:h-13 sm:w-13 items-center justify-center rounded-lg sm:rounded-2xl border ${s.iconBg} shadow-xs transition-transform duration-300 group-hover:scale-105 shrink-0`}
                       >
@@ -130,7 +130,7 @@ export function WhatWeDoSection() {
                       </div>
 
                       <span
-                        className={`rounded-full border px-1.5 py-0.5 sm:px-3 sm:py-1 text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider truncate max-w-[95px] sm:max-w-none ${s.badgeStyle}`}
+                        className={`rounded-full border px-1.5 py-0.5 sm:px-3 sm:py-1 text-[7.5px] min-[390px]:text-[8px] sm:text-[10px] font-extrabold uppercase tracking-tight min-[390px]:tracking-normal sm:tracking-wider leading-tight text-center whitespace-normal sm:whitespace-nowrap ${s.badgeStyle}`}
                       >
                         {s.badge}
                       </span>

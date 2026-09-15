@@ -670,7 +670,7 @@ function AdminCertificatesPage() {
           {/* Card 1: Total Credentials */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div className="flex items-start justify-between gap-1.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-snug">
                 Total Credentials
               </span>
               <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-red-50 text-brand-red flex items-center justify-center font-bold shrink-0 border border-red-100">
@@ -681,7 +681,7 @@ function AdminCertificatesPage() {
               <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
                 {isLoading ? "—" : certs.length}
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium leading-snug mt-0.5">
                 Verified credentials
               </p>
             </div>
@@ -690,7 +690,7 @@ function AdminCertificatesPage() {
           {/* Card 2: Curriculum Tracks */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div className="flex items-start justify-between gap-1.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-snug">
                 Curriculum
               </span>
               <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 border border-indigo-100">
@@ -701,7 +701,7 @@ function AdminCertificatesPage() {
               <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
                 9 Tracks
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium leading-snug mt-0.5">
                 8 AI + 1 Executive
               </p>
             </div>
@@ -710,7 +710,7 @@ function AdminCertificatesPage() {
           {/* Card 3: Partner Organizations */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div className="flex items-start justify-between gap-1.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-snug">
                 Organizations
               </span>
               <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0 border border-emerald-100">
@@ -721,7 +721,7 @@ function AdminCertificatesPage() {
               <div className="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
                 {isLoading ? "—" : uniqueInstitutionsCount}
               </div>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium truncate mt-0.5">
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium leading-snug mt-0.5">
                 Institutions &amp; partners
               </p>
             </div>
@@ -730,7 +730,7 @@ function AdminCertificatesPage() {
           {/* Card 4: Top Track */}
           <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between">
             <div className="flex items-start justify-between gap-1.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 block leading-snug">
                 Top Track
               </span>
               <div className="h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0 border border-amber-100">

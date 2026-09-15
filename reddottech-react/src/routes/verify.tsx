@@ -312,7 +312,7 @@ function CertificateVerificationPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="w-full lg:w-auto flex flex-wrap sm:flex-nowrap items-center gap-2 mt-2 lg:mt-0">
                   <ShareOnLinkedInButton
                     variant="pill"
                     certificateTitle={result.courseName}
@@ -320,10 +320,11 @@ function CertificateVerificationPage() {
                     recipientName={result.name}
                     issueDate={result.completedAt || result.issuedAt}
                     label="Share on LinkedIn"
+                    className="w-full sm:w-auto text-[11px] sm:text-xs"
                   />
                   <button
                     onClick={copyShareLink}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 text-xs font-extrabold text-white transition-colors cursor-pointer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 text-[11px] sm:text-xs font-extrabold text-white transition-colors cursor-pointer whitespace-nowrap"
                   >
                     {copiedLink ? (
                       <Check className="h-3.5 w-3.5 text-emerald-300" />
@@ -334,10 +335,10 @@ function CertificateVerificationPage() {
                   </button>
                   <button
                     onClick={handlePrintCertificate}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-white text-emerald-900 hover:bg-emerald-50 px-3.5 py-1.5 text-xs font-black transition-colors shadow-sm cursor-pointer"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl bg-white text-emerald-900 hover:bg-emerald-50 px-3 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-black transition-colors shadow-sm cursor-pointer whitespace-nowrap"
                   >
                     <Printer className="h-3.5 w-3.5" />
-                    <span>Print Official Certificate</span>
+                    <span>Print Certificate</span>
                   </button>
                 </div>
               </div>
@@ -386,7 +387,7 @@ function CertificateVerificationPage() {
                     <span>Verified Recipient</span>
                   </span>
 
-                  <h2 className="display-font text-2xl sm:text-4xl font-black text-brand-ink tracking-tight">
+                  <h2 className="display-font text-2xl sm:text-4xl font-black text-brand-ink tracking-tight break-words">
                     {result.name}
                   </h2>
 
@@ -396,8 +397,8 @@ function CertificateVerificationPage() {
                   </p>
 
                   <div className="pt-2">
-                    <div className="inline-block rounded-2xl bg-brand-ink text-white px-5 py-3 shadow-lg">
-                      <h3 className="text-sm sm:text-lg font-black tracking-tight text-white">
+                    <div className="inline-block rounded-2xl bg-brand-ink text-white px-5 py-3 shadow-lg max-w-full">
+                      <h3 className="text-sm sm:text-lg font-black tracking-tight text-white break-words">
                         {result.courseName || "AI Foundations: General AI Literacy"}
                       </h3>
                       {result.track && (
