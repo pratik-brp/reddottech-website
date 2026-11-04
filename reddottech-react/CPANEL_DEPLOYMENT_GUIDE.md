@@ -88,6 +88,7 @@ npm run package:cpanel
 4. In the **Environment variables** section, click **Add Variable** and add the following keys:
    - `NODE_ENV` = `production`
    - `PORT` = `5000`
+   - `SITE_URL` = `https://reddottech.com.np`
    - `DB_HOST` = `localhost`
    - `DB_PORT` = `3306`
    - `DB_NAME` = _Your cPanel Database Name from Step 1_

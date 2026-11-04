@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+*backup*.sql
 
 # Node / JS deps
 node_modules/
@@ -17,6 +18,7 @@ vendor/
 .env
 .env.*
 !.env.example
+*backup*.sql
 storage/receipts/
 storage/receipts/*
 !storage/receipts/.gitkeep

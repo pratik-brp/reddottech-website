@@ -4,13 +4,25 @@ import { GraduationCap, Bot, Route, Clock, Sparkles } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { getAboutStats, type AboutStats } from "@/lib/api";
 
-export function StatsSection() {
-  const [aboutStats, setAboutStats] = useState<AboutStats>({
-    pecpCourses: 9,
-    aiUnlockedPathways: 8,
-    careerPathways: 17,
-    courseAccess: "24/7",
+interface StatsSectionProps {
+  stats?: AboutStats;
+}
+
+export function StatsSection({ stats: initialStats }: StatsSectionProps = {}) {
+  const [aboutStats, setAboutStats] = useState<AboutStats>(() => {
+    return (
+      initialStats || {
+        pecpCourses: 9,
+        aiUnlockedPathways: 8,
+        careerPathways: 17,
+        courseAccess: "24/7",
+      }
+    );
   });
+
+  useEffect(() => {
+    if (initialStats) setAboutStats(initialStats);
+  }, [initialStats]);
 
   useEffect(() => {
     getAboutStats().then((data) => {

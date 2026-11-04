@@ -21,12 +21,17 @@ export function Footer() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
-  const [courses, setCourses] = useState<any[]>(() => getCachedCourses() || []);
+  const [courses, setCourses] = useState<any[]>([]);
 
   useEffect(() => {
     const cached = getCachedSettings();
     if (cached) {
       setSettings(cached);
+    }
+
+    const cachedCoursesData = getCachedCourses();
+    if (cachedCoursesData && cachedCoursesData.length > 0) {
+      setCourses(cachedCoursesData);
     }
 
     getSettings().then((data) => {
@@ -293,7 +298,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-slate-200/80 bg-white/60">
           <div className="mx-auto max-w-7xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500" suppressHydrationWarning>
               © {new Date().getFullYear()} Red Dot Technologies Pvt. Ltd. All rights reserved.
             </p>
 

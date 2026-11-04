@@ -7,14 +7,26 @@ import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { getAboutStats, type AboutStats } from "@/lib/api";
 import hero3d from "@/assets/hero-3d.webp";
 
-export function NewHeroSection() {
+interface NewHeroSectionProps {
+  stats?: AboutStats;
+}
+
+export function NewHeroSection({ stats }: NewHeroSectionProps = {}) {
   const container = useRef<HTMLElement>(null);
-  const [aboutStats, setAboutStats] = useState<AboutStats>({
-    pecpCourses: 9,
-    aiUnlockedPathways: 8,
-    careerPathways: 17,
-    courseAccess: "24/7",
+  const [aboutStats, setAboutStats] = useState<AboutStats>(() => {
+    return (
+      stats || {
+        pecpCourses: 9,
+        aiUnlockedPathways: 8,
+        careerPathways: 17,
+        courseAccess: "24/7",
+      }
+    );
   });
+
+  useEffect(() => {
+    if (stats) setAboutStats(stats);
+  }, [stats]);
 
   useEffect(() => {
     getAboutStats().then((data) => {

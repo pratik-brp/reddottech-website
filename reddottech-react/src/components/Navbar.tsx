@@ -405,7 +405,7 @@ export const Navbar = memo(function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<MegaMenuKey | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<Record<string, boolean>>({});
-  const [courses, setCourses] = useState<any[]>(() => getCachedCourses() || []);
+  const [courses, setCourses] = useState<any[]>([]);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
 
@@ -414,6 +414,12 @@ export const Navbar = memo(function Navbar() {
 
   // Load live courses from API and subscribe to real-time update events
   useEffect(() => {
+    // Read cached courses after hydration to prevent SSR mismatch error #418
+    const cached = getCachedCourses();
+    if (cached && cached.length > 0) {
+      setCourses(cached);
+    }
+
     const loadCourses = () => {
       getCourses()
         .then((data) => {

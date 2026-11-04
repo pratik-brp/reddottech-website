@@ -47,7 +47,13 @@ const MIME_TYPES = {
 // Serve the client build output (dist/client) for static assets/images.
 function serveStatic(req, res) {
   const url = new URL(req.url, "http://localhost");
-  const relative = decodeURIComponent(url.pathname).replace(/^\/+/, "");
+  let relative;
+  try {
+    relative = decodeURIComponent(url.pathname).replace(/^\/+/, "");
+  } catch {
+    // Malformed URIs from bots/scanners — reject safely instead of crashing
+    return false;
+  }
   const filePath = path.resolve(clientDir, relative);
 
   if (filePath !== clientDir && !filePath.startsWith(clientDir + path.sep)) return false;
@@ -128,7 +134,7 @@ async function handleSsr(req, res) {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com; frame-ancestors 'self';",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:; upgrade-insecure-requests;",
   );
   if (proto === "https" || process.env.NODE_ENV === "production") {
     res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");

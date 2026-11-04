@@ -60,7 +60,7 @@ app.use((req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com; frame-ancestors 'self';",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https:; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://youtube.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https:; upgrade-insecure-requests;",
   );
   next();
 });
@@ -1807,8 +1807,12 @@ app.get("/api/stats", requireAuth, async (req, res) => {
 // -------------------------------------------------------------------
 app.get("/api/about-stats", contentLimiter, async (req, res) => {
   try {
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
     const pecpRow = await get(
-      "SELECT COUNT(*) as count FROM courses WHERE status = 'published' AND LOWER(certification) = 'pecp'",
+      "SELECT COUNT(*) as count FROM courses WHERE status = 'published'",
     );
     const pecpCourses = Number(pecpRow?.count) || 0;
 

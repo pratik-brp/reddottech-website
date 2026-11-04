@@ -80,14 +80,26 @@ const features = [
   },
 ];
 
-export function WhyChooseUsSection() {
+interface WhyChooseUsSectionProps {
+  stats?: AboutStats;
+}
+
+export function WhyChooseUsSection({ stats: initialStats }: WhyChooseUsSectionProps = {}) {
   const [active, setActive] = useState(0);
-  const [aboutStats, setAboutStats] = useState<AboutStats>({
-    pecpCourses: 9,
-    aiUnlockedPathways: 8,
-    careerPathways: 17,
-    courseAccess: "24/7",
+  const [aboutStats, setAboutStats] = useState<AboutStats>(() => {
+    return (
+      initialStats || {
+        pecpCourses: 9,
+        aiUnlockedPathways: 8,
+        careerPathways: 17,
+        courseAccess: "24/7",
+      }
+    );
   });
+
+  useEffect(() => {
+    if (initialStats) setAboutStats(initialStats);
+  }, [initialStats]);
 
   useEffect(() => {
     getAboutStats().then((data) => {

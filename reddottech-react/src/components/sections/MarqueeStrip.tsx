@@ -32,9 +32,14 @@ function getPunchyLabel(course: any): string {
 }
 
 export function MarqueeStrip() {
-  const [courses, setCourses] = useState<any[]>(() => getCachedCourses() || []);
+  const [courses, setCourses] = useState<any[]>([]);
 
   useEffect(() => {
+    const cached = getCachedCourses();
+    if (cached && cached.length > 0) {
+      setCourses(cached);
+    }
+
     getCourses().then((data) => {
       if (Array.isArray(data) && data.length > 0) {
         setCourses(data);

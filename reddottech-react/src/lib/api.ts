@@ -1,16 +1,38 @@
 import { getToken, clearAuth, setAdminEmail } from "./auth";
 
 // Same-origin by default (served behind the Vite dev proxy in development and a
-// reverse proxy / API route in production). Override with VITE_API_BASE_URL.
-const getApiBaseUrl = () => {
-  if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL as string;
-  if (typeof window === "undefined") {
-    const port = (typeof process !== "undefined" && process.env?.PORT) || "5000";
-    return `http://127.0.0.1:${port}/api`;
+// reverse proxy / API route in production). Override with VITE_API_BASE_URL or SITE_URL.
+export const getApiBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL as string;
+    return "/api";
   }
-  return "/api";
+
+  // Server-side (SSR) execution in Node.js
+  const envApiUrl =
+    (typeof process !== "undefined" &&
+      (process.env?.VITE_API_BASE_URL || process.env?.SITE_URL || process.env?.APP_URL)) ||
+    (import.meta.env.VITE_API_BASE_URL as string | undefined);
+
+  if (envApiUrl) {
+    const cleanUrl = envApiUrl.replace(/\/+$/, "");
+    return cleanUrl.endsWith("/api") ? cleanUrl : `${cleanUrl}/api`;
+  }
+
+  // If running in production (e.g. cPanel Passenger / CloudLinux), connect to the production domain
+  const isProd =
+    (typeof process !== "undefined" && process.env?.NODE_ENV === "production") ||
+    import.meta.env.PROD;
+
+  if (isProd) {
+    return "https://reddottech.com.np/api";
+  }
+
+  // Local development fallback (Express runs on port 5000)
+  const port = (typeof process !== "undefined" && process.env?.PORT) || "5000";
+  return `http://127.0.0.1:${port}/api`;
 };
-const API_BASE_URL = getApiBaseUrl();
+export const API_BASE_URL = getApiBaseUrl();
 
 interface FetchOptions extends RequestInit {
   /** When true, throws on HTTP errors even for reads (default: writes throw, reads fall back). */
@@ -28,7 +50,9 @@ export async function fetchApi<T>(endpoint: string, options?: FetchOptions): Pro
       headers.set("Authorization", `Bearer ${token}`);
     }
 
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const baseUrl = getApiBaseUrl();
+    const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const res = await fetch(`${baseUrl}${cleanEndpoint}`, {
       ...options,
       headers,
     });
@@ -226,7 +250,10 @@ export interface AboutStats {
 }
 
 export async function getAboutStats(): Promise<AboutStats> {
-  const data = await fetchApi<AboutStats>("/about-stats");
+  const timestamp = Date.now();
+  const data = await fetchApi<AboutStats>(`/about-stats?_t=${timestamp}`, {
+    cache: "no-store",
+  });
   return (
     data || {
       pecpCourses: 9,
