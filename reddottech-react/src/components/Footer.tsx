@@ -2,7 +2,13 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, MapPin, Phone, Mail, ArrowUp } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
-import { subscribeNewsletter, getSettings, getCachedSettings, getCourses, getCachedCourses } from "@/lib/api";
+import {
+  subscribeNewsletter,
+  getSettings,
+  getCachedSettings,
+  getCourses,
+  getCachedCourses,
+} from "@/lib/api";
 
 function TikTokIcon({ className }: { className?: string }) {
   return (
@@ -86,6 +92,7 @@ export function Footer() {
   const quickLinks = [
     { name: "About Us", href: "/about" },
     { name: "PECP Program", href: "/pecp" },
+    { name: "Advanced Courses", href: "/advanced-courses" },
     { name: "All Courses", href: "/courses" },
     { name: "AI Unlocked", href: "/ai-unlocked" },
     { name: "Verify Certificate", href: "/verify" },

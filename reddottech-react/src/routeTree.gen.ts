@@ -24,6 +24,8 @@ import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminSubscriptionsRouteImport } from './routes/admin/subscriptions'
+import { Route as AdvancedCoursesIndexRouteImport } from './routes/advanced-courses/index'
+import { Route as AdvancedCoursesSlugRouteImport } from './routes/advanced-courses/$slug'
 import { Route as CoursesIndexRouteImport } from './routes/courses/index'
 import { Route as CoursesIdRouteImport } from './routes/courses/$id'
 import { Route as AdminCoursesIndexRouteImport } from './routes/admin/courses/index'
@@ -104,6 +106,16 @@ const AdminSubscriptionsRoute = AdminSubscriptionsRouteImport.update({
   path: '/admin/subscriptions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdvancedCoursesIndexRoute = AdvancedCoursesIndexRouteImport.update({
+  id: '/advanced-courses/',
+  path: '/advanced-courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvancedCoursesSlugRoute = AdvancedCoursesSlugRouteImport.update({
+  id: '/advanced-courses/$slug',
+  path: '/advanced-courses/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesIndexRoute = CoursesIndexRouteImport.update({
   id: '/courses/',
   path: '/courses/',
@@ -140,8 +152,10 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
+  '/advanced-courses/$slug': typeof AdvancedCoursesSlugRoute
   '/courses/$id': typeof CoursesIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/advanced-courses/': typeof AdvancedCoursesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses/': typeof AdminCoursesIndexRoute
@@ -161,8 +175,10 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
+  '/advanced-courses/$slug': typeof AdvancedCoursesSlugRoute
   '/courses/$id': typeof CoursesIdRoute
   '/admin': typeof AdminIndexRoute
+  '/advanced-courses': typeof AdvancedCoursesIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses': typeof AdminCoursesIndexRoute
@@ -183,8 +199,10 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
+  '/advanced-courses/$slug': typeof AdvancedCoursesSlugRoute
   '/courses/$id': typeof CoursesIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/advanced-courses/': typeof AdvancedCoursesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/admin/courses/create': typeof AdminCoursesCreateRoute
   '/admin/courses/': typeof AdminCoursesIndexRoute
@@ -206,8 +224,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
+    | '/advanced-courses/$slug'
     | '/courses/$id'
     | '/admin/'
+    | '/advanced-courses/'
     | '/courses/'
     | '/admin/courses/create'
     | '/admin/courses/'
@@ -227,8 +247,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
+    | '/advanced-courses/$slug'
     | '/courses/$id'
     | '/admin'
+    | '/advanced-courses'
     | '/courses'
     | '/admin/courses/create'
     | '/admin/courses'
@@ -248,8 +270,10 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/settings'
     | '/admin/subscriptions'
+    | '/advanced-courses/$slug'
     | '/courses/$id'
     | '/admin/'
+    | '/advanced-courses/'
     | '/courses/'
     | '/admin/courses/create'
     | '/admin/courses/'
@@ -270,8 +294,10 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSubscriptionsRoute: typeof AdminSubscriptionsRoute
+  AdvancedCoursesSlugRoute: typeof AdvancedCoursesSlugRoute
   CoursesIdRoute: typeof CoursesIdRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdvancedCoursesIndexRoute: typeof AdvancedCoursesIndexRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
   AdminCoursesCreateRoute: typeof AdminCoursesCreateRoute
   AdminCoursesIndexRoute: typeof AdminCoursesIndexRoute
@@ -384,6 +410,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSubscriptionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/advanced-courses/': {
+      id: '/advanced-courses/'
+      path: '/advanced-courses'
+      fullPath: '/advanced-courses/'
+      preLoaderRoute: typeof AdvancedCoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advanced-courses/$slug': {
+      id: '/advanced-courses/$slug'
+      path: '/advanced-courses/$slug'
+      fullPath: '/advanced-courses/$slug'
+      preLoaderRoute: typeof AdvancedCoursesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses/': {
       id: '/courses/'
       path: '/courses'
@@ -430,8 +470,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSubscriptionsRoute: AdminSubscriptionsRoute,
+  AdvancedCoursesSlugRoute: AdvancedCoursesSlugRoute,
   CoursesIdRoute: CoursesIdRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdvancedCoursesIndexRoute: AdvancedCoursesIndexRoute,
   CoursesIndexRoute: CoursesIndexRoute,
   AdminCoursesCreateRoute: AdminCoursesCreateRoute,
   AdminCoursesIndexRoute: AdminCoursesIndexRoute,

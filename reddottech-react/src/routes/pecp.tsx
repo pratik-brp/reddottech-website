@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Users,
   BookOpen,
+  Sparkles,
 } from "lucide-react";
 
 export const Route = createFileRoute("/pecp")({
@@ -783,6 +784,47 @@ function PecpPage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- */}
+      {/* 6.5. FEATURED PECP HALLMARK COURSE                            */}
+      {/* ------------------------------------------------------------- */}
+      <section className="relative py-8 sm:py-14 bg-white">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-[2rem] border border-slate-200/90 bg-gradient-to-r from-slate-900 via-slate-900 to-brand-ink p-6 sm:p-10 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2.5 max-w-2xl">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-red/20 border border-brand-red/40 px-3 py-0.5 text-[10px] sm:text-xs font-black uppercase tracking-wider text-brand-red-light">
+                  <Sparkles className="h-3 w-3 text-amber-300" />
+                  Featured PECP Hallmark Course
+                </div>
+                <h3 className="display-font text-xl sm:text-3xl font-black text-white leading-tight">
+                  Analyzing and Presenting Data
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                  Practical, faculty-led online course with USC Upstate faculty in Microsoft Excel,
+                  Power BI, Copilot and executive PowerPoint presentations.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full sm:w-auto">
+                <Link
+                  to="/advanced-courses/$slug"
+                  params={{ slug: "analyzing-and-presenting-data" }}
+                  className="btn-primary text-xs sm:text-sm px-6 py-3 justify-center text-center shadow-lg"
+                >
+                  <span>Explore Hallmark Course</span>
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/advanced-courses"
+                  className="btn-secondary text-xs sm:text-sm px-5 py-3 justify-center text-center bg-white/10 text-white border-white/20 hover:bg-white/20"
+                >
+                  <span>All Advanced Courses</span>
+                </Link>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

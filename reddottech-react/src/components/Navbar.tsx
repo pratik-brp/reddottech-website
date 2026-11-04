@@ -280,6 +280,15 @@ const STATIC_MEGA_MENUS: Omit<Record<MegaMenuKey, MegaMenuConfig>, "courses"> = 
             iconBg: "bg-blue-50 text-blue-600 border-blue-200/60",
             icon: Users,
           },
+          {
+            title: "Advanced Courses",
+            desc: "Faculty-led certification cohorts in Excel, Power BI & Copilot.",
+            href: "/advanced-courses",
+            badge: "HALLMARK",
+            badgeColor: "bg-red-50 text-brand-red border-red-200",
+            iconBg: "bg-red-50 text-brand-red border-red-200/60",
+            icon: Award,
+          },
         ],
       },
     ],
@@ -501,9 +510,7 @@ export const Navbar = memo(function Navbar() {
     const courseSections: MegaMenuSection[] = [
       {
         heading:
-          dynamicCourseItems.length > 0
-            ? "Featured & Live Programs"
-            : "Explore by Course Category",
+          dynamicCourseItems.length > 0 ? "Featured & Live Programs" : "Explore by Course Category",
         items: dynamicCourseItems.length > 0 ? dynamicCourseItems : categoryFallbackItems,
       },
     ];
@@ -522,8 +529,7 @@ export const Navbar = memo(function Navbar() {
             badge: latestCourse.category?.toUpperCase() || "NEW COHORT",
             title: latestCourse.name,
             desc: latestCleanDesc
-              ? latestCleanDesc.slice(0, 220) +
-                (latestCleanDesc.length > 220 ? "..." : "")
+              ? latestCleanDesc.slice(0, 220) + (latestCleanDesc.length > 220 ? "..." : "")
               : "Instructor-led professional certification cohort with international credentials.",
             href: `/courses/${latestCourse.id}`,
             ctaText: "View Program Details",
@@ -646,6 +652,7 @@ export const Navbar = memo(function Navbar() {
     if (path === "/about") return currentPath.startsWith("/about");
     if (path === "/pecp") return currentPath.startsWith("/pecp");
     if (path === "/courses") return currentPath.startsWith("/courses");
+    if (path === "/advanced-courses") return currentPath.startsWith("/advanced-courses");
     if (path === "/ai-unlocked") return currentPath.startsWith("/ai-unlocked");
     if (path === "/contact") return currentPath.startsWith("/contact");
     return currentPath.startsWith(path);
@@ -832,6 +839,22 @@ export const Navbar = memo(function Navbar() {
               <span>Courses</span>
             </Link>
           </div>
+
+          {/* Advanced Courses Link */}
+          <Link
+            to="/advanced-courses"
+            onMouseEnter={() => setActiveMegaMenu(null)}
+            className={`relative flex items-center gap-2 rounded-full px-3.5 py-[0.42rem] text-[0.8rem] font-bold transition-all duration-200 cursor-pointer ${
+              isNavActive("/advanced-courses")
+                ? "bg-brand-ink text-white shadow-md"
+                : "text-slate-600 hover:text-brand-ink hover:bg-white/80"
+            }`}
+          >
+            {isNavActive("/advanced-courses") && (
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-red shadow-sm shrink-0" />
+            )}
+            <span>Advanced Courses</span>
+          </Link>
 
           {/* Contact Us Link */}
           <Link
@@ -1162,7 +1185,9 @@ export const Navbar = memo(function Navbar() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-1.5">
-                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">
+                                {item.title}
+                              </span>
                               {item.badge && (
                                 <span
                                   className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${
@@ -1228,7 +1253,9 @@ export const Navbar = memo(function Navbar() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-1.5">
-                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">
+                                {item.title}
+                              </span>
                               {item.badge && (
                                 <span
                                   className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${
@@ -1313,6 +1340,36 @@ export const Navbar = memo(function Navbar() {
               )}
             </div>
 
+            {/* 4.5 Advanced Courses */}
+            <div className="rounded-2xl border border-slate-100 overflow-hidden bg-slate-50/40">
+              <div className="flex items-center justify-between px-4 py-2.5">
+                <Link
+                  to="/advanced-courses"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 font-extrabold text-sm text-slate-800 hover:text-brand-red flex-1"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                    <Award className="h-4 w-4 text-brand-red" />
+                  </div>
+                  <span className="flex items-center gap-2">
+                    <span>Advanced Courses</span>
+                    <span className="rounded-full bg-brand-red/10 text-brand-red border border-brand-red/20 px-1.5 py-0.2 text-[8px] font-black uppercase">
+                      New
+                    </span>
+                  </span>
+                </Link>
+                <Link
+                  to="/advanced-courses/$slug"
+                  params={{ slug: "analyzing-and-presenting-data" }}
+                  onClick={() => setMobileOpen(false)}
+                  className="p-1.5 text-slate-400 hover:text-brand-red"
+                  aria-label="View Analyzing and Presenting Data"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
             {/* 5. AI Unlocked Accordion */}
             <div className="rounded-2xl border border-slate-100 overflow-hidden bg-slate-50/40">
               <div className="flex items-center justify-between px-4 py-2.5">
@@ -1365,7 +1422,9 @@ export const Navbar = memo(function Navbar() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-start justify-between gap-1.5">
-                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">{item.title}</span>
+                              <span className="line-clamp-2 leading-snug break-words text-[11.5px] sm:text-xs font-bold text-slate-800">
+                                {item.title}
+                              </span>
                               {item.badge && (
                                 <span
                                   className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black leading-none mt-0.5 ${

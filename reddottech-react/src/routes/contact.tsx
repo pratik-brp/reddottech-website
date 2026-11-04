@@ -20,8 +20,18 @@ import { toast } from "sonner";
 import { PageHero } from "@/components/PageHero";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { submitContact, getSettings, getCachedSettings } from "@/lib/api";
+import { advancedCourses } from "@/data/advanced-courses-data";
+
+interface ContactSearch {
+  course?: string;
+  subject?: string;
+}
 
 export const Route = createFileRoute("/contact")({
+  validateSearch: (search: Record<string, unknown>): ContactSearch => ({
+    course: typeof search.course === "string" ? search.course : undefined,
+    subject: typeof search.subject === "string" ? search.subject : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Contact Us | Red Dot Technologies — Enrollment & Support" },
@@ -35,18 +45,43 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+function getInitialSubject(search: ContactSearch): string {
+  if (search.course) {
+    const matched = advancedCourses.find((c) => c.slug === search.course);
+    const courseTitle =
+      matched?.title ||
+      search.course.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+    return `Enrollment: ${courseTitle}`;
+  }
+  if (search.subject) {
+    return search.subject;
+  }
+  return "";
+}
+
 function ContactPage() {
-  const [form, setForm] = useState({
+  const searchParams = Route.useSearch();
+  const [form, setForm] = useState(() => ({
     fullName: "",
     email: "",
     phone: "",
-    subject: "",
+    subject: getInitialSubject(searchParams),
     message: "",
-  });
+  }));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const faqContentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const initialSubject = getInitialSubject(searchParams);
+    if (initialSubject) {
+      setForm((prev) => ({
+        ...prev,
+        subject: initialSubject,
+      }));
+    }
+  }, [searchParams.course, searchParams.subject]);
 
   useEffect(() => {
     const cached = getCachedSettings();
@@ -401,6 +436,10 @@ function ContactPage() {
                           className="w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm font-semibold text-brand-ink placeholder:text-slate-400 focus:outline-none focus:border-brand-red focus:bg-white focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-red)_12%,transparent)] transition-all duration-200"
                         >
                           <option value="">Select a topic</option>
+                          {form.subject &&
+                            !["general", "program", "technical", "collaboration"].includes(
+                              form.subject,
+                            ) && <option value={form.subject}>{form.subject}</option>}
                           <option value="general">General Inquiry</option>
                           <option value="program">Program Inquiry</option>
                           <option value="technical">Technical Assistance</option>
